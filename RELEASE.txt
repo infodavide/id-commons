@@ -1,0 +1,11 @@
+To release Common project.
+1) Compile Maven project.
+2) Change the version of artifact by using the depencies plugin (See https://www.mojohaus.org/versions-maven-plugin/examples/set.html).
+  For example, use 'mvn versions:set -DnewVersion=1.0.3' if you want to tag the artifact with 1.0.3 version.
+3) Compile the project
+  For example, use 'mvn clean install -DskipTests=true' or 'mvn clean install' to run all the unit tests
+4) Commit the changes to the right branch named Common-X.X.X.
+5) After this commit, increase the version of trunk using the depencies plugin as done before with the -SNAPSHOT suffix and commit these changes on pom.xml files.
+
+Note :
+If you plan to release a downstream project, you have to change the reference of Common in its top level pom.xml. Search 'common.version' property and replace the value in that file.

@@ -1,0 +1,4 @@
+To compile Common project.
+1) Update your working copy
+2) Compile the project
+  For example, use 'mvn clean install -DskipTests=true' or 'mvn clean install' to run all the unit tests
