@@ -68,6 +68,10 @@ public final class ConverterUtils {
      * @return true, if successful
      */
     public BigDecimal toBigDecimal(final Object object) {
+        if (object == null) { // Handle null value
+            return null;
+        }
+
         return (BigDecimal) ConvertUtils.convert(object, BigDecimal.class);
     }
 
@@ -89,6 +93,10 @@ public final class ConverterUtils {
      * @return true, if successful
      */
     public BigInteger toBigInteger(final Object object) {
+        if (object == null) { // Handle null value
+            return null;
+        }
+
         return (BigInteger) ConvertUtils.convert(object, BigInteger.class);
     }
 
@@ -133,6 +141,10 @@ public final class ConverterUtils {
      * @return the boolean
      */
     public Boolean toBooleanObject(final Object object) {
+        if (object == null) { // Handle null value
+            return null; //NOSONAR if input is null then result must be null
+        }
+
         return (Boolean) ConvertUtils.convert(object, Boolean.class);
     }
 
@@ -154,6 +166,10 @@ public final class ConverterUtils {
      * @return the booleans
      */
     public boolean[] toBooleans(final Object object) {
+        if (object == null) { // Handle null value
+            return null; //NOSONAR if input is null then result must be null
+        }
+
         return (boolean[]) ConvertUtils.convert(object, boolean[].class);
     }
 
@@ -163,6 +179,10 @@ public final class ConverterUtils {
      * @return true, if successful
      */
     public byte toByte(final Object object) {
+        if (object == null) { // Handle null value
+            return NumberUtils.BYTE_ZERO.byteValue();
+        }
+
         final Byte result = (Byte) ConvertUtils.convert(object, Byte.class);
 
         return result == null ? NumberUtils.BYTE_ZERO.byteValue() : result.byteValue();
@@ -175,6 +195,10 @@ public final class ConverterUtils {
      * @return true, if successful
      */
     public byte toByte(final Object object, final byte defaultValue) {
+        if (object == null) { // Handle null value
+            return defaultValue;
+        }
+
         final Byte result = (Byte) ConvertUtils.convert(object, Byte.class);
 
         return result == null ? defaultValue : result.byteValue();
@@ -186,6 +210,10 @@ public final class ConverterUtils {
      * @return the byte
      */
     public Byte toByteObject(final Object object) {
+        if (object == null) { // Handle null value
+            return null;
+        }
+
         return (Byte) ConvertUtils.convert(object, Byte.class);
     }
 
@@ -207,6 +235,10 @@ public final class ConverterUtils {
      * @return the bytes
      */
     public byte[] toBytes(final Object object) {
+        if (object == null) { // Handle null value
+            return null; //NOSONAR if input is null then result must be null
+        }
+
         return (byte[]) ConvertUtils.convert(object, byte[].class);
     }
 
@@ -216,6 +248,10 @@ public final class ConverterUtils {
      * @return the date
      */
     public Date toDate(final Object object) {
+        if (object == null) { // Handle null value
+            return null;
+        }
+
         return (Date) ConvertUtils.convert(object, Date.class);
     }
 
@@ -226,6 +262,10 @@ public final class ConverterUtils {
      * @return the date
      */
     public Date toDate(final Object object, final Date defaultValue) {
+        if (object == null) { // Handle null value
+            return defaultValue;
+        }
+
         final Date result = (Date) ConvertUtils.convert(object, Date.class);
 
         return result == null ? defaultValue : result;
@@ -237,6 +277,10 @@ public final class ConverterUtils {
      * @return the double
      */
     public double toDouble(final Object object) {
+        if (object == null) { // Handle null value
+            return NumberUtils.DOUBLE_ZERO.doubleValue();
+        }
+
         final Double result = (Double) ConvertUtils.convert(object, Double.class);
 
         return result == null ? NumberUtils.DOUBLE_ZERO.doubleValue() : result.doubleValue();
@@ -260,6 +304,10 @@ public final class ConverterUtils {
      * @return the double
      */
     public Double toDoubleObject(final Object object) {
+        if (object == null) { // Handle null value
+            return null;
+        }
+
         return (Double) ConvertUtils.convert(object, Double.class);
     }
 
@@ -281,6 +329,10 @@ public final class ConverterUtils {
      * @return the doubles
      */
     public double[] toDoubles(final Object object) {
+        if (object == null) { // Handle null value
+            return null; //NOSONAR if input is null then result must be null
+        }
+
         return (double[]) ConvertUtils.convert(object, double[].class);
     }
 
@@ -290,6 +342,10 @@ public final class ConverterUtils {
      * @return the float
      */
     public float toFloat(final Object object) {
+        if (object == null) { // Handle null value
+            return NumberUtils.FLOAT_ZERO.floatValue();
+        }
+
         final Float result = (Float) ConvertUtils.convert(object, Float.class);
 
         return result == null ? NumberUtils.FLOAT_ZERO.floatValue() : result.floatValue();
@@ -313,6 +369,10 @@ public final class ConverterUtils {
      * @return the float
      */
     public Float toFloatObject(final Object object) {
+        if (object == null) { // Handle null value
+            return null;
+        }
+
         return (Float) ConvertUtils.convert(object, Float.class);
     }
 
@@ -334,6 +394,10 @@ public final class ConverterUtils {
      * @return the floats
      */
     public float[] toFloats(final Object object) {
+        if (object == null) { // Handle null value
+            return null; //NOSONAR if input is null then result must be null
+        }
+
         return (float[]) ConvertUtils.convert(object, float[].class);
     }
 
@@ -343,6 +407,10 @@ public final class ConverterUtils {
      * @return the integer
      */
     public int toInteger(final Object object) {
+        if (object == null) { // Handle null value
+            return NumberUtils.INTEGER_ZERO.intValue();
+        }
+
         final Integer result = (Integer) ConvertUtils.convert(object, Integer.class);
 
         return result == null ? NumberUtils.INTEGER_ZERO.intValue() : result.intValue();
@@ -366,6 +434,10 @@ public final class ConverterUtils {
      * @return the integer
      */
     public Integer toIntegerObject(final Object object) {
+        if (object == null) { // Handle null value
+            return null;
+        }
+
         return (Integer) ConvertUtils.convert(object, Integer.class);
     }
 
@@ -387,6 +459,10 @@ public final class ConverterUtils {
      * @return the integers
      */
     public int[] toIntegers(final Object object) {
+        if (object == null) { // Handle null value
+            return null; //NOSONAR if input is null then result must be null
+        }
+
         return (int[]) ConvertUtils.convert(object, int[].class);
     }
 
@@ -396,6 +472,10 @@ public final class ConverterUtils {
      * @return true, if successful
      */
     public long toLong(final Object object) {
+        if (object == null) { // Handle null value
+            return NumberUtils.LONG_ZERO.longValue();
+        }
+
         final Long result = (Long) ConvertUtils.convert(object, Long.class);
 
         return result == null ? NumberUtils.LONG_ZERO.longValue() : result.longValue();
@@ -419,6 +499,10 @@ public final class ConverterUtils {
      * @return true, if successful
      */
     public Long toLongObject(final Object object) {
+        if (object == null) { // Handle null value
+            return null;
+        }
+
         return (Long) ConvertUtils.convert(object, Long.class);
     }
 
@@ -440,6 +524,10 @@ public final class ConverterUtils {
      * @return the longs
      */
     public long[] toLongs(final Object object) {
+        if (object == null) { // Handle null value
+            return null; //NOSONAR if input is null then result must be null
+        }
+
         return (long[]) ConvertUtils.convert(object, long[].class);
     }
 
@@ -507,6 +595,10 @@ public final class ConverterUtils {
      * @return true, if successful
      */
     public short toShort(final Object object) {
+        if (object == null) { // Handle null value
+            return NumberUtils.SHORT_ZERO.shortValue();
+        }
+
         final Short result = (Short) ConvertUtils.convert(object, Short.class);
 
         return result == null ? NumberUtils.SHORT_ZERO.shortValue() : result.shortValue();
@@ -530,6 +622,10 @@ public final class ConverterUtils {
      * @return the short
      */
     public Short toShortObject(final Object object) {
+        if (object == null) { // Handle null value
+            return null;
+        }
+
         return (Short) ConvertUtils.convert(object, Short.class);
     }
 
@@ -551,6 +647,10 @@ public final class ConverterUtils {
      * @return the shorts
      */
     public short[] toShorts(final Object object) {
+        if (object == null) { // Handle null value
+            return null; //NOSONAR if input is null then result must be null
+        }
+
         return (short[]) ConvertUtils.convert(object, short[].class);
     }
 
@@ -560,7 +660,7 @@ public final class ConverterUtils {
      * @return the string
      */
     public String toString(final Class<?> type) {
-        StringBuilder buffer = new StringBuilder();
+        final StringBuilder buffer = new StringBuilder();
 
         if (type == null) {
             buffer.append("null");
@@ -582,11 +682,12 @@ public final class ConverterUtils {
             buffer.append(type.getName());
         }
 
-        String string = buffer.toString();
+        final String string = buffer.toString();
 
         if (string.startsWith("java.lang.") || string.startsWith("java.util.") || string.startsWith("java.math.")) {
             return string.substring("java.lang.".length());
-        } else if (string.startsWith(getClass().getPackage().getName())) {
+        }
+        if (string.startsWith(getClass().getPackage().getName())) {
             return string.substring(getClass().getPackage().getName().length());
         }
 

@@ -16,11 +16,11 @@ public class EntityReferenceDto implements Serializable {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 211893791477310800L;
 
+    /** The display name. */
+    private String displayName;
+
     /** The identifier. */
     private String id;
-
-    /** The label. */
-    private String label;
 
     /**
      * Instantiates a new DTO.
@@ -36,7 +36,7 @@ public class EntityReferenceDto implements Serializable {
      */
     public EntityReferenceDto(final String id, final String label) {
         this.id = id;
-        this.label = label;
+        displayName = label;
     }
 
     /*
@@ -53,13 +53,19 @@ public class EntityReferenceDto implements Serializable {
             return false;
         }
 
-        if (!(obj instanceof EntityReferenceDto)) {
+        if (!(obj instanceof final EntityReferenceDto other)) {
             return false;
         }
 
-        final EntityReferenceDto other = (EntityReferenceDto) obj;
-
         return Objects.equals(id, other.id);
+    }
+
+    /**
+     * Gets the display name.
+     * @return the display name
+     */
+    public String getDisplayName() {
+        return displayName;
     }
 
     /**
@@ -68,14 +74,6 @@ public class EntityReferenceDto implements Serializable {
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * Gets the label.
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
     }
 
     /*
@@ -88,19 +86,19 @@ public class EntityReferenceDto implements Serializable {
     }
 
     /**
+     * Sets the display name.
+     * @param displayName the display name to set
+     */
+    public void setDisplayName(final String displayName) {
+        this.displayName = displayName;
+    }
+
+    /**
      * Sets the identifier.
      * @param id the identifier to set
      */
     public void setId(final String id) {
         this.id = id;
-    }
-
-    /**
-     * Sets the label.
-     * @param label the label to set
-     */
-    public void setLabel(final String label) {
-        this.label = label;
     }
 
     /*
