@@ -30,4 +30,12 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDao {
     @Override
     @Query("select new org.infodavid.commons.model.DefaultEntityReference(id,displayName) from User")
     Page<DefaultEntityReference> findReferences(final Pageable pageable) throws PersistenceException;
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.dao.UserDao#findByRole(java.lang.String, org.springframework.data.domain.Pageable)
+     */
+    @Override
+    @Query(value = "select * from users u where u.roles = ?1 or u.roles like '?1;%' or u.roles like '%;?1' or u.roles like '%;?1;%'", countQuery = "select cound(id) from users u where u.roles = ?1 or u.roles like '?1;%' or u.roles like '%;?1' or u.roles like '%;?1;%'", nativeQuery = true)
+    Page<User> findByRole(String value, Pageable pageable) throws PersistenceException;
 }

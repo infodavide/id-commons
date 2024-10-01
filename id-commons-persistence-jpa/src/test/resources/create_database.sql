@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS users (
   last_ip VARCHAR(48) NULL,
   locked BOOLEAN DEFAULT false,
   password VARCHAR(48) NOT NULL,
-  role VARCHAR(16) DEFAULT 'GUEST',
+  roles VARCHAR(512) DEFAULT 'GUEST',
   CONSTRAINT unq_users UNIQUE (name)
 );
 

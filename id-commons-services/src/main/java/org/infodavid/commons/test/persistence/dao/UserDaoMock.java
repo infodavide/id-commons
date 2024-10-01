@@ -1,7 +1,6 @@
 package org.infodavid.commons.test.persistence.dao;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -84,7 +83,6 @@ public class UserDaoMock extends AbstractDefaultDaoMock<Long, User> implements U
     @Override
     public Optional<User> findByName(final String value) throws PersistenceException {
         for (final Entry<Long, User> entry : map.entrySet()) {
-            System.out.println(entry.getKey() + "=" + entry.getValue());
             if (StringUtils.equals(entry.getValue().getName(), value)) {
                 return Optional.ofNullable(clone(entry.getValue()));
             }
@@ -94,15 +92,15 @@ public class UserDaoMock extends AbstractDefaultDaoMock<Long, User> implements U
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.persistence.dao.UserDao#findByRoleIn(java.util.Collection, org.springframework.data.domain.Pageable)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.dao.UserDao#findByRole(java.lang.String, org.springframework.data.domain.Pageable)
      */
     @Override
-    public Page<User> findByRoleIn(final Collection<String> values, final Pageable pageable) throws PersistenceException {
+    public Page<User> findByRole(final String value, final Pageable pageable) throws PersistenceException {
         final List<User> results = new ArrayList<>();
 
         for (final User user : map.values()) {
-            if (values.contains(user.getRole())) {
+            if (user.getRoles() != null && user.getRoles().contains(value)) {
                 results.add(user);
             }
         }

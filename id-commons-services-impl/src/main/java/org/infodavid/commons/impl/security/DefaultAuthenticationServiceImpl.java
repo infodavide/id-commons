@@ -347,8 +347,8 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             getLogger().trace("Instantiating a new authentication");
             final Collection<GrantedAuthority> authorities = new ArrayList<>();
 
-            if (user.getRole() != null) {
-                authorities.add(new SimpleGrantedAuthority(user.getRole()));
+            if (user.getRoles() != null) {
+                user.getRoles().forEach(v -> authorities.add(new SimpleGrantedAuthority(v)));
             }
 
             if (builder == null) {
@@ -501,14 +501,18 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
      * @see org.infodavid.security.AuthenticationService#getListeners()
      */
     @Override
-    public Set<AuthenticationListener> getListeners() { return listeners; }
+    public Set<AuthenticationListener> getListeners() {
+        return listeners;
+    }
 
     /*
      * (non-javadoc)
      * @see org.infodavid.impl.service.AbstractService#getLogger()
      */
     @Override
-    protected Logger getLogger() { return LOGGER; }
+    protected Logger getLogger() {
+        return LOGGER;
+    }
 
     /*
      * (non-javadoc)
@@ -533,9 +537,9 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
 
         getLogger().trace("Authentication: {}", context.getAuthentication());
 
-        if (context.getAuthentication().getPrincipal() instanceof final User user) {
+        if (context.getAuthentication().getPrincipal() instanceof final User user) { // NOSONAR Use of pattern matching
             result = user;
-        } else if (context.getAuthentication().getDetails() instanceof final User user) {
+        } else if (context.getAuthentication().getDetails() instanceof final User user) { // NOSONAR Use of pattern matching
             result = user;
         }
 
@@ -604,19 +608,19 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             return true;
         }
 
-        if (user.getRole() == null) {
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
             getLogger().trace(Constants.USER_HAS_NO_ROLE_DENIED);
 
             return false;
         }
 
-        if (org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE.equals(user.getRole())) {
+        if (user.getRoles().contains(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE)) {
             getLogger().trace(Constants.USER_IS_AN_ADMINISTRATOR_ALLOWED);
 
             return true;
         }
 
-        final boolean result = user.getRole().equals(role);
+        final boolean result = user.getRoles().contains(role);
         getLogger().trace(Constants.USER_HAS_ROLE_PATTERN, role, result);
 
         return result;

@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -157,9 +156,9 @@ class UserServiceTest extends AbstractSpringTest {
      * @throws Exception the exception
      */
     @Test
-    void testAddWithNullRole() throws Exception { // NOSONAR Normal case
+    void testAddWithNullRoles() throws Exception { // NOSONAR Normal case
         final User user = newUser();
-        user.setRole(null);
+        user.setRoles(null);
 
         service.add(user);
     }
@@ -277,13 +276,13 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testFindByRoles() throws Exception {
-        final Page<User> results = service.findByRole(Collections.singletonList(org.infodavid.commons.model.Constants.USER_ROLE), Pageable.unpaged());
+        final Page<User> results = service.findByRole(org.infodavid.commons.model.Constants.USER_ROLE, Pageable.unpaged());
 
         assertNotNull(results, "Result is null");
         assertEquals(2, results.getNumberOfElements(), "Wrong count");
 
         for (final User result : results) {
-            assertEquals(org.infodavid.commons.model.Constants.USER_ROLE, result.getRole(), "Wrong result");
+            assertTrue(result.getRoles().contains(org.infodavid.commons.model.Constants.USER_ROLE), "Wrong result");
         }
     }
 
@@ -354,7 +353,7 @@ class UserServiceTest extends AbstractSpringTest {
         assertEquals(user.getEmail(), service.findById(user.getId()).get().getEmail(), "Not updated");
         assertEquals(user.getExpirationDate(), service.findById(user.getId()).get().getExpirationDate(), "Not updated");
         assertEquals(user.getName(), service.findById(user.getId()).get().getName(), "Not updated");
-        assertEquals(user.getRole(), service.findById(user.getId()).get().getRole(), "Not updated");
+        assertEquals(user.getRoles(), service.findById(user.getId()).get().getRoles(), "Not updated");
         final UserDao dao = applicationContext.getBean(UserDao.class);
         assertEquals(user.getPassword(), dao.findById(user.getId()).get().getPassword(), "Not updated");
     }
@@ -393,7 +392,7 @@ class UserServiceTest extends AbstractSpringTest {
         assertEquals(user.getEmail(), service.findById(user.getId()).get().getEmail(), "Not updated");
         assertEquals(user.getExpirationDate(), service.findById(user.getId()).get().getExpirationDate(), "Not updated");
         assertEquals(user.getName(), service.findById(user.getId()).get().getName(), "Not updated");
-        assertEquals(user.getRole(), service.findById(user.getId()).get().getRole(), "Not updated");
+        assertEquals(user.getRoles(), service.findById(user.getId()).get().getRoles(), "Not updated");
         assertEquals(oldPassword, service.findById(user.getId()).get().getPassword(), "Password has been updated");
         final UserDao dao = applicationContext.getBean(UserDao.class);
         assertNotEquals(user.getPassword(), dao.findById(user.getId()).get().getPassword(), "Not updated");
@@ -417,7 +416,7 @@ class UserServiceTest extends AbstractSpringTest {
         assertEquals(user.getEmail(), service.findById(user.getId()).get().getEmail(), "Not updated");
         assertEquals(user.getExpirationDate(), service.findById(user.getId()).get().getExpirationDate(), "Not updated");
         assertEquals(user.getName(), service.findById(user.getId()).get().getName(), "Not updated");
-        assertEquals(user.getRole(), service.findById(user.getId()).get().getRole(), "Not updated");
+        assertEquals(user.getRoles(), service.findById(user.getId()).get().getRoles(), "Not updated");
         assertEquals(user.getPassword(), service.findById(user.getId()).get().getPassword(), "Password not updated");
         final UserDao dao = applicationContext.getBean(UserDao.class);
         assertEquals(user.getPassword(), dao.findById(user.getId()).get().getPassword(), "Not updated");

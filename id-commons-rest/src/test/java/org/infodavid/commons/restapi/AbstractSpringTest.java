@@ -9,6 +9,7 @@ import org.infodavid.commons.restapi.configuration.WebSocketConfiguration;
 import org.infodavid.commons.restapi.dto.UserDto;
 import org.infodavid.commons.security.AuthenticationService;
 import org.infodavid.commons.test.TestCase;
+import org.infodavid.commons.util.collection.CollectionUtils;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mockito;
@@ -61,7 +62,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
         result.setName("user" + System.nanoTime());
         result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
         result.setEmail(result.getName() + "@infodavid.org");
-        result.setRole(org.infodavid.commons.model.Constants.USER_ROLE);
+        result.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.USER_ROLE));
 
         return result;
     }
@@ -78,7 +79,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
         result.setName("user" + System.nanoTime());
         result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
         result.setEmail(result.getName() + "@infodavid.org");
-        result.setRole(org.infodavid.commons.model.Constants.USER_ROLE);
+        result.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.USER_ROLE));
 
         return result;
     }
@@ -132,7 +133,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
 
         user.setName(name);
         user.setPassword(password);
-        user.setRole(role);
+        user.setRoles(CollectionUtils.getInstance().of(role));
         final UsernamePasswordAuthenticationToken authentication = newAuthentication(role, user, password);
         authentication.setDetails(user);
         SecurityContextHolder.getContext().setAuthentication(authentication);

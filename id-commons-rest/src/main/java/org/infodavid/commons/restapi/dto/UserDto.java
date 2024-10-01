@@ -2,6 +2,7 @@ package org.infodavid.commons.restapi.dto;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.processing.Generated;
 
@@ -60,7 +61,7 @@ public class UserDto extends AbstractDto {
     private List<PropertyDto> properties;
 
     /** The role. */
-    private String role;
+    private Set<String> roles;
 
     /**
      * Gets the connections count.
@@ -135,11 +136,11 @@ public class UserDto extends AbstractDto {
     }
 
     /**
-     * Gets the role.
-     * @return the role
+     * Gets the roles.
+     * @return the roles
      */
-    public String getRole() {
-        return role;
+    public Set<String> getRoles() {
+        return roles;
     }
 
     /*
@@ -155,7 +156,7 @@ public class UserDto extends AbstractDto {
         lastIp = null;
         locked = false;
         password = null;
-        role = null;
+        roles = null;
         name = null;
         displayName = null;
         email = null;
@@ -266,10 +267,10 @@ public class UserDto extends AbstractDto {
     }
 
     /**
-     * Sets the role.
-     * @param role the new role
+     * Sets the roles.
+     * @param roles the new roles
      */
-    public void setRole(final String role) {
-        this.role = role;
+    public void setRoles(final Set<String> roles) {
+        this.roles = roles;
     }
 }

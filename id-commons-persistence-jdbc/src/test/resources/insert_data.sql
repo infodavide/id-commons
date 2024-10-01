@@ -5,7 +5,7 @@ INSERT INTO settings (deletable, read_only, name, cdate, mdate, data_type, data,
   (true, false, 'Param2', NOW(), NOW(), 'STRING', 'Donnée2', NULL, NULL, 'Param 2', NULL),
   (true, false, 'Param3', NOW(), NOW(), 'STRING', 'Donnée2', 'Scope1', NULL, 'Param 3', NULL);
 
-INSERT INTO users (deletable, name, display_name, cdate, mdate, connections_count, email, expiration_date, last_connection_date, last_ip, locked, password, role) VALUES
+INSERT INTO users (deletable, name, display_name, cdate, mdate, connections_count, email, expiration_date, last_connection_date, last_ip, locked, password, roles) VALUES
   (false, 'admin', 'Administrator', NOW(), NOW(), 0, 'Support@infodavid.org', NULL, NULL, NULL, false, '21232F297A57A5A743894A0E4A801FC3', 'ADMINISTRATOR'),
   (false, 'anonymous', 'Anonymous', NOW(), NOW(), 0, NULL, NULL, NULL, NULL, false, '', 'ANONYMOUS'),
   (true, 'user1', 'User 1', NOW(), NOW(), 2, 'user1@infodavid.org', NULL, NOW(), '192.168.0.101', false, '24C9E15E52AFC47C225B757E7BEE1F9D', 'USER'),

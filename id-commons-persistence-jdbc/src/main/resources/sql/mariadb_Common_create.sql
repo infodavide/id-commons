@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS users (
   last_ip varchar(48) DEFAULT NULL,
   locked boolean NOT NULL DEFAULT false,
   password varchar(48) NOT NULL,
-  role varchar(16) NOT NULL DEFAULT 'GUEST',
+  roles varchar(512) NOT NULL DEFAULT 'GUEST',
   CONSTRAINT unq_users UNIQUE (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

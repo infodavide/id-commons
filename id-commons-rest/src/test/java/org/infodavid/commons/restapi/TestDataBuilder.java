@@ -4,6 +4,7 @@ import org.infodavid.commons.model.ApplicationProperty;
 import org.infodavid.commons.model.Property;
 import org.infodavid.commons.model.PropertyType;
 import org.infodavid.commons.model.User;
+import org.infodavid.commons.util.collection.CollectionUtils;
 
 /**
  * The Class TestDataBuilder.
@@ -44,7 +45,7 @@ public class TestDataBuilder {
         result.setName("test-" + System.nanoTime());
         result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
         result.setEmail(result.getName() + "@infodavid.org");
-        result.setRole(org.infodavid.commons.model.Constants.USER_ROLE);
+        result.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.USER_ROLE));
 
         return result;
     }

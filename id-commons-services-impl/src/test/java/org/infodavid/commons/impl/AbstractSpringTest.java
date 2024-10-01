@@ -7,6 +7,7 @@ import org.infodavid.commons.model.Constants;
 import org.infodavid.commons.model.User;
 import org.infodavid.commons.security.AuthenticationService;
 import org.infodavid.commons.test.TestCase;
+import org.infodavid.commons.util.collection.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -71,7 +72,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
         result.setDisplayName("User " + result.getName());
         result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
         result.setEmail(result.getName() + "@infodavid.org");
-        result.setRole(Constants.USER_ROLE);
+        result.setRoles(CollectionUtils.getInstance().of(Constants.USER_ROLE));
 
         return result;
     }

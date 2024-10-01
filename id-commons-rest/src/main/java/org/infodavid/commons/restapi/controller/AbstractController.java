@@ -129,7 +129,7 @@ public abstract class AbstractController implements ApplicationContextAware {
 
         final User user = service.getUser();
 
-        return user != null && !user.isLocked() && !user.isExpired() && !org.infodavid.commons.model.Constants.ANONYMOUS_ROLE.equalsIgnoreCase(user.getRole());
+        return user != null && !user.isLocked() && !user.isExpired() && user.getRoles() != null && !user.getRoles().contains(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE);
     }
 
     /*

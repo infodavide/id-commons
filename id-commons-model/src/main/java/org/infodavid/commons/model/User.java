@@ -8,11 +8,13 @@ import java.util.Set;
 
 import javax.annotation.processing.Generated;
 
+import org.infodavid.commons.model.converter.StringSetConverter;
 import org.infodavid.commons.model.decorator.PropertiesDecorator;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -72,8 +74,8 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
     @Transient
     private PropertiesDecorator properties;
 
-    /** The role. */
-    private String role;
+    /** The roles. */
+    private Set<String> roles = new HashSet<>();
 
     /**
      * The Constructor.
@@ -108,7 +110,7 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
         locked = source.locked;
         password = source.password;
         properties = new PropertiesDecorator(Collections.synchronizedSet(new HashSet<>()), source.properties);
-        role = source.role;
+        roles = source.roles;
     }
 
     /*
@@ -259,12 +261,13 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
     }
 
     /**
-     * Gets the role.
-     * @return the role
+     * Gets the roles.
+     * @return the roles
      */
-    @Column(name = "role", length = 16)
-    public String getRole() {
-        return role;
+    @Convert(converter = StringSetConverter.class)
+    @Column(name = "roles", length = 16)
+    public Set<String> getRoles() {
+        return roles;
     }
 
     /*
@@ -399,10 +402,10 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
     }
 
     /**
-     * Sets the role.
-     * @param role the new role
+     * Sets the roles.
+     * @param roles the new roles
      */
-    public void setRole(final String role) {
-        this.role = role;
+    public void setRoles(final Set<String> roles) {
+        this.roles = roles;
     }
 }

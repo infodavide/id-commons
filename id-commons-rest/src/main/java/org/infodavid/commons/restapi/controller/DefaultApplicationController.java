@@ -124,8 +124,8 @@ public class DefaultApplicationController extends AbstractPersistentEntityContro
         if (authenticationService != null) {
             final User user = authenticationService.getUser();
 
-            if (user != null) {
-                dto.setEditable(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE.equalsIgnoreCase(user.getRole()));
+            if (user != null && user.getRoles() != null) {
+                dto.setEditable(user.getRoles().contains(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
             }
         }
 

@@ -12,6 +12,7 @@ import org.infodavid.commons.persistence.dao.ApplicationPropertyDao;
 import org.infodavid.commons.persistence.dao.UserDao;
 import org.infodavid.commons.test.persistence.dao.AbstractDefaultDaoMock;
 import org.infodavid.commons.util.StringUtils;
+import org.infodavid.commons.util.collection.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,7 @@ public class TestDataInitializer {
         user.setDisplayName("Admin");
         user.setEmail("admin@infodavid.org");
         user.setPassword(DigestUtils.md5Hex("secret"));
-        user.setRole(Constants.ADMINISTRATOR_ROLE);
+        user.setRoles(CollectionUtils.getInstance().of(Constants.ADMINISTRATOR_ROLE));
         userDao.insert(user);
         user = new User();
         user.setDeletable(true);
@@ -102,7 +103,7 @@ public class TestDataInitializer {
         user.setEmail("user1@infodavid.org");
         user.setLastIp("192.168.0.101");
         user.setPassword(DigestUtils.md5Hex("pass1"));
-        user.setRole(Constants.USER_ROLE);
+        user.setRoles(CollectionUtils.getInstance().of(Constants.USER_ROLE));
         user.getProperties().add(null, "prop10", "val10");
         userDao.insert(user);
         final User user2 = new User();
@@ -114,7 +115,7 @@ public class TestDataInitializer {
         user2.setEmail("user2@infodavid.org");
         user2.setLastIp("192.168.0.102");
         user2.setPassword(DigestUtils.md5Hex("pass2"));
-        user2.setRole(Constants.USER_ROLE);
+        user2.setRoles(CollectionUtils.getInstance().of(Constants.USER_ROLE));
         userDao.insert(user2);
         LOGGER.info("{} users inserted", String.valueOf(userDao.count()));
     }

@@ -1,6 +1,5 @@
 package org.infodavid.commons.persistence.dao;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import org.infodavid.commons.model.DefaultEntityReference;
@@ -38,13 +37,13 @@ public interface UserDao extends DefaultDao<Long, User> {
     Optional<User> findByName(String value) throws PersistenceException;
 
     /**
-     * Selects by one of the given roles.
-     * @param values   the roles
+     * Selects by role.
+     * @param value   the role
      * @param pageable the page definition
      * @return the users
      * @throws PersistenceException the persistence exception
      */
-    Page<User> findByRoleIn(Collection<String> values, Pageable pageable) throws PersistenceException;
+    Page<User> findByRole(String value, Pageable pageable) throws PersistenceException;
 
     /**
      * Find references.

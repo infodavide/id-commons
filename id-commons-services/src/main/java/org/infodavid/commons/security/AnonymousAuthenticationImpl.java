@@ -23,7 +23,7 @@ public class AnonymousAuthenticationImpl extends AnonymousAuthenticationToken { 
      * @param token       the token
      */
     private AnonymousAuthenticationImpl() {
-        super(org.infodavid.commons.model.Constants.ANONYMOUS, Constants.ANONYMOUS, AuthorityUtils.createAuthorityList(Constants.ANONYMOUS.getRole()));
+        super(org.infodavid.commons.model.Constants.ANONYMOUS, Constants.ANONYMOUS, AuthorityUtils.createAuthorityList(Constants.ANONYMOUS.getRoles()));
         setDetails(Constants.ANONYMOUS);
     }
 

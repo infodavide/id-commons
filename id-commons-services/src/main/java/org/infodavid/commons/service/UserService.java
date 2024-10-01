@@ -1,7 +1,6 @@
 package org.infodavid.commons.service;
 
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,13 +43,13 @@ public interface UserService extends EntityService<Long, User> {
     Optional<User> findByName(String value) throws ServiceException;
 
     /**
-     * Find by one of the given roles.
-     * @param roles    the roles
+     * Find by role.
+     * @param role     the role
      * @param pageable the page definition
      * @return the page
      * @throws ServiceException the service exception
      */
-    Page<User> findByRole(Collection<String> roles, Pageable pageable) throws ServiceException;
+    Page<User> findByRole(String role, Pageable pageable) throws ServiceException;
 
     /**
      * Find by status.

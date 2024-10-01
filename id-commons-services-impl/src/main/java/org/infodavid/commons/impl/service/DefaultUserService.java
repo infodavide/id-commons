@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -22,6 +23,7 @@ import org.infodavid.commons.security.AuthenticationService;
 import org.infodavid.commons.service.ApplicationService;
 import org.infodavid.commons.service.UserService;
 import org.infodavid.commons.service.exception.ServiceException;
+import org.infodavid.commons.util.collection.CollectionUtils;
 import org.infodavid.commons.util.jackson.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +62,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
         Arrays.sort(SUPPORTED_ROLES);
         ANONYMOUS = new User();
         ANONYMOUS.setName(org.infodavid.commons.model.Constants.ANONYMOUS);
-        ANONYMOUS.setRole(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE);
+        ANONYMOUS.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
         ANONYMOUS.setDeletable(false);
         ANONYMOUS.setCreationDate(new Date());
         ANONYMOUS.setModificationDate(ANONYMOUS.getCreationDate());
@@ -110,7 +112,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
                 user.setDisplayName("Administrator");
                 user.setEmail("support@infodavid.org");
                 user.setPassword(DigestUtils.md5Hex(org.infodavid.commons.model.Constants.DEFAULT_PASSWORD));
-                user.setRole(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE);
+                user.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
                 dao.insert(user);
             }
 
@@ -123,7 +125,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
                 user.setDisplayName("Anonymous");
                 user.setEmail("support@infodavid.org");
                 user.setPassword(org.infodavid.commons.model.Constants.ANONYMOUS);
-                user.setRole(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE);
+                user.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
                 dao.insert(user);
             }
         } catch (final PersistenceException e) {
@@ -203,7 +205,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
                 }
 
                 writer.write(Constants.CSV_SEPARATOR);
-                writer.write(user.getRole());
+                writer.write(StringUtils.join(user.getRoles(), ','));
                 writer.write(Constants.CSV_SEPARATOR);
 
                 if (user.getExpirationDate() != null) {
@@ -300,17 +302,17 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.service.UserService#findByRoles(java.util.Collection, org.springframework.data.domain.Pageable)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.service.UserService#findByRole(java.lang.String, org.springframework.data.domain.Pageable)
      */
     @Override
-    public Page<User> findByRole(final Collection<String> roles, final Pageable pageable) throws ServiceException {
-        if (roles == null || roles.isEmpty()) {
+    public Page<User> findByRole(final String role, final Pageable pageable) throws ServiceException {
+        if (StringUtils.isEmpty(role)) {
             throw new IllegalArgumentException(org.infodavid.commons.impl.service.Constants.ARGUMENT_ROLE_IS_NULL_OR_EMPTY);
         }
 
         try {
-            return filter(dao.findByRoleIn(roles, pageable));
+            return filter(dao.findByRole(role, pageable));
         } catch (final PersistenceException e) {
             throw new ServiceException(ExceptionUtils.getRootCause(e));
         }
@@ -521,7 +523,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
         final AuthenticationService authenticationService = getAuthenticationService();
 
         if (existing.isPresent() && authenticationService != null) {
-            if (!authenticationService.hasRole(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE) && !existing.get().getRole().equals(value.getRole())) {
+            if (!authenticationService.hasRole(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE) && !Objects.equals(existing.get().getRoles(), value.getRoles())) {
                 throw new IllegalAccessException("User '" + existing.get().getDisplayName() + "' is protected, role update is not allowed");
             }
 
@@ -591,7 +593,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
         if (!existing.isDeletable()) {
             valueToUpdate.setName(existing.getName());
-            valueToUpdate.setRole(existing.getRole());
+            valueToUpdate.setRoles(existing.getRoles());
             valueToUpdate.setLocked(existing.isLocked());
             valueToUpdate.setExpirationDate(existing.getExpirationDate());
         }
@@ -609,10 +611,14 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
             return;
         }
 
-        if (value.getRole() == null) {
-            value.setRole(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE);
-        } else if (Arrays.binarySearch(getSupportedRoles(), value.getRole()) < 0) {
-            throw new ValidationException("Role is not supported: " + value.getRole() + " (" + Arrays.toString(getSupportedRoles()) + ')');
+        if (value.getRoles() == null) {
+            value.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
+        } else {
+            for (final String role : value.getRoles()) {
+                if (Arrays.binarySearch(getSupportedRoles(), role) < 0) {
+                    throw new ValidationException("Role is not supported: " + role + " (" + Arrays.toString(getSupportedRoles()) + ')');
+                }
+            }
         }
 
         StringUtils.trim(value.getDisplayName());

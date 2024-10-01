@@ -127,8 +127,8 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
     /** The Constant USER_NAME_ATTRIBUTE. */
     private static final String USER_NAME_ATTRIBUTE = "username";
 
-    /** The Constant USER_ROLE_ATTRIBUTE. */
-    private static final String USER_ROLE_ATTRIBUTE = "userrole";
+    /** The Constant USER_ROLES_ATTRIBUTE. */
+    private static final String USER_ROLES_ATTRIBUTE = "userroles";
 
     /**
      * Gets the remote address.
@@ -240,7 +240,7 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
 
         wss.getAttributes().remove(AUTHENTICATION_ATTRIBUTE);
         wss.getAttributes().remove(USER_NAME_ATTRIBUTE);
-        wss.getAttributes().remove(USER_ROLE_ATTRIBUTE);
+        wss.getAttributes().remove(USER_ROLES_ATTRIBUTE);
         sessions.put(wss.getId(), new WeakReference<>(wss));
 
         synchronized (userSessionsId) {
@@ -418,7 +418,7 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
 
             wss.getAttributes().remove(AUTHENTICATION_ATTRIBUTE);
             wss.getAttributes().remove(USER_NAME_ATTRIBUTE);
-            wss.getAttributes().remove(USER_ROLE_ATTRIBUTE);
+            wss.getAttributes().remove(USER_ROLES_ATTRIBUTE);
 
             if (token != null) {
                 try {
@@ -431,7 +431,7 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
                         userSessionsId.put(user.getName(), wss.getId());
                         wss.getAttributes().put(AUTHENTICATION_ATTRIBUTE, authentication);
                         wss.getAttributes().put(USER_NAME_ATTRIBUTE, user.getName());
-                        wss.getAttributes().put(USER_ROLE_ATTRIBUTE, user.getRole());
+                        wss.getAttributes().put(USER_ROLES_ATTRIBUTE, user.getRoles());
                         getLogger().info("Websocket session is now associated to user: {}", user.getName());
                     }
                 } catch (@SuppressWarnings("unused") final NoSuchBeanDefinitionException e) {
@@ -674,10 +674,10 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
             final WebSocketSession wss = ref == null ? null : ref.get();
 
             if (wss != null) {
-                final Object value = wss.getAttributes().get(USER_ROLE_ATTRIBUTE);
+                final Object value = wss.getAttributes().get(USER_ROLES_ATTRIBUTE);
 
-                if (value instanceof final String roleOfSession) {
-                    if (role.equalsIgnoreCase(roleOfSession)) {
+                if (value instanceof final Set<?> roles) {
+                    if (roles.contains(role)) {
                         sessionsSnapshot.add(wss);
                     }
                 } else if (org.infodavid.commons.model.Constants.ANONYMOUS_ROLE.equalsIgnoreCase(role)) {

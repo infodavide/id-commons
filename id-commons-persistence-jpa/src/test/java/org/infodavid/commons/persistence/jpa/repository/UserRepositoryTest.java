@@ -124,7 +124,7 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertEquals("192.168.0.100", result.getLastIp(), "Wrong last IP");
         assertEquals("admin", result.getName(), "Wrong name");
         assertEquals("21232F297A57A5A743894A0E4A801FC3", result.getPassword(), "Wrong password");
-        assertEquals(Constants.ADMINISTRATOR_ROLE, result.getRole(), "Wrong role");
+        assertEquals(Collections.singleton(Constants.ADMINISTRATOR_ROLE), result.getRoles(), "Wrong roles");
         assertNotNull(result.getProperties(), "Wrong properties");
         assertEquals(2, result.getProperties().size(), "Wrong count of properties");
         assertNotNull(result.getProperties().get("prop10"), "Wrong property");
@@ -158,11 +158,11 @@ class UserRepositoryTest extends AbstractSpringTest {
      */
     @Test
     void testFindByRole() throws Exception {
-        final Page<User> results = dao.findByRoleIn(Collections.singletonList(Constants.USER_ROLE), Pageable.unpaged());
+        final Page<User> results = dao.findByRole(Constants.USER_ROLE, Pageable.unpaged());
 
         assertNotNull(results, "Null result");
         assertEquals(3, results.getNumberOfElements(), "Wrong number of elements");
-        results.forEach(u -> assertEquals(Constants.USER_ROLE, u.getRole(), "Wrong result"));
+        results.forEach(u -> assertTrue(u.getRoles().contains(Constants.USER_ROLE), "Wrong result"));
     }
 
     /**
@@ -237,7 +237,7 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertNull(inserted.getLastIp(), "Wrong last IP");
         assertEquals(entity.getName(), inserted.getName(), "Wrong name");
         assertEquals(entity.getPassword(), inserted.getPassword(), "Wrong password");
-        assertEquals(entity.getRole(), inserted.getRole(), "Wrong role");
+        assertEquals(entity.getRoles(), inserted.getRoles(), "Wrong roles");
         assertEquals(count + 1, dao.count(), "Wrong count");
         assertNotNull(inserted.getProperties(), "Wrong properties");
         assertEquals(7, inserted.getProperties().size(), "Wrong count of properties");
@@ -280,7 +280,7 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertEquals(entity.getLastIp(), updated.getLastIp(), "Wrong last IP");
         assertEquals(entity.getName(), updated.getName(), "Wrong name");
         assertEquals(entity.getPassword(), updated.getPassword(), "Wrong password");
-        assertEquals(entity.getRole(), updated.getRole(), "Wrong role");
+        assertEquals(entity.getRoles(), updated.getRoles(), "Wrong roles");
         assertEquals(count, dao.count(), "Wrong count");
         assertNotNull(updated.getProperties(), "Wrong properties");
         assertEquals(3, updated.getProperties().size(), "Wrong count of properties");

@@ -365,7 +365,7 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
 
         final User user = getAuthenticationService() == null ? null : getAuthenticationService().getUser();
 
-        if (user != null && !org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE.equals(user.getRole())) {
+        if (user != null && user.getRoles() != null && !user.getRoles().contains(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE)) {
             throw new IllegalAccessException(String.format(DefaultAuthenticationServiceImpl.USER_HAS_NOT_THE_ROLE, org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
         }
 
@@ -403,7 +403,7 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
             throw new IllegalAccessException(String.format(APPLICATION_PROPERTY_IS_READ_ONLY, value.getName()));
         }
 
-        if (user != null && !org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE.equals(user.getRole())) {
+        if (user != null && user.getRoles() != null && !user.getRoles().contains(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE)) {
             throw new IllegalAccessException(String.format(DefaultAuthenticationServiceImpl.USER_HAS_NOT_THE_ROLE, org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
         }
 
@@ -441,7 +441,7 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
 
         final User user = getAuthenticationService() == null ? null : getAuthenticationService().getUser();
 
-        if (user != null && !org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE.equals(user.getRole())) {
+        if (user != null && user.getRoles() != null && !user.getRoles().contains(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE)) {
             throw new IllegalAccessException(String.format(DefaultAuthenticationServiceImpl.USER_HAS_NOT_THE_ROLE, org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
         }
 

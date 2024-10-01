@@ -1,6 +1,7 @@
 package org.infodavid.commons.service;
 
 import java.util.Date;
+import java.util.Set;
 
 import org.infodavid.commons.model.User;
 
@@ -66,7 +67,7 @@ public final class Constants {
     static {
         ANONYMOUS = new User();
         ANONYMOUS.setName(org.infodavid.commons.model.Constants.ANONYMOUS);
-        ANONYMOUS.setRole(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE);
+        ANONYMOUS.setRoles(Set.of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
         ANONYMOUS.setDeletable(false);
         ANONYMOUS.setCreationDate(new Date());
         ANONYMOUS.setModificationDate(ANONYMOUS.getCreationDate());
