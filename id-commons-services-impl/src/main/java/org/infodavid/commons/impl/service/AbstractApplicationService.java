@@ -24,6 +24,7 @@ import org.infodavid.commons.service.ApplicationService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.listener.ApplicationPropertyChangedListener;
 import org.infodavid.commons.util.concurrency.ThreadUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -39,10 +40,8 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
     /** The Constant APPLICATION_PROPERTY_IS_READ_ONLY. */
     private static final String APPLICATION_PROPERTY_IS_READ_ONLY = "Application property '%s' is read only";
 
-    /**
-     * The DAO.
-     */
-    protected final ApplicationPropertyDao dao;
+    /** The data access object. */
+    private final ApplicationPropertyDao dao;
 
     /** The listeners. */
     private final LinkedHashSet<ApplicationPropertyChangedListener> listeners = new LinkedHashSet<>();
@@ -52,12 +51,12 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
 
     /**
      * Instantiates a new application service.
-     * @param applicationContextProvider the application context provider
-     * @param validationHelper           the validation helper
-     * @param dao                        the DAO
+     * @param applicationContext the application context
+     * @param validationHelper   the validation helper
+     * @param dao                the DAO
      */
-    protected AbstractApplicationService(final ApplicationContextProvider applicationContextProvider, final ValidationHelper validationHelper, final ApplicationPropertyDao dao) {
-        super(applicationContextProvider, Long.class, ApplicationProperty.class, validationHelper);
+    protected AbstractApplicationService(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final ApplicationPropertyDao dao) {
+        super(applicationContext, Long.class, ApplicationProperty.class, validationHelper);
         this.dao = dao;
     }
 

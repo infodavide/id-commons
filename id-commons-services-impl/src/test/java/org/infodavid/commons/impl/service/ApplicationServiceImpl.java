@@ -4,6 +4,7 @@ import org.infodavid.commons.persistence.dao.ApplicationPropertyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,13 +18,13 @@ public class ApplicationServiceImpl extends AbstractApplicationService {
 
     /**
      * Instantiates a new application service.
-     * @param applicationContextProvider the application context provider
-     * @param validationHelper           the validation helper
-     * @param dao                        the DAO
+     * @param applicationContext the application context
+     * @param validationHelper   the validation helper
+     * @param dao                the DAO
      */
     @Autowired
-    protected ApplicationServiceImpl(final ApplicationContextProvider applicationContextProvider, final ValidationHelper validationHelper, final ApplicationPropertyDao dao) {
-        super(applicationContextProvider, validationHelper, dao);
+    protected ApplicationServiceImpl(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final ApplicationPropertyDao dao) {
+        super(applicationContext, validationHelper, dao);
     }
 
     /*

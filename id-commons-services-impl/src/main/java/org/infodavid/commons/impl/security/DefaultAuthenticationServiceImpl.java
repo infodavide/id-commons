@@ -4,25 +4,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.security.auth.login.AccountExpiredException;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.infodavid.commons.impl.service.AbstractService;
-import org.infodavid.commons.impl.service.ApplicationContextProvider;
 import org.infodavid.commons.model.ApplicationProperty;
 import org.infodavid.commons.model.PropertyType;
 import org.infodavid.commons.model.User;
@@ -38,6 +32,7 @@ import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -51,11 +46,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.github.benmanes.caffeine.cache.RemovalListener;
-
 import jakarta.persistence.PersistenceException;
 
 /**
@@ -66,30 +56,6 @@ import jakarta.persistence.PersistenceException;
 /* If necessary, declare the bean in the Spring configuration. */
 @Transactional
 public class DefaultAuthenticationServiceImpl extends AbstractService implements AuthenticationService, ApplicationPropertyChangedListener, InitializingBean {
-
-    /**
-     * The Class Listener.
-     */
-    protected class Listener implements RemovalListener<Long, Authentication> {
-
-        /*
-         * (non-javadoc)
-         * @see com.github.benmanes.caffeine.cache.RemovalListener#onRemoval(java.lang.Object, java.lang.Object, com.github.benmanes.caffeine.cache.RemovalCause)
-         */
-        @Override
-        public void onRemoval(@Nullable final Long key, @Nullable final Authentication value, @NonNull final RemovalCause cause) {
-            if (key == null || value == null) {
-                return;
-            }
-
-            getLogger().debug("Removing cached entry associated to user name: {}", value.getName());
-            final Optional<User> optional = userDao.findById(key);
-
-            if (optional.isPresent()) {
-                fireOnLogout(optional.get(), Collections.emptyMap());
-            }
-        }
-    }
 
     /** The Constant CACHE_SIZE. */
     private static final String CACHE_SIZE = "Cache size: {}";
@@ -112,36 +78,32 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     /** The Constant USER_HAS_ROLE. */
     public static final String USER_HAS_ROLE = "User has role: {}";
 
-    /** The authentication cache. */
-    private Cache<Long, Authentication> cache;
+    /** The cache. */
+    private AuthenticationCache cache;
 
     /** The listeners. */
     private final Set<AuthenticationListener> listeners = new HashSet<>();
 
-    /** The lock. */
-    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
-
-    /** The removal listener. */
-    protected final Listener removalListener;
-
     /** The user DAO. */
-    protected final UserDao userDao;
+    private final UserDao userDao;
 
     /**
      * Instantiates a new authentication service.
-     * @param applicationContextProvider the application context provider
-     * @param userDao                    the user data access object
+     * @param applicationContext the application context
+     * @param userDao            the user data access object
+     * @param cache              the cache
      */
-    public DefaultAuthenticationServiceImpl(final ApplicationContextProvider applicationContextProvider, final UserDao userDao) {
-        super(applicationContextProvider);
+    public DefaultAuthenticationServiceImpl(final ApplicationContext applicationContext, final UserDao userDao, final AuthenticationCache cache) {
+        super(applicationContext);
         this.userDao = userDao;
-        removalListener = new Listener();
-        buildCache(org.infodavid.commons.service.Constants.DEFAULT_SESSION_INACTIVITY_TIMEOUT, TimeUnit.MINUTES);
+        this.cache = cache;
+        cache.setAuthenticationService(this);
+        cache.reconfigure(org.infodavid.commons.service.Constants.DEFAULT_SESSION_INACTIVITY_TIMEOUT, TimeUnit.MINUTES);
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#addListener(org.infodavid.security.AuthenticationListener)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#addListener(org.infodavid.commons.security.AuthenticationListener)
      */
     @Override
     public void addListener(final AuthenticationListener listener) {
@@ -154,7 +116,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     }
 
     /*
-     * (non-javadoc)
+     * (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
@@ -211,44 +173,9 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         return doAuthenticate(login, password, properties, builder);
     }
 
-    /**
-     * Builds the cache with the given expiration duration.
-     * @param expireAfterAccessDuration the expire after access duration
-     * @param unit                      the unit associated to the specified duration
-     */
-    protected void buildCache(final int expireAfterAccessDuration, final TimeUnit unit) {
-        lock.writeLock().lock();
-        getLogger().debug("Initializing...");
-
-        try {
-            Map<Long, Authentication> existing;
-
-            if (cache == null) {
-                existing = Collections.emptyMap();
-            } else {
-                existing = new HashMap<>(cache.asMap());
-            }
-
-            final Caffeine<Long, Authentication> builder = Caffeine.newBuilder().maximumSize(100).removalListener(removalListener);
-
-            if (expireAfterAccessDuration > 0) {
-                getLogger().info("Building cache using expire after access duration: {} {}", String.valueOf(expireAfterAccessDuration), StringUtils.lowerCase(unit.name())); // NOSONAR Always written
-                builder.expireAfterAccess(expireAfterAccessDuration, unit);
-            } else {
-                getLogger().info("Building cache without expiration");
-            }
-
-            cache = builder.build();
-            existing.entrySet().forEach(e -> cache.put(e.getKey(), e.getValue()));
-            getLogger().debug("Initialized");
-        } finally {
-            lock.writeLock().unlock();
-        }
-    }
-
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#checkRole(java.lang.String)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#checkRole(java.lang.String)
      */
     @Override
     public void checkRole(final String role) throws IllegalAccessException, ServiceException {
@@ -358,21 +285,15 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
                 result = builder.build(user, authorities, null);
             }
 
-            lock.readLock().lock();
+            // caches and force use of transaction
+            getLogger().debug("Caching authentication: {} for user: {}", result, user.getName());
+            cache.put(user.getId(), result);
 
-            try {
-                // caches and force use of transaction
-                getLogger().debug("Caching authentication: {} for user: {}", result, user.getName());
-                cache.put(user.getId(), result);
-
-                if (getLogger().isTraceEnabled()) {
-                    getLogger().debug(CACHE_SIZE, String.valueOf(cache.estimatedSize()));
-                }
-
-                fireOnLogin(user, properties);
-            } finally {
-                lock.readLock().unlock();
+            if (getLogger().isTraceEnabled()) {
+                getLogger().debug(CACHE_SIZE, String.valueOf(cache.getSize()));
             }
+
+            fireOnLogin(user, properties);
         } else {
             getLogger().debug("User already authenticated: {}", user.getName());
         }
@@ -384,7 +305,6 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
 
     /**
      * Fire on login.
-     * @param listener   the listener
      * @param user       the user
      * @param properties the properties
      */
@@ -402,7 +322,6 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
 
     /**
      * Fire on logout.
-     * @param listener   the listener
      * @param user       the user
      * @param properties the properties
      */
@@ -419,40 +338,28 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#getAuthenticatedUsers()
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#getAuthenticatedUsers()
      */
     @Override
     public Collection<User> getAuthenticatedUsers() {
-        lock.readLock().lock();
+        final Collection<User> results = new HashSet<>();
+        final Map<Long, Authentication> map = cache.getMap();
 
-        try {
-            final Collection<User> results = new HashSet<>();
-            final Map<Long, Authentication> map;
+        for (final Entry<Long, Authentication> entry : map.entrySet()) {
+            final Optional<User> optional = userDao.findById(entry.getKey());
 
-            if (cache == null) {
-                map = Collections.emptyMap();
-            } else {
-                map = new HashMap<>(cache.asMap());
+            if (optional.isPresent()) {
+                results.add(optional.get());
             }
-
-            for (final Entry<Long, Authentication> entry : map.entrySet()) {
-                final Optional<User> optional = userDao.findById(entry.getKey());
-
-                if (optional.isPresent()) {
-                    results.add(optional.get());
-                }
-            }
-
-            return results;
-        } finally {
-            lock.readLock().unlock();
         }
+
+        return results;
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#getAuthentication(java.lang.Long)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#getAuthentication(java.lang.Long)
      */
     @Override
     public Authentication getAuthentication(final Long userId) {
@@ -462,28 +369,22 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             throw new IllegalArgumentException("Given user identifier is invalid");
         }
 
-        lock.readLock().lock();
+        final Authentication result = cache.get(userId);
 
-        try {
-            final Authentication result = cache.getIfPresent(userId);
+        if (result == null) {
+            getLogger().trace("No authentication found");
 
-            if (result == null) {
-                getLogger().trace("No authentication found");
-
-                return null;
-            }
-
-            getLogger().trace("Found authentication: {}", result);
-
-            return result;
-        } finally {
-            lock.readLock().unlock();
+            return null;
         }
+
+        getLogger().trace("Found authentication: {}", result);
+
+        return result;
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#getAuthentication(org.infodavid.model.User)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#getAuthentication(org.infodavid.commons.model.User)
      */
     @Override
     public Authentication getAuthentication(final User user) {
@@ -497,8 +398,8 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#getListeners()
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#getListeners()
      */
     @Override
     public Set<AuthenticationListener> getListeners() {
@@ -506,8 +407,8 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.impl.service.AbstractService#getLogger()
+     * (non-Javadoc)
+     * @see org.infodavid.commons.impl.service.AbstractService#getLogger()
      */
     @Override
     protected Logger getLogger() {
@@ -515,8 +416,8 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#getUser()
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#getUser()
      */
     @Override
     public User getUser() throws ServiceException {
@@ -549,8 +450,8 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#getUser(org.infodavid.security.AuthenticationToken)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#getUser(org.springframework.security.core.Authentication)
      */
     @Override
     public User getUser(final Authentication authentication) {
@@ -559,38 +460,26 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         }
 
         getLogger().trace("Retrieving user for token: {}", authentication);
-        lock.readLock().lock();
+        final Map<Long, Authentication> map = cache.getMap();
 
-        try {
-            final Map<Long, Authentication> map;
+        for (final Entry<Long, Authentication> entry : map.entrySet()) {
+            if (authentication.equals(entry.getValue())) {
+                final Optional<User> optional = userDao.findById(entry.getKey());
 
-            if (cache == null) {
-                map = Collections.emptyMap();
-            } else {
-                map = new HashMap<>(cache.asMap());
-            }
-
-            for (final Entry<Long, Authentication> entry : map.entrySet()) {
-                if (authentication.equals(entry.getValue())) {
-                    final Optional<User> optional = userDao.findById(entry.getKey());
-
-                    if (optional.isEmpty()) {
-                        return null;
-                    }
-
-                    return optional.get();
+                if (optional.isEmpty()) {
+                    return null;
                 }
-            }
 
-            return null;
-        } finally {
-            lock.readLock().unlock();
+                return optional.get();
+            }
         }
+
+        return null;
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#hasRole(java.lang.String)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#hasRole(java.lang.String)
      */
     @Override
     @SuppressWarnings("boxing")
@@ -627,8 +516,8 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#invalidate(org.springframework.security.core.Authentication, java.util.Map)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#invalidate(org.springframework.security.core.Authentication, java.util.Map)
      */
     @Override
     public void invalidate(final Authentication authentication, final Map<String, String> properties) {
@@ -644,8 +533,8 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#invalidate(org.infodavid.model.User, java.util.Map)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#invalidate(org.infodavid.commons.model.User, java.util.Map)
      */
     @Override
     public boolean invalidate(final User user, final Map<String, String> properties) {
@@ -653,47 +542,33 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             return false;
         }
 
-        lock.readLock().lock();
+        getLogger().warn("Invalidating authentication for user: {}", user.getName());
+        cache.invalidate(user.getId());
 
-        try {
-            getLogger().warn("Invalidating authentication for user: {}", user.getName());
-            cache.invalidate(user.getId());
-            cache.cleanUp();
-
-            if (getLogger().isTraceEnabled()) {
-                getLogger().debug(CACHE_SIZE, String.valueOf(cache.estimatedSize()));
-            }
-
-            return true;
-        } finally {
-            lock.readLock().unlock();
+        if (getLogger().isTraceEnabled()) {
+            getLogger().debug(CACHE_SIZE, String.valueOf(cache.getSize()));
         }
+
+        return true;
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#invalidateAll()
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#invalidateAll()
      */
     @Override
     public void invalidateAll() {
         getAuthenticatedUsers().forEach(u -> invalidate(u, Collections.emptyMap()));
-        lock.readLock().lock();
+        cache.invalidate();
 
-        try {
-            cache.invalidateAll();
-            cache.cleanUp();
-
-            if (getLogger().isTraceEnabled()) {
-                getLogger().debug(CACHE_SIZE, String.valueOf(cache.estimatedSize()));
-            }
-        } finally {
-            lock.readLock().unlock();
+        if (getLogger().isTraceEnabled()) {
+            getLogger().debug(CACHE_SIZE, String.valueOf(cache.getSize()));
         }
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#isAuthenticated(org.infodavid.model.User)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#isAuthenticated(org.infodavid.commons.model.User)
      */
     @Override
     public boolean isAuthenticated(final User user) {
@@ -728,13 +603,13 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
                 value += 1;
             }
 
-            buildCache(value, TimeUnit.MINUTES);
+            cache.reconfigure(value, TimeUnit.MINUTES);
         }
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationService#removeListener(org.infodavid.security.AuthenticationListener)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.security.AuthenticationService#removeListener(org.infodavid.commons.security.AuthenticationListener)
      */
     @Override
     public boolean removeListener(final AuthenticationListener listener) {

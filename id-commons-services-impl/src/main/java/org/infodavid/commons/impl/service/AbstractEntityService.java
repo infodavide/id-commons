@@ -19,6 +19,7 @@ import org.infodavid.commons.persistence.dao.DefaultDao;
 import org.infodavid.commons.security.AuthenticationService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Propagation;
@@ -49,13 +50,13 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
 
     /**
      * Instantiates a new abstract entity service.
-     * @param applicationContextProvider the application context provider
-     * @param identifierClass            the identifier class
-     * @param entityClass                the entity class
-     * @param validationHelper           the validation helper
+     * @param applicationContext the application context
+     * @param identifierClass    the identifier class
+     * @param entityClass        the entity class
+     * @param validationHelper   the validation helper
      */
-    protected AbstractEntityService(final ApplicationContextProvider applicationContextProvider, final Class<K> identifierClass, final Class<T> entityClass, final ValidationHelper validationHelper) {
-        super(applicationContextProvider);
+    protected AbstractEntityService(final ApplicationContext applicationContext, final Class<K> identifierClass, final Class<T> entityClass, final ValidationHelper validationHelper) {
+        super(applicationContext);
         this.entityClass = entityClass;
         this.identifierClass = identifierClass;
         this.validationHelper = validationHelper;

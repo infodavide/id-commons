@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 
 import jakarta.annotation.PreDestroy;
 
@@ -44,10 +45,10 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
 
     /**
      * Instantiates a new scheduler service.
-     * @param applicationContextProvider the application context provider
+     * @param applicationContext the application context
      */
-    public DefaultSchedulerService(final ApplicationContextProvider applicationContextProvider) {
-        super(applicationContextProvider);
+    public DefaultSchedulerService(final ApplicationContext applicationContext) {
+        super(applicationContext);
         lock = new ReentrantLock(getLogger());
     }
 

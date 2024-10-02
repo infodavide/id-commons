@@ -1,9 +1,10 @@
 package org.infodavid.commons.impl;
 
-import org.infodavid.commons.impl.security.DefaultAuthenticationCache;
 import org.infodavid.commons.impl.security.DefaultAuthenticationServiceImpl;
+import org.infodavid.commons.impl.security.DistributedAuthenticationCache;
 import org.infodavid.commons.impl.service.DefaultSchedulerService;
 import org.infodavid.commons.impl.service.DefaultUserService;
+import org.infodavid.commons.impl.service.DistributedDataServiceImpl;
 import org.infodavid.commons.impl.service.ValidationHelper;
 import org.infodavid.commons.persistence.dao.ApplicationPropertyDao;
 import org.infodavid.commons.persistence.dao.UserDao;
@@ -47,21 +48,43 @@ public class SpringTestConfiguration {
     /**
      * Authentication service.
      * @param applicationContext the application context
-     * @param userDao            the user data access object
+     * @param userDao            the data access object
      * @throws Exception the exception
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public FactoryBean<AuthenticationService> authenticationService(final ApplicationContext applicationContext, final UserDao userDao) throws Exception {
+    public FactoryBean<AuthenticationService> authenticationService(final ApplicationContext applicationContext, final UserDao userDao, final DistributedDataServiceImpl distributedDataService) throws Exception {
         return new FactoryBean<>() {
             @Override
             public AuthenticationService getObject() throws Exception {
-                return new DefaultAuthenticationServiceImpl(applicationContext, userDao, new DefaultAuthenticationCache(userDao));
+                return new DefaultAuthenticationServiceImpl(applicationContext, userDao, new DistributedAuthenticationCache(userDao, distributedDataService));
             }
 
             @Override
             public Class<?> getObjectType() {
                 return AuthenticationService.class;
+            }
+        };
+    }
+
+    /**
+     * Distributed data service.
+     * @param applicationContext the application context
+     * @return the factory bean
+     * @throws Exception the exception
+     */
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public FactoryBean<DistributedDataServiceImpl> distributedDataService(final ApplicationContext applicationContext) throws Exception {
+        return new FactoryBean<>() {
+            @Override
+            public DistributedDataServiceImpl getObject() throws Exception {
+                return new DistributedDataServiceImpl(applicationContext);
+            }
+
+            @Override
+            public Class<?> getObjectType() {
+                return DistributedDataServiceImpl.class;
             }
         };
     }
@@ -93,7 +116,7 @@ public class SpringTestConfiguration {
      * User service.
      * @param applicationContext the application context
      * @param validationHelper   the validation helper
-     * @param dao                the DAO
+     * @param dao                the data access object
      * @return the user service
      * @throws Exception the exception
      */

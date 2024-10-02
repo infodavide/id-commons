@@ -8,14 +8,14 @@ import org.springframework.context.ApplicationContext;
  */
 public abstract class AbstractService {
 
-    /** The application context provider. */
-    protected final ApplicationContextProvider applicationContextProvider;
+    /** The application context. */
+    private final ApplicationContext applicationContext;
 
     /**
      * Instantiates a new abstract service.
      */
-    protected AbstractService(final ApplicationContextProvider applicationContextProvider) {
-        this.applicationContextProvider = applicationContextProvider;
+    protected AbstractService(final ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -23,7 +23,7 @@ public abstract class AbstractService {
      * @return the application context
      */
     protected ApplicationContext getApplicationContext() {
-        return ApplicationContextProvider.getApplicationContext();
+        return applicationContext;
     }
 
     /**

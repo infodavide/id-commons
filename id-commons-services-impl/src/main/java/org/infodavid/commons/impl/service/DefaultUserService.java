@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -83,12 +84,12 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /**
      * Instantiates a new user service.
-     * @param applicationContextProvider the application context provider
-     * @param validationHelper           the validation helper
-     * @param dao                        the DAO
+     * @param applicationContext the application context
+     * @param validationHelper   the validation helper
+     * @param dao                the DAO
      */
-    public DefaultUserService(final ApplicationContextProvider applicationContextProvider, final ValidationHelper validationHelper, final UserDao dao) {
-        super(applicationContextProvider, Long.class, User.class, validationHelper);
+    public DefaultUserService(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final UserDao dao) {
+        super(applicationContext, Long.class, User.class, validationHelper);
         this.dao = dao;
         templateEngine = new SimpleTemplateEngine();
         templateEngine.setEscapeBackslash(true);
