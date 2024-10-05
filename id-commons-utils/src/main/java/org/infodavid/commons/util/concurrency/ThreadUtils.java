@@ -446,21 +446,6 @@ public final class ThreadUtils {
     }
 
     /**
-     * On interruption.
-     * @param logger    the logger
-     * @param exception the exception
-     */
-    public void onInterruption(final Logger logger, final InterruptedException exception) {
-        if (logger == null) {
-            LOGGER.info(THREAD_INTERRUPTED);
-        } else {
-            logger.info(THREAD_INTERRUPTED);
-        }
-
-        Thread.currentThread().interrupt();
-    }
-
-    /**
      * Reset.
      * @param executor the executor
      */
@@ -469,7 +454,7 @@ public final class ThreadUtils {
             LOGGER.info("Reset on executor: {}", executor); // NOSONAR Always written
 
             try {
-                if (executor instanceof ThreadPoolExecutor threadPool) {
+                if (executor instanceof final ThreadPoolExecutor threadPool) {
                     threadPool.getQueue().forEach(threadPool::remove);
                     threadPool.purge();
                     LOGGER.info("Executor status: active={}, queue={}", String.valueOf(threadPool.getActiveCount()), String.valueOf(threadPool.getQueue().size())); // NOSONAR Always written

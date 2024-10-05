@@ -145,7 +145,8 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
         }
 
         if (interruption != null) {// NOSONAR Exception handled by utilities
-            ThreadUtils.getInstance().onInterruption(getLogger(), interruption);
+            LOGGER.warn("Thread interrupted", interruption);
+            Thread.currentThread().interrupt();
         }
 
         getLogger().debug("Finalized");

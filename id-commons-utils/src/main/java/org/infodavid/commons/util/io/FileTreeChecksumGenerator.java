@@ -30,10 +30,6 @@ public class FileTreeChecksumGenerator implements FileVisitor<Path> {
      * (non-javadoc)
      * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
      */
-    /*
-     * (non-Javadoc)
-     * @see java.nio.file.FileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
-     */
     @Override
     public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
         return FileVisitResult.CONTINUE;
@@ -43,10 +39,6 @@ public class FileTreeChecksumGenerator implements FileVisitor<Path> {
      * (non-javadoc)
      * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object, java.nio.file.attribute.BasicFileAttributes)
      */
-    /*
-     * (non-Javadoc)
-     * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object, java.nio.file.attribute.BasicFileAttributes)
-     */
     @Override
     public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
         return FileVisitResult.CONTINUE;
@@ -54,10 +46,6 @@ public class FileTreeChecksumGenerator implements FileVisitor<Path> {
 
     /*
      * (non-javadoc)
-     * @see java.nio.file.FileVisitor#visitFile(java.lang.Object, java.nio.file.attribute.BasicFileAttributes)
-     */
-    /*
-     * (non-Javadoc)
      * @see java.nio.file.FileVisitor#visitFile(java.lang.Object, java.nio.file.attribute.BasicFileAttributes)
      */
     @Override
@@ -86,10 +74,6 @@ public class FileTreeChecksumGenerator implements FileVisitor<Path> {
 
     /*
      * (non-javadoc)
-     * @see java.nio.file.FileVisitor#visitFileFailed(java.lang.Object, java.io.IOException)
-     */
-    /*
-     * (non-Javadoc)
      * @see java.nio.file.FileVisitor#visitFileFailed(java.lang.Object, java.io.IOException)
      */
     @Override

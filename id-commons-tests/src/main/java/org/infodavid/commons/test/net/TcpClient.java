@@ -105,16 +105,21 @@ public class TcpClient extends AbstractTcpComponent {
     /**
      * Connect.
      * @return the client
-     * @throws IOException          Signals that an I/O exception has occurred.
-     * @throws InterruptedException the interrupted exception
+     * @throws IOException Signals that an I/O exception has occurred.
      */
-    public synchronized TcpClient connect() throws IOException, InterruptedException {
+    public synchronized TcpClient connect() throws IOException {
         final NioSocketConnector connector = new NioSocketConnector();
         connector.setHandler(handler);
         connector.getSessionConfig().setReadBufferSize(2048);
         connector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 2);
         connector.getSessionConfig().setReuseAddress(false);
-        future = connector.connect(new InetSocketAddress(hostName, getPort())).await();
+
+        try {
+            future = connector.connect(new InetSocketAddress(hostName, getPort())).await();
+        } catch (final InterruptedException e) {
+            LOGGER.warn("Thread interrupted", e);
+            Thread.currentThread().interrupt();
+        }
 
         return this;
     }

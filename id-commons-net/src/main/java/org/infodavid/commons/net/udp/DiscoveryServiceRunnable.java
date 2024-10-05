@@ -165,10 +165,6 @@ class DiscoveryServiceRunnable implements Runnable, Thread.UncaughtExceptionHand
      * (non-javadoc)
      * @see java.lang.Thread#run()
      */
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Thread#run()
-     */
     @Override
     public void run() { // NOSONAR No complexity
         final byte[] recvBuf = new byte[15000];

@@ -30,12 +30,12 @@ public interface ApplicationService extends EntityService<Long, ApplicationPrope
     void addListener(ApplicationPropertyChangedListener listener);
 
     /**
-     * Zip the backup of the application stuff.
+     * Dump of the application stuff.
      * @return the path of the zip file containing the backup
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    Path backup() throws ServiceException, IllegalAccessException;
+    Path dump() throws ServiceException, IllegalAccessException;
 
     /**
      * Delete by name.
@@ -135,11 +135,10 @@ public interface ApplicationService extends EntityService<Long, ApplicationPrope
     void removeListener(ApplicationPropertyChangedListener listener);
 
     /**
-     * Unzip the given stream and restore the application stuff.
+     * Restore the given stream and restore the application stuff.
      * @param in the input stream
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
-     * @throws InterruptedException   the interrupted exception
      */
-    void restore(InputStream in) throws ServiceException, IllegalAccessException, InterruptedException;
+    void restore(InputStream in) throws ServiceException, IllegalAccessException;
 }

@@ -15,9 +15,8 @@ public final class SHA512ChecksumGenerator extends AbstractChecksumGenerator {
 
     /**
      * Instantiates a new SHA 512 checksum generator.
-     * @throws InterruptedException the interrupted exception
      */
-    public SHA512ChecksumGenerator() throws InterruptedException {
+    public SHA512ChecksumGenerator() {
         // noop
     }
 

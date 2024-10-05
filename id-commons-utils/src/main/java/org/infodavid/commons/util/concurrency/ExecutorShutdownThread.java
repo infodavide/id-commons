@@ -46,7 +46,8 @@ public class ExecutorShutdownThread extends Thread { // NOSONAR
                 try {
                     ThreadUtils.getInstance().shutdown(executor);
                 } catch (final InterruptedException e) {// NOSONAR Exception handled by utilities
-                    ThreadUtils.getInstance().onInterruption(LOGGER, e);
+                    LOGGER.warn("Thread interrupted", e);
+                    Thread.currentThread().interrupt();
                 }
             }
         }

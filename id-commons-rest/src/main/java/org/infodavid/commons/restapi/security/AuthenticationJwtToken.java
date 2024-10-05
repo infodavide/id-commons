@@ -138,10 +138,6 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
      * (non-Javadoc)
      * @see org.springframework.security.authentication.AbstractAuthenticationToken#equals(java.lang.Object)
      */
-    /*
-     * (non-javadoc)
-     * @see org.springframework.security.authentication.AbstractAuthenticationToken#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -171,10 +167,6 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
      * (non-Javadoc)
      * @see org.springframework.security.core.Authentication#getCredentials()
      */
-    /*
-     * (non-javadoc)
-     * @see org.springframework.security.core.Authentication#getCredentials()
-     */
     @Override
     public Object getCredentials() {
         return token;
@@ -184,10 +176,6 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
      * (non-Javadoc)
      * @see org.springframework.security.authentication.AbstractAuthenticationToken#getName()
      */
-    /*
-     * (non-javadoc)
-     * @see org.springframework.security.authentication.AbstractAuthenticationToken#getName()
-     */
     @Override
     public String getName() {
         return getUser() == null ? "" : getUser().getName();
@@ -195,10 +183,6 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
 
     /*
      * (non-Javadoc)
-     * @see org.springframework.security.core.Authentication#getPrincipal()
-     */
-    /*
-     * (non-javadoc)
      * @see org.springframework.security.core.Authentication#getPrincipal()
      */
     @Override
@@ -220,10 +204,6 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
 
     /*
      * (non-Javadoc)
-     * @see org.springframework.security.authentication.AbstractAuthenticationToken#hashCode()
-     */
-    /*
-     * (non-javadoc)
      * @see org.springframework.security.authentication.AbstractAuthenticationToken#hashCode()
      */
     @Override

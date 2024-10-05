@@ -52,7 +52,7 @@ public class SecurityHeadersFilter implements Filter {
      */
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
-        if (response instanceof HttpServletResponse httpServletResponse) {
+        if (response instanceof final HttpServletResponse httpServletResponse) {
             final Set<String> existing = new HashSet<>(httpServletResponse.getHeaderNames());
             headers.entrySet().stream().filter(h -> !existing.contains(h.getKey())).forEach(h -> httpServletResponse.addHeader(h.getKey(), h.getValue()));
         }
@@ -63,10 +63,6 @@ public class SecurityHeadersFilter implements Filter {
     /*
      * (non-javadoc)
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
-    /*
-     * (non-Javadoc)
-     * @see com.thetransactioncompany.cors.CORSFilter#init(javax.servlet.FilterConfig)
      */
     @SuppressWarnings("rawtypes")
     @Override

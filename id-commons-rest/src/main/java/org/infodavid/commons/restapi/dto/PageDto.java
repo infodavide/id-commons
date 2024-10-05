@@ -21,10 +21,6 @@ public record PageDto(boolean canAdd, int number, List results, int size, long t
      * (non-javadoc)
      * @see java.lang.Record#toString()
      */
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         final StringBuilder buffer = new StringBuilder();

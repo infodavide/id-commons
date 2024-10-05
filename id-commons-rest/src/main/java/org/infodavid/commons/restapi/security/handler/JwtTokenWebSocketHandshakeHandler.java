@@ -86,10 +86,6 @@ public class JwtTokenWebSocketHandshakeHandler extends DefaultHandshakeHandler {
      * (non-Javadoc)
      * @see org.springframework.web.socket.server.support.AbstractHandshakeHandler#determineUser(org.springframework.http.server.ServerHttpRequest, org.springframework.web.socket.WebSocketHandler, java.util.Map)
      */
-    /*
-     * (non-javadoc)
-     * @see org.springframework.web.socket.server.support.AbstractHandshakeHandler#determineUser(org. springframework.http.server.ServerHttpRequest, org.springframework.web.socket.WebSocketHandler, java.util.Map)
-     */
     @Override
     protected Principal determineUser(final ServerHttpRequest request, final WebSocketHandler wsHandler, final Map<String, Object> attributes) {
         SecurityContextHolder.getContext().setAuthentication(AnonymousAuthenticationImpl.INSTANCE);

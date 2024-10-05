@@ -15,9 +15,8 @@ public final class SHA384ChecksumGenerator extends AbstractChecksumGenerator {
 
     /**
      * Instantiates a new SHA 384 checksum generator.
-     * @throws InterruptedException the interrupted exception
      */
-    public SHA384ChecksumGenerator() throws InterruptedException {
+    public SHA384ChecksumGenerator() {
         // noop
     }
 

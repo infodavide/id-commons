@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.infodavid.commons.impl.security.DefaultAuthenticationServiceImpl;
@@ -23,7 +24,6 @@ import org.infodavid.commons.persistence.dao.ApplicationPropertyDao;
 import org.infodavid.commons.service.ApplicationService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.listener.ApplicationPropertyChangedListener;
-import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,12 +75,11 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
 
     /*
      * (non-javadoc)
-     * @see org.infodavid.service.ApplicationService#backup()
+     * @see org.infodavid.service.ApplicationService#dump()
      */
     @Override
-    public Path backup() throws ServiceException, IllegalAccessException {
-        // noop
-        return null;
+    public Path dump() throws ServiceException, IllegalAccessException {
+        throw new NotImplementedException("Dump not implemented");
     }
 
     /*
@@ -294,9 +293,8 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
     /**
      * Fire change.
      * @param property the property
-     * @throws InterruptedException the interrupted exception
      */
-    protected void fireChange(final ApplicationProperty property) throws InterruptedException {
+    protected void fireChange(final ApplicationProperty property) {
         if (StringUtils.isEmpty(property.getName())) {
             return;
         }
@@ -484,8 +482,8 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
      * @see org.infodavid.service.ApplicationService#restore(java.io.InputStream)
      */
     @Override
-    public void restore(final InputStream in) throws ServiceException, IllegalAccessException, InterruptedException {
-        // noop
+    public void restore(final InputStream in) throws ServiceException, IllegalAccessException {
+        throw new NotImplementedException("Restore not implemented");
     }
 
     /*
@@ -501,12 +499,7 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
         }
 
         final ApplicationProperty result = update(matching, value);
-
-        try {
-            fireChange(value);
-        } catch (final InterruptedException e) {// NOSONAR Exception handled by utilities
-            ThreadUtils.getInstance().onInterruption(getLogger(), e);
-        }
+        fireChange(value);
 
         return result;
     }

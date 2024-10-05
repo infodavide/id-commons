@@ -81,18 +81,20 @@ public class TestCase {
     /**
      * Sleep. Workaround to avoid high CPU load.
      * @param millis the milliseconds
-     * @return true, if successful
-     * @throws InterruptedException the interrupted exception
      */
     @SuppressWarnings("boxing")
-    public static boolean sleep(final long millis) throws InterruptedException {
+    public static void sleep(final long millis) {
         LOGGER.trace("Sleeping for {} ms", millis);
         final Lock testLock = new ReentrantLock();
         final Condition testLockCondition = testLock.newCondition();
         testLock.lock();
 
         try {
-            return testLockCondition.await(millis, TimeUnit.MILLISECONDS); // NOSONAR
+            testLockCondition.await(millis, TimeUnit.MILLISECONDS); // NOSONAR
+        } catch (final InterruptedException e) {
+            testLock.unlock();
+            LOGGER.warn("Thread interrupted", e);
+            Thread.currentThread().interrupt();
         } finally {
             testLock.unlock();
             LOGGER.trace("Sleep completed");

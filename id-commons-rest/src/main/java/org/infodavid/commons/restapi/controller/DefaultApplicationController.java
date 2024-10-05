@@ -32,7 +32,6 @@ import org.infodavid.commons.security.AuthenticationService;
 import org.infodavid.commons.service.ApplicationService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.util.ObjectUtils;
-import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.infodavid.commons.util.io.PathUtils;
 import org.infodavid.commons.util.system.SystemUtils;
 import org.slf4j.Logger;
@@ -170,16 +169,16 @@ public class DefaultApplicationController extends AbstractPersistentEntityContro
     @GetMapping(value = "/app/download")
     public void download(final HttpServletResponse response) {
         getLogger().debug("download request for the application");
-        Path backupFile = null;
+        Path file = null;
 
         try (OutputStream out = response.getOutputStream()) {
             // if a failure occured, the disposition header is not set and nothing is written to the output stream
-            backupFile = service.backup();
+            file = service.dump();
             // use to trigger callbacks of jquery file download plugin
             addFileDownloadCookie(response);
             // set file attachment
             setContentDispositionHeader(response, service.getName(), Constants.DOT_ZIP);
-            Files.copy(backupFile, out);
+            Files.copy(file, out);
             response.flushBuffer();
         } catch (final NoSuchElementException e) {
             getLogger().debug(NotFoundStatusException.NOT_FOUND);
@@ -194,7 +193,7 @@ public class DefaultApplicationController extends AbstractPersistentEntityContro
             getLogger().error("Error during processing of the download request", e);
             applyResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, response);
         } finally {
-            PathUtils.getInstance().deleteQuietly(backupFile);
+            PathUtils.getInstance().deleteQuietly(file);
         }
     }
 
@@ -441,8 +440,6 @@ public class DefaultApplicationController extends AbstractPersistentEntityContro
 
         try (InputStream in = file.getInputStream()) {
             service.restore(in);
-        } catch (final InterruptedException e) {// NOSONAR Exception handled by utilities
-            ThreadUtils.getInstance().onInterruption(LOGGER, e);
         }
     }
 }

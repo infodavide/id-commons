@@ -148,7 +148,8 @@ public class FilesRepositoryWatcher implements Runnable, RemovalListener<Path, E
                     }
                 }
             } catch (final InterruptedException e) { // NOSONAR Handled by utilities
-                ThreadUtils.getInstance().onInterruption(LOGGER, e);
+                LOGGER.warn("Thread interrupted", e);
+                Thread.currentThread().interrupt();
             } finally {
                 LOGGER.debug("Entry processor stopped for observer: {}", observer);
             }

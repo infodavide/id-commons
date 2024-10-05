@@ -15,9 +15,8 @@ public final class MD5ChecksumGenerator extends AbstractChecksumGenerator {
 
     /**
      * Instantiates a new MD 5 checksum generator.
-     * @throws InterruptedException the interrupted exception
      */
-    public MD5ChecksumGenerator() throws InterruptedException {
+    public MD5ChecksumGenerator() {
         // noop
     }
 

@@ -15,9 +15,8 @@ public final class SHA256ChecksumGenerator extends AbstractChecksumGenerator {
 
     /**
      * Instantiates a new SHA 256 checksum generator.
-     * @throws InterruptedException the interrupted exception
      */
-    public SHA256ChecksumGenerator() throws InterruptedException {
+    public SHA256ChecksumGenerator() {
         // noop
     }
 

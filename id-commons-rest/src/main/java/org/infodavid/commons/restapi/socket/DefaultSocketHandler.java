@@ -187,10 +187,6 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.springframework.web.socket.handler.AbstractWebSocketHandler#afterConnectionClosed(org.springframework.web.socket.WebSocketSession, org.springframework.web.socket.CloseStatus)
      */
-    /*
-     * (non-javadoc)
-     * @see org.springframework.web.socket.handler.AbstractWebSocketHandler# afterConnectionClosed(org. springframework.web.socket.WebSocketSession, org.springframework.web.socket.CloseStatus)
-     */
     @SuppressWarnings("resource")
     @Override
     public void afterConnectionClosed(final WebSocketSession wss, final CloseStatus status) {
@@ -224,10 +220,6 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.springframework.web.socket.handler.AbstractWebSocketHandler#afterConnectionEstablished(org.springframework.web.socket.WebSocketSession)
      */
-    /*
-     * (non-javadoc)
-     * @see org.springframework.web.socket.handler.AbstractWebSocketHandler# afterConnectionEstablished( org.springframework.web.socket.WebSocketSession)
-     */
     @Override
     public void afterConnectionEstablished(final WebSocketSession wss) {
         if (wss == null || !wss.isOpen()) {
@@ -252,10 +244,6 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
-    /*
-     * (non-javadoc)
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     @Override
     public void afterPropertiesSet() {
         getLogger().debug("Initializing socket handler...");
@@ -276,26 +264,22 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.infodavid.commons.restapi.socket.SocketHandler#getListeners()
      */
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.socket.SocketHandler#getListeners()
-     */
     @Override
-    public Set<SocketMessageListener> getListeners() { return listeners; }
+    public Set<SocketMessageListener> getListeners() {
+        return listeners;
+    }
 
     /**
      * Gets the logger.
      * @return the logger
      */
-    protected Logger getLogger() { return LOGGER; }
+    protected Logger getLogger() {
+        return LOGGER;
+    }
 
     /*
      * (non-Javadoc)
      * @see org.springframework.web.socket.handler.AbstractWebSocketHandler#handleTextMessage(org.springframework.web.socket.WebSocketSession, org.springframework.web.socket.TextMessage)
-     */
-    /*
-     * (non-javadoc)
-     * @see org.springframework.web.socket.handler.AbstractWebSocketHandler# handleTextMessage(org. springframework.web.socket.WebSocketSession, org.springframework.web.socket.TextMessage)
      */
     @Override
     public void handleTextMessage(final WebSocketSession wss, final TextMessage textMessage) {
@@ -354,10 +338,6 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.springframework.web.socket.handler.AbstractWebSocketHandler#handleTransportError(org.springframework.web.socket.WebSocketSession, java.lang.Throwable)
      */
-    /*
-     * (non-javadoc)
-     * @see org.springframework.web.socket.handler.AbstractWebSocketHandler# handleTransportError(org. springframework.web.socket.WebSocketSession, java.lang.Throwable)
-     */
     @Override
     public void handleTransportError(final WebSocketSession wss, final Throwable e) {
         getLogger().warn(String.format("Transport error for session: %s", wss.getId()), e); // NOSONAR No template with Throwable
@@ -366,10 +346,6 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
     /*
      * (non-Javadoc)
      * @see org.infodavid.commons.restapi.socket.SocketHandler#hasSessions()
-     */
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.socket.SocketHandler#hasSessions()
      */
     @Override
     public boolean hasSessions() {
@@ -380,12 +356,10 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.infodavid.commons.restapi.socket.SocketHandler#isActive()
      */
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.socket.SocketHandler#isActive()
-     */
     @Override
-    public boolean isActive() { return active.get(); }
+    public boolean isActive() {
+        return active.get();
+    }
 
     /**
      * Link session with authentication.</br>
@@ -445,10 +419,6 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.infodavid.commons.security.AuthenticationListener#onLogin(org.infodavid.commons.model.User, java.util.Map)
      */
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationListener#onLogin(org.infodavid.model.User, java.util.Map)
-     */
     @Override
     public void onLogin(final User user, final Map<String, String> properties) {
         // noop
@@ -458,12 +428,8 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.infodavid.commons.security.AuthenticationListener#onLogout(org.infodavid.commons.model.User, java.util.Map)
      */
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.security.AuthenticationListener#onLogout(org.infodavid.model.User, java.util.Map)
-     */
     @Override
-    public void onLogout(final User user, final Map<String, String> properties) throws MessagingException, InterruptedException {
+    public void onLogout(final User user, final Map<String, String> properties) throws MessagingException {
         if (isActive() && hasSessions()) {
             final SocketMessage message = new SocketMessage();
             String remoteAddress = null;
@@ -489,7 +455,8 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
         try {
             ThreadUtils.getInstance().shutdown(executor);
         } catch (final InterruptedException e) {// NOSONAR Exception handled by utilities
-            ThreadUtils.getInstance().onInterruption(getLogger(), e);
+            LOGGER.warn("Thread interrupted", e);
+            Thread.currentThread().interrupt();
         }
 
         getLogger().debug("Finalized");
@@ -497,10 +464,6 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
 
     /*
      * (non-Javadoc)
-     * @see java.lang.Runnable#run()
-     */
-    /*
-     * (non-javadoc)
      * @see java.lang.Runnable#run()
      */
     @SuppressWarnings("resource")
@@ -538,7 +501,7 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
 
                 send(sessionsSnapshot, message);
             }
-        } catch (final InterruptedException e) { // NOSONAR THread interrupted at the end
+        } catch (final InterruptedException e) { // NOSONAR Thread interrupted at the end
             interruption = e;
         } catch (final Exception e) {
             getLogger().error("An error occured while processing messages", e);
@@ -547,7 +510,8 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
         }
 
         if (interruption != null) {// NOSONAR Exception handled by utilities
-            ThreadUtils.getInstance().onInterruption(getLogger(), interruption);
+            LOGGER.warn("Thread interrupted", interruption);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -570,12 +534,8 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.infodavid.commons.restapi.socket.SocketHandler#send(org.infodavid.commons.restapi.socket.SocketMessage)
      */
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.socket.SocketHandler#send(org.infodavid.web.socket. SocketMessage)
-     */
     @Override
-    public void send(final SocketMessage message) throws InterruptedException {
+    public void send(final SocketMessage message) {
         getLogger().trace("Stacking message: {}", message);
 
         try {
@@ -588,6 +548,9 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
             }
         } catch (final IllegalStateException e) {
             getLogger().warn("Cannot stack message: {}, Reason: {}, Active: {}, queue size: {}, sessions: {}", message, e.getMessage(), String.valueOf(active.get()), String.valueOf(queue.size()), String.valueOf(sessions.size())); // NOSONAR Always written
+        } catch (final InterruptedException e) {
+            LOGGER.warn("Thread interrupted", e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -595,13 +558,9 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.infodavid.commons.restapi.socket.SocketHandler#sendToUser(java.lang.String, java.lang.String, org.infodavid.commons.restapi.socket.SocketMessage)
      */
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.socket.SocketHandler#sendToUser(java.lang.String, java.lang.String, org.infodavid.web.socket.SocketMessage)
-     */
     @SuppressWarnings("resource")
     @Override
-    public void sendToUser(final String username, final String remoteAddress, final SocketMessage message) throws MessagingException, InterruptedException { // NOSONAR Runtime exception
+    public void sendToUser(final String username, final String remoteAddress, final SocketMessage message) throws MessagingException { // NOSONAR Runtime exception
         if (StringUtils.isEmpty(username)) {
             send(message);
 
@@ -655,13 +614,9 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      * (non-Javadoc)
      * @see org.infodavid.commons.restapi.socket.SocketHandler#sendToUsers(java.lang.String, org.infodavid.commons.restapi.socket.SocketMessage)
      */
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.socket.SocketHandler#sendToUsers(java.lang.String, org.infodavid.web.socket.SocketMessage)
-     */
     @SuppressWarnings("resource")
     @Override
-    public void sendToUsers(final String role, final SocketMessage message) throws MessagingException, InterruptedException { // NOSONAR Runtime exception
+    public void sendToUsers(final String role, final SocketMessage message) throws MessagingException { // NOSONAR Runtime exception
         if (StringUtils.isEmpty(role)) {
             send(message);
 

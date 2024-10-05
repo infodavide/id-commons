@@ -10,7 +10,6 @@ public interface ApplicationPropertyChangedListener {
     /**
      * Property or properties have changed.
      * @param properties the properties
-     * @throws InterruptedException the interrupted exception
      */
-    void propertyChanged(ApplicationProperty... properties) throws InterruptedException;
+    void propertyChanged(ApplicationProperty... properties);
 }

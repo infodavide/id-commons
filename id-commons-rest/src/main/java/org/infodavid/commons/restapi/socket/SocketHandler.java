@@ -60,27 +60,24 @@ public interface SocketHandler {
     /**
      * Send.
      * @param socketMessage the socket message
-     * @throws MessagingException   the messaging exception
-     * @throws InterruptedException the interrupted exception
+     * @throws MessagingException the messaging exception
      */
-    void send(SocketMessage socketMessage) throws MessagingException, InterruptedException; // NOSONAR Runtime exception
+    void send(SocketMessage socketMessage) throws MessagingException; // NOSONAR Runtime exception
 
     /**
      * Send to user.
      * @param username      the user name
      * @param remoteAddress the remote address
      * @param socketMessage the socket message
-     * @throws MessagingException   the messaging exception
-     * @throws InterruptedException the interrupted exception
+     * @throws MessagingException the messaging exception
      */
-    void sendToUser(String username, String remoteAddress, SocketMessage socketMessage) throws MessagingException, InterruptedException; // NOSONAR Runtime exception
+    void sendToUser(String username, String remoteAddress, SocketMessage socketMessage) throws MessagingException; // NOSONAR Runtime exception
 
     /**
      * Send to users.
      * @param role          the role
      * @param socketMessage the socket message
-     * @throws MessagingException   the messaging exception
-     * @throws InterruptedException
+     * @throws MessagingException the messaging exception
      */
-    void sendToUsers(String role, SocketMessage socketMessage) throws MessagingException, InterruptedException; // NOSONAR Runtime exception
+    void sendToUsers(String role, SocketMessage socketMessage) throws MessagingException; // NOSONAR Runtime exception
 }

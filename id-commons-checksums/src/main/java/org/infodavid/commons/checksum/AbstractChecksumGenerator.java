@@ -27,9 +27,8 @@ public abstract class AbstractChecksumGenerator implements ChecksumGenerator {
 
     /**
      * Instantiates a new abstract checksum generator.
-     * @throws InterruptedException the interrupted exception
      */
-    protected AbstractChecksumGenerator() throws InterruptedException {
+    protected AbstractChecksumGenerator() {
         final String command = getCommand();
 
         if (StringUtils.isEmpty(command)) {
@@ -37,8 +36,8 @@ public abstract class AbstractChecksumGenerator implements ChecksumGenerator {
         }
 
         final String[] commandLine = {
-            command,
-            "--help"
+                command,
+                "--help"
         };
 
         if (LOGGER.isDebugEnabled()) {
@@ -57,7 +56,8 @@ public abstract class AbstractChecksumGenerator implements ChecksumGenerator {
 
             commandSupported = code == 0;
         } catch (final InterruptedException e) {
-            throw e;
+            LOGGER.warn("Thread interrupted", e);
+            Thread.currentThread().interrupt();
         } catch (final Exception e) {
             LOGGER.trace("An error occured while checking the presence of the command", e);
             commandSupported = false;
@@ -90,8 +90,8 @@ public abstract class AbstractChecksumGenerator implements ChecksumGenerator {
             final StringBuilder output = new StringBuilder();
             final StringBuilder error = new StringBuilder();
             final int code = CommandExecutorFactory.getInstance().executeCommand(output, error, new String[] {
-                getCommand(),
-                file.toAbsolutePath().toString()
+                    getCommand(),
+                    file.toAbsolutePath().toString()
             });
 
             if (code != 0 && StringUtils.isNotEmpty(error.toString())) {

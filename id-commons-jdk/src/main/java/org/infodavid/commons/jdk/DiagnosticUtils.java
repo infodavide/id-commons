@@ -126,9 +126,8 @@ public final class DiagnosticUtils {
     /**
      * This method guarantees that garbage collection is done unlike <code>{@link System#gc()}</code>.
      * @param reference the reference
-     * @throws InterruptedException the interrupted exception
      */
-    public void gc(final WeakReference<?> reference) throws InterruptedException {
+    public void gc(final WeakReference<?> reference) {
         WeakReference<?> ref = reference;
         final long timeout = System.currentTimeMillis() + 5000;
 
@@ -140,15 +139,20 @@ public final class DiagnosticUtils {
 
         while (ref.get() != null && System.currentTimeMillis() < timeout) {
             System.gc(); // NOSONAR
-            Thread.sleep(100); // NOSONAR Only for testing
+
+            try {
+                Thread.sleep(100); // NOSONAR Only for testing
+            } catch (final InterruptedException e) {
+                LOGGER.warn("Thread interrupted", e);
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
     /**
      * This method guarantees that garbage collection is done unlike <code>{@link System#gc()}</code>.
-     * @throws InterruptedException the interrupted exception
      */
-    public void gc() throws InterruptedException {
+    public void gc() {
         gc(null);
     }
 

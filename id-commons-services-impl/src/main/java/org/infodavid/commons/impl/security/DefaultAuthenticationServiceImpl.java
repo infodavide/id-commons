@@ -28,7 +28,6 @@ import org.infodavid.commons.security.AuthenticationService;
 import org.infodavid.commons.service.ApplicationService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.listener.ApplicationPropertyChangedListener;
-import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -312,8 +311,6 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         for (final AuthenticationListener listener : listeners) {
             try {
                 listener.onLogin(user, properties);
-            } catch (final InterruptedException e) { // NOSONAR Handled by utilities
-                ThreadUtils.getInstance().onInterruption(LOGGER, e);
             } catch (final Exception e) {
                 getLogger().warn("Listener cannot process login event: {}", e.getMessage());
             }
@@ -329,8 +326,6 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         for (final AuthenticationListener listener : listeners) {
             try {
                 listener.onLogout(user, properties);
-            } catch (final InterruptedException e) { // NOSONAR Handled by utilities
-                ThreadUtils.getInstance().onInterruption(LOGGER, e);
             } catch (final Exception e) {
                 getLogger().warn("Listener cannot process logout event", e);
             }

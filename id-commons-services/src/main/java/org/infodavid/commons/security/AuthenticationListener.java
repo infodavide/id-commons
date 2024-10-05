@@ -13,15 +13,13 @@ public interface AuthenticationListener {
      * On login.
      * @param user       the user
      * @param properties the properties
-     * @throws InterruptedException
      */
-    void onLogin(User user, Map<String, String> properties) throws InterruptedException;
+    void onLogin(User user, Map<String, String> properties);
 
     /**
      * On logout.
      * @param user       the user
      * @param properties the properties
-     * @throws InterruptedException the interrupted exception
      */
-    void onLogout(User user, Map<String, String> properties) throws InterruptedException;
+    void onLogout(User user, Map<String, String> properties);
 }

@@ -15,7 +15,6 @@ import org.infodavid.commons.model.User;
 import org.infodavid.commons.persistence.dao.UserDao;
 import org.infodavid.commons.security.AuthenticationListener;
 import org.infodavid.commons.security.AuthenticationService;
-import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -56,8 +55,6 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
                 for (final AuthenticationListener listener : authenticationService.getListeners()) {
                     try {
                         listener.onLogout(user, Collections.emptyMap());
-                    } catch (final InterruptedException e) { // NOSONAR Handled by utilities
-                        ThreadUtils.getInstance().onInterruption(LOGGER, e);
                     } catch (final Exception e) {
                         LOGGER.warn("Listener cannot process logout event", e);
                     }

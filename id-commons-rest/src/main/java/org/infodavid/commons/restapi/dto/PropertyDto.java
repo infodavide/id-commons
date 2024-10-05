@@ -52,10 +52,6 @@ public class PropertyDto extends AbstractDto {
      * (non-javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object obj) { // NOSONAR Generated
         if (this == obj) {
@@ -66,11 +62,9 @@ public class PropertyDto extends AbstractDto {
             return false;
         }
 
-        if (!(obj instanceof PropertyDto)) {
+        if (!(obj instanceof final PropertyDto other)) {
             return false;
         }
-
-        final PropertyDto other = (PropertyDto) obj;
 
         return Objects.equals(name, other.name);
     }
@@ -149,10 +143,6 @@ public class PropertyDto extends AbstractDto {
 
     /*
      * (non-javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    /*
-     * (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override

@@ -16,10 +16,6 @@ public class DepthComparator implements Comparator<Path>, Serializable {
      * (non-javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    /*
-     * (non-Javadoc)
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
     @Override
     public int compare(final Path path1, final Path path2) {
         if (path1 == path2) {
