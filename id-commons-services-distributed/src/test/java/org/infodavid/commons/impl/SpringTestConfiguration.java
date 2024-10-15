@@ -35,8 +35,8 @@ import org.springframework.test.context.TestPropertySource;
 public class SpringTestConfiguration {
 
     /**
-     * ApplicationProperty DAO.
-     * @return the DAO
+     * ApplicationProperty data access object.
+     * @return the data access object
      * @throws Exception the exception
      */
     @Bean
@@ -102,8 +102,8 @@ public class SpringTestConfiguration {
     }
 
     /**
-     * User DAO.
-     * @return the DAO
+     * User data access object.
+     * @return the data access object
      * @throws Exception the exception
      */
     @Bean

@@ -48,7 +48,7 @@ public class DistributedAuthenticationCache implements AuthenticationCache {
     /** The expiration unit. */
     private TimeUnit expirationUnit;
 
-    /** The user DAO. */
+    /** The user data access object. */
     protected final UserDao userDao;
 
     /**

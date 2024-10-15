@@ -8,7 +8,6 @@ import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.restapi.Constants;
 import org.infodavid.commons.restapi.security.AuthenticationJwtToken;
-import org.infodavid.commons.security.AnonymousAuthenticationImpl;
 import org.infodavid.commons.security.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,12 +71,32 @@ public class JwtTokenAuthenticationFilter implements Filter {
      */
     @Override
     public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain) throws IOException, ServletException {
-        SecurityContextHolder.getContext().setAuthentication(AnonymousAuthenticationImpl.INSTANCE);
         final HttpServletRequest request = (HttpServletRequest) req;
         final HttpServletResponse response = (HttpServletResponse) res;
         String token = null;
 
         if (!requestMatcher.matches(request) || FilterUtils.getInstance().isResource(request)) {
+            chain.doFilter(request, response);
+
+            return;
+        }
+
+        if (LOGGER.isDebugEnabled()) {
+            if (SecurityContextHolder.getContext() == null) {
+                LOGGER.debug("No security context available");
+            } else {
+                LOGGER.debug("Security context has authentication: {}", SecurityContextHolder.getContext().getAuthentication());
+            }
+        }
+
+        Authentication authentication = null;
+
+        if (SecurityContextHolder.getContext() != null) {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+        }
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            LOGGER.debug("Already authenticated");
             chain.doFilter(request, response);
 
             return;
@@ -124,11 +143,14 @@ public class JwtTokenAuthenticationFilter implements Filter {
             return;
         }
 
-        final Authentication authentication = authenticationService.getAuthentication(authenticationTokenBuilder.parseUserId(token));
+        authentication = authenticationService.getAuthentication(authenticationTokenBuilder.parseUserId(token));
 
         if (authentication == null) {
             LOGGER.warn("Token has expired or user is not authenticated");
             response.addHeader(Constants.HTTP_EXPIRED_AUTHORIZATION_HEADER, "true");
+        } else {
+            LOGGER.debug("Updating security context with authentication: {}", authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         chain.doFilter(request, response);

@@ -2,7 +2,6 @@ package org.infodavid.commons.impl.service;
 
 import java.io.Serializable;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +33,7 @@ import jakarta.persistence.PersistenceException;
  * @param <K> the key type
  * @param <T> the generic type
  */
-@Transactional(rollbackFor = Throwable.class, propagation = Propagation.SUPPORTS)
+@Transactional(readOnly = true)
 public abstract class AbstractEntityService<K extends Serializable, T extends PersistentObject<K>> extends AbstractService {
 
     /** The authentication supported. */
@@ -63,14 +63,25 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     }
 
     /**
-     * Adds the entity.
+     * Adds the entity in transaction.
      * @param value the value
      * @return the t
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     public T add(final T value) throws ServiceException, IllegalAccessException {
+        return doAdd(value);
+    }
+
+    /**
+     * Do add.
+     * @param value the value
+     * @return the t
+     * @throws ServiceException       the service exception
+     * @throws IllegalAccessException the illegal access exception
+     */
+    protected T doAdd(final T value) throws ServiceException, IllegalAccessException {
         getLogger().debug("Adding entity");
 
         if (getLogger().isDebugEnabled()) {
@@ -158,12 +169,23 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     }
 
     /**
-     * Delete by identifier.
+     * Delete by identifier in transaction.
      * @param id the identifier
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     public void deleteById(final K id) throws ServiceException, IllegalAccessException {
+        doDeleteById(id);
+    }
+
+    /**
+     * Do delete by identifier.
+     * @param id the identifier
+     * @throws ServiceException       the service exception
+     * @throws IllegalAccessException the illegal access exception
+     */
+    protected void doDeleteById(final K id) throws ServiceException, IllegalAccessException {
         getLogger().info("Removing entity: {}", String.valueOf(id)); // NOSONAR Always written
         validationHelper.validateId(id);
         preDelete(id);
@@ -424,30 +446,41 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     }
 
     /**
-     * Update the entities.
+     * Update the entities in transaction.
      * @param values the values
-     * @return the updated entities
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    @Transactional(propagation = Propagation.REQUIRED)
-    public List<T> update(final Collection<T> values) throws ServiceException, IllegalAccessException {
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+    public void update(final Collection<T> values) throws ServiceException, IllegalAccessException {
+        doUpdate(values);
+    }
+
+    /**
+     * Do update.
+     * @param values the values
+     * @throws ServiceException       the service exception
+     * @throws IllegalAccessException the illegal access exception
+     */
+    protected void doUpdate(final Collection<T> values) throws ServiceException, IllegalAccessException {
         if (getLogger().isDebugEnabled()) {
             getLogger().debug("Updating {} entities", String.valueOf(values.size()));
         }
 
-        return new ArrayList<>(values);
+        for (final T value : values) {
+            // Avoid unique constraint violation by searching for an entity having the same data without considering its identifier
+            update(findByUniqueConstraints(value), value);
+        }
     }
 
     /**
      * Update the entity.
      * @param matching the matching
      * @param value    the value
-     * @return the updated entity
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    protected T update(final Optional<T> matching, final T value) throws ServiceException, IllegalAccessException {
+    protected void update(final Optional<T> matching, final T value) throws ServiceException, IllegalAccessException {
         getLogger().debug("Updating entity: {}", value);
         final T valueToUpdate;
 
@@ -489,23 +522,28 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
             getLogger().debug(Constants.DATA_PATTERN, valueToUpdate);
             getLogger().debug("Entity updated: {}", valueToUpdate.getId());
         }
-
-        return valueToUpdate;
     }
 
     /**
-     * Update the entity.
+     * Update the entity in transaction.
      * @param value the value
-     * @return the updated entity
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    @Transactional(propagation = Propagation.REQUIRED)
-    public T update(final T value) throws ServiceException, IllegalAccessException {
-        // Avoid unique constraint violation by searching for an entity having the same data without considering its identifier
-        final Optional<T> matching = findByUniqueConstraints(value);
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+    public void update(final T value) throws ServiceException, IllegalAccessException {
+        doUpdate(value);
+    }
 
-        return update(matching, value);
+    /**
+     * Do update.
+     * @param value the value
+     * @throws ServiceException       the service exception
+     * @throws IllegalAccessException the illegal access exception
+     */
+    protected void doUpdate(final T value) throws ServiceException, IllegalAccessException {
+        // Avoid unique constraint violation by searching for an entity having the same data without considering its identifier
+        update(findByUniqueConstraints(value), value);
     }
 
     /**

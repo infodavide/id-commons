@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.PreDestroy;
 
@@ -25,6 +26,7 @@ import jakarta.annotation.PreDestroy;
  * The Class DefaultSchedulerService.
  */
 /* If necessary, declare the bean in the Spring configuration. */
+@Transactional(readOnly = true)
 public class DefaultSchedulerService extends AbstractService implements SchedulerService, InitializingBean {
 
     /** The Constant LOGGER. */
@@ -58,6 +60,11 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
      */
     @Override
     public void afterPropertiesSet() {
+        // Caution: @Transactionnal on afterPropertiesSet and PostConstruct method is not evaluated
+        if (executor != null) {
+            return; // NOSONAR Already initialized
+        }
+
         getLogger().debug("Initializing...");
         initializeExecutor();
         getLogger().debug("Initialized");
@@ -173,6 +180,7 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
 
                     if (executor != null) {
                         runnables = executor.shutdownNow();
+                        executor = null;
                     }
 
                     threadsCount = org.apache.commons.lang3.math.NumberUtils.isCreatable(property.getValue()) ? Integer.parseInt(property.getValue()) : Math.min(16, Runtime.getRuntime().availableProcessors() * 10);

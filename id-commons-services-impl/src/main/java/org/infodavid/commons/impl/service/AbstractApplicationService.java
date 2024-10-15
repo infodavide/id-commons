@@ -27,6 +27,7 @@ import org.infodavid.commons.service.listener.ApplicationPropertyChangedListener
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.PersistenceException;
 
@@ -35,6 +36,7 @@ import jakarta.persistence.PersistenceException;
  * Keep this class abstract to make it optional for the projects using this module.<br>
  * To use this service, the project must extends this class and add the Spring annotation(s).
  */
+@Transactional(readOnly = true)
 public abstract class AbstractApplicationService extends AbstractEntityService<Long, ApplicationProperty> implements ApplicationService {
 
     /** The Constant APPLICATION_PROPERTY_IS_READ_ONLY. */
@@ -53,7 +55,7 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
      * Instantiates a new application service.
      * @param applicationContext the application context
      * @param validationHelper   the validation helper
-     * @param dao                the DAO
+     * @param dao                the data access object
      */
     protected AbstractApplicationService(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final ApplicationPropertyDao dao) {
         super(applicationContext, Long.class, ApplicationProperty.class, validationHelper);
@@ -491,17 +493,15 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
      * @see org.infodavid.impl.service.AbstractEntityService#update(org.infodavid.model.PersistentObject)
      */
     @Override
-    public ApplicationProperty update(final ApplicationProperty value) throws ServiceException, IllegalAccessException {
+    public void update(final ApplicationProperty value) throws ServiceException, IllegalAccessException {
         final Optional<ApplicationProperty> matching = findByUniqueConstraints(value);
 
         if (matching.isPresent() && matching.get().isReadOnly()) {
-            return value;
+            return;
         }
 
-        final ApplicationProperty result = update(matching, value);
+        update(matching, value);
         fireChange(value);
-
-        return result;
     }
 
     /*

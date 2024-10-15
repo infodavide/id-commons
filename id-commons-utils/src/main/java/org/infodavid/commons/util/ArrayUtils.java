@@ -1,6 +1,7 @@
 package org.infodavid.commons.util;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -81,12 +82,208 @@ public final class ArrayUtils {
      * @param values the values
      * @return the t
      */
-    public <T> T first(T[] values) {
+    public <T> T first(final T[] values) {
         if (values == null || values.length == 0) {
             return null;
         }
 
         return values[0];
+    }
+
+    /**
+     * Index of.
+     * @param input   the input
+     * @param pattern the pattern
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final byte[] input, final byte[] pattern) {
+        return indexOf(input, pattern, 0);
+    }
+
+    /**
+     * Last.
+     * @param <T>    the generic type
+     * @param values the values
+     * @return the t
+     */
+    public <T> T last(final T[] values) {
+        if (values == null || values.length == 0) {
+            return null;
+        }
+
+        return values[values.length - 1];
+    }
+
+    /**
+     * Index of.
+     * @param input   the input
+     * @param pattern the pattern
+     * @return the index or -1 if not found
+     */
+    public byte[][] split(final byte[] input, final byte[] pattern) {
+        final List<byte[]> result = new ArrayList<>();
+        int start = 0;
+        int found = -1;
+
+        do {
+            found = indexOf(input, pattern, start);
+
+            if (found != -1) {
+                result.add(Arrays.copyOfRange(input, start, found));
+                start = found + pattern.length;
+            }
+        } while (found != -1);
+
+        if (start < input.length) {
+            result.add(Arrays.copyOfRange(input, start, input.length));
+        }
+
+        return result.toArray(new byte[][] {});
+    }
+
+    /**
+     * Index of.
+     * @param input    the input
+     * @param pattern  the pattern
+     * @param position the position
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final byte[] input, final byte[] pattern, final int position) {
+        if (input.length < pattern.length) {
+            return -1;
+        }
+
+        for (int i = position; i < input.length; i++) {
+            if (input[i] == pattern[0] && input.length >= i + pattern.length && Arrays.equals(pattern, Arrays.copyOfRange(input, i, i + pattern.length))) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * Index of.
+     * @param input   the input
+     * @param pattern the pattern
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final double[] input, final double[] pattern) {
+        return indexOf(input, pattern, 0);
+    }
+
+    /**
+     * Index of.
+     * @param input    the input
+     * @param pattern  the pattern
+     * @param position the position
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final double[] input, final double[] pattern, final int position) {
+        if (input.length < pattern.length) {
+            return -1;
+        }
+
+        for (int i = position; i < input.length; i++) {
+            if (input[i] == pattern[0] && input.length >= i + pattern.length && Arrays.equals(pattern, Arrays.copyOfRange(input, i, i + pattern.length))) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * Index of.
+     * @param input   the input
+     * @param pattern the pattern
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final int[] input, final int[] pattern) {
+        return indexOf(input, pattern, 0);
+    }
+
+    /**
+     * Index of.
+     * @param input    the input
+     * @param pattern  the pattern
+     * @param position the position
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final int[] input, final int[] pattern, final int position) {
+        if (input.length < pattern.length) {
+            return -1;
+        }
+
+        for (int i = position; i < input.length; i++) {
+            if (input[i] == pattern[0] && input.length >= i + pattern.length && Arrays.equals(pattern, Arrays.copyOfRange(input, i, i + pattern.length))) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * Index of.
+     * @param input   the input
+     * @param pattern the pattern
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final long[] input, final long[] pattern) {
+        return indexOf(input, pattern, 0);
+    }
+
+    /**
+     * Index of.
+     * @param input    the input
+     * @param pattern  the pattern
+     * @param position the position
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final long[] input, final long[] pattern, final int position) {
+        if (input.length < pattern.length) {
+            return -1;
+        }
+
+        for (int i = position; i < input.length; i++) {
+            if (input[i] == pattern[0] && input.length >= i + pattern.length && Arrays.equals(pattern, Arrays.copyOfRange(input, i, i + pattern.length))) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * Index of.
+     * @param input   the input
+     * @param pattern the pattern
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final short[] input, final short[] pattern) {
+        return indexOf(input, pattern, 0);
+    }
+
+    /**
+     * Index of.
+     * @param input    the input
+     * @param pattern  the pattern
+     * @param position the position
+     * @return the index or -1 if not found
+     */
+    public int indexOf(final short[] input, final short[] pattern, final int position) {
+        if (input.length < pattern.length) {
+            return -1;
+        }
+
+        for (int i = position; i < input.length; i++) {
+            if (input[i] == pattern[0] && input.length >= i + pattern.length && Arrays.equals(pattern, Arrays.copyOfRange(input, i, i + pattern.length))) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     /**
@@ -192,20 +389,6 @@ public final class ArrayUtils {
         }
 
         return true;
-    }
-
-    /**
-     * Last.
-     * @param <T>    the generic type
-     * @param values the values
-     * @return the t
-     */
-    public <T> T last(T[] values) {
-        if (values == null || values.length == 0) {
-            return null;
-        }
-
-        return values[values.length - 1];
     }
 
     /**

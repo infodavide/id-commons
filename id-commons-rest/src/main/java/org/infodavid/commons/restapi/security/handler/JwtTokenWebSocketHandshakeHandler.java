@@ -8,14 +8,12 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.restapi.Constants;
 import org.infodavid.commons.restapi.security.AuthenticationJwtToken;
-import org.infodavid.commons.security.AnonymousAuthenticationImpl;
 import org.infodavid.commons.security.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
@@ -88,7 +86,6 @@ public class JwtTokenWebSocketHandshakeHandler extends DefaultHandshakeHandler {
      */
     @Override
     protected Principal determineUser(final ServerHttpRequest request, final WebSocketHandler wsHandler, final Map<String, Object> attributes) {
-        SecurityContextHolder.getContext().setAuthentication(AnonymousAuthenticationImpl.INSTANCE);
         String header = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
         if (header == null) {

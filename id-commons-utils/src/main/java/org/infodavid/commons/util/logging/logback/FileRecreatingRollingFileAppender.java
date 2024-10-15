@@ -1,4 +1,4 @@
-package org.infodavid.commons.util.logging;
+package org.infodavid.commons.util.logging.logback;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,9 +1,10 @@
 package org.infodavid.commons.restapi.security;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.infodavid.commons.restapi.RequestUtils;
+import org.infodavid.commons.restapi.security.AuthenticationJwtToken.Builder;
 import org.infodavid.commons.security.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -28,20 +30,19 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginAuthenticationProvider.class);
 
-    /** The builder. */
-    private final AuthenticationJwtToken.Builder authenticationTokenBuilder;
+    /** The authentication token builder. */
+    private final Builder authenticationTokenBuilder;
 
     /** The service. */
     private final AuthenticationService service;
 
     /**
      * Instantiates a new login authentication provider.
-     * @param service                    the service
-     * @param authenticationTokenBuilder the authentication token builder
+     * @param service the service
      */
     public LoginAuthenticationProvider(final AuthenticationService service, final AuthenticationJwtToken.Builder authenticationTokenBuilder) {
-        this.service = service;
         this.authenticationTokenBuilder = authenticationTokenBuilder;
+        this.service = service;
     }
 
     /*
@@ -51,13 +52,12 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(final Authentication authentication) {
         final RequestAttributes attrs = RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest request = null;
 
         if (attrs instanceof final ServletRequestAttributes servletRequestAttributes) {
-            request = servletRequestAttributes.getRequest();
+            return authenticate(authentication, servletRequestAttributes.getRequest());
         }
 
-        return authenticate(authentication, request);
+        return authentication;
     }
 
     /**
@@ -83,19 +83,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
             plain = authorizationHeader != null && authorizationHeader.toLowerCase().startsWith("basic ");
 
             if (LOGGER.isDebugEnabled()) {
-                final StringBuilder buffer = new StringBuilder();
-                final Enumeration<String> headers = request.getHeaderNames();
-                String header;
-
-                while (headers.hasMoreElements()) {
-                    header = headers.nextElement();
-                    buffer.append(header);
-                    buffer.append('=');
-                    buffer.append(request.getHeader(header));
-                    buffer.append('\n');
-                }
-
-                LOGGER.trace("Request headers:\n{}", buffer);
+                LOGGER.trace("Request:\n{}", RequestUtils.getInstance().getDescription(request));
             }
         }
 
@@ -107,13 +95,22 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
                 credentials = DigestUtils.md5DigestAsHex(credentials.getBytes()).toUpperCase();
             }
 
-            return service.authenticate(authentication.getName(), credentials, properties, authenticationTokenBuilder);
+            final Authentication result = service.authenticate(authentication.getName(), credentials, properties, authenticationTokenBuilder);
+
+            if (result instanceof UsernamePasswordAuthenticationToken) {
+                LOGGER.debug("Updating security context with authentication: {}", result);
+                SecurityContextHolder.getContext().setAuthentication(result);
+
+                return result;
+            }
         } catch (final Exception e) {
             final String msg = "User is not valid: " + authentication.getName();
             LOGGER.warn(msg, e);
 
             throw new AuthenticationServiceException(msg);
         }
+
+        return authentication;
     }
 
     /*

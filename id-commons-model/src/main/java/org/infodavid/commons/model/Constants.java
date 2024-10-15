@@ -1,18 +1,23 @@
 package org.infodavid.commons.model;
 
+import java.util.Date;
+
 /**
  * The Interface Constants.
  */
 public final class Constants {
 
     /** The administrator role. */
-    public static final String ADMINISTRATOR_ROLE = "ADMINISTRATOR";
+    public static final String ADMINISTRATOR_ROLE = "ROLE_ADMIN";
 
     /** The Constant ANONYMOUS. */
     public static final String ANONYMOUS = "anonymous";
 
     /** The anonymous (unauthenticated) role. */
-    public static final String ANONYMOUS_ROLE = "ANONYMOUS";
+    public static final String ANONYMOUS_ROLE = "ROLE_ANONYMOUS";
+
+    /** The Constant ANONYMOUS_USER. */
+    public static final User ANONYMOUS_USER;
 
     /** The Constant APPLICATION_NAME_PROPERTY. */
     public static final String APPLICATION_NAME_PROPERTY = "application.name";
@@ -132,13 +137,21 @@ public final class Constants {
     public static final byte USER_NAME_MIN_LENGTH = 3;
 
     /** The user role. */
-    public static final String USER_ROLE = "USER";
+    public static final String USER_ROLE = "ROLE_USER";
 
     /** The Constant USER_ROLE_MAX_LENGTH. */
     public static final byte USER_ROLE_MAX_LENGTH = 16;
 
     static {
         System.setProperty("org.jboss.logging.provider", "slf4j");
+        ANONYMOUS_USER = new User(Long.valueOf(-1));
+        ANONYMOUS_USER.setDeletable(false);
+        ANONYMOUS_USER.setCreationDate(new Date());
+        ANONYMOUS_USER.setDisplayName("Guest");
+        ANONYMOUS_USER.setEmail("");
+        ANONYMOUS_USER.setModificationDate(ANONYMOUS_USER.getCreationDate());
+        ANONYMOUS_USER.setName(ANONYMOUS);
+        ANONYMOUS_USER.getRoles().add(ANONYMOUS_ROLE);
     }
 
     /**

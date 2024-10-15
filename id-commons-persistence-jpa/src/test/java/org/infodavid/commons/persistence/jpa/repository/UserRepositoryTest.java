@@ -37,7 +37,7 @@ class UserRepositoryTest extends AbstractSpringTest {
     /** The Constant COUNT. */
     private static final byte COUNT = 5;
 
-    /** The DAO. */
+    /** The data access object. */
     @Autowired
     private UserDao dao;
 

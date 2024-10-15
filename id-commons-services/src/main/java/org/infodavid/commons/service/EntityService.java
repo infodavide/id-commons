@@ -2,7 +2,6 @@ package org.infodavid.commons.service;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import org.infodavid.commons.model.PersistentObject;
@@ -60,18 +59,16 @@ public interface EntityService<K extends Serializable, T extends PersistentObjec
     /**
      * Update.
      * @param values the values
-     * @return the list of updated entities
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    List<T> update(Collection<T> values) throws ServiceException, IllegalAccessException;
+    void update(Collection<T> values) throws ServiceException, IllegalAccessException;
 
     /**
      * Update.
      * @param value the value
-     * @return the updated entity
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    T update(T value) throws ServiceException, IllegalAccessException;
+    void update(T value) throws ServiceException, IllegalAccessException;
 }

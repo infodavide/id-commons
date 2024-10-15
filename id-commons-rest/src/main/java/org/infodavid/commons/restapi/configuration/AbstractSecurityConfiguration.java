@@ -4,6 +4,7 @@ import org.infodavid.commons.restapi.security.AuthenticationJwtToken;
 import org.infodavid.commons.restapi.security.LoginAuthenticationProvider;
 import org.infodavid.commons.restapi.security.RestAuthenticationEntryPoint;
 import org.infodavid.commons.restapi.security.filter.BasicAuthenticationFilter;
+import org.infodavid.commons.restapi.security.filter.JsonContentCachingFilter;
 import org.infodavid.commons.restapi.security.filter.JwtTokenAuthenticationFilter;
 import org.infodavid.commons.restapi.security.filter.JwtTokenLogoutFilter;
 import org.infodavid.commons.restapi.security.filter.RestLoginAuthenticationFilter;
@@ -183,6 +184,7 @@ public abstract class AbstractSecurityConfiguration implements ApplicationContex
         })
         // Session and authentication management
         .authenticationProvider(authenticationProvider).sessionManagement(management -> management.sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy()).sessionCreationPolicy(SessionCreationPolicy.NEVER)).exceptionHandling(handling -> handling.authenticationEntryPoint(authenticationEntryPoint())).logout(logout -> logout.clearAuthentication(true).invalidateHttpSession(true)).addFilterBefore(loginAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(new JsonContentCachingFilter(), UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(basicAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).addFilterBefore(new JwtTokenAuthenticationFilter(applicationContext, new AntPathRequestMatcher("/rest/**/*"), authenticationTokenBuilder), UsernamePasswordAuthenticationFilter.class).addFilterAfter(new SecurityHeadersFilter(), UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(new JwtTokenLogoutFilter(authenticationService, new AntPathRequestMatcher(LOGOUT_PATH), new SecurityContextLogoutHandler()), UsernamePasswordAuthenticationFilter.class);
 

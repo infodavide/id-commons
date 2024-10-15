@@ -20,7 +20,7 @@ public class ApplicationServiceImpl extends AbstractApplicationService {
      * Instantiates a new application service.
      * @param applicationContext the application context
      * @param validationHelper   the validation helper
-     * @param dao                the DAO
+     * @param dao                the data access object
      */
     @Autowired
     protected ApplicationServiceImpl(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final ApplicationPropertyDao dao) {

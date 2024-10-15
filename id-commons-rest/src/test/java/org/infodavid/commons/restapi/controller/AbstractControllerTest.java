@@ -137,14 +137,12 @@ abstract class AbstractControllerTest<D extends AbstractDto, K extends Serializa
      */
     @Test
     void testUpdate() throws Exception {
-        Mockito.when(getController().getService().update(any(getController().getEntityClass()))).then(i -> i.getArgument(0));
         final D dto = newDto();
         dto.setId(String.valueOf(SEQUENCE.incrementAndGet()));
 
-        final D result = update(dto.getId(), dto);
+        update(dto.getId(), dto);
 
         Mockito.verify(getController().getService()).update(any(getController().getEntityClass()));
-        assertNotNull(result, "Wrong response");
     }
 
     /**
@@ -216,9 +214,8 @@ abstract class AbstractControllerTest<D extends AbstractDto, K extends Serializa
      * Update the data.
      * @param id  the identifier
      * @param dto the data transfer object
-     * @return the data transfer object
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    protected abstract D update(String id, D dto) throws ServiceException, IllegalAccessException;
+    protected abstract void update(String id, D dto) throws ServiceException, IllegalAccessException;
 }

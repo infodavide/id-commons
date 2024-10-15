@@ -35,7 +35,7 @@ class AuthenticationServiceTest extends AbstractSpringTest {
     @Autowired
     private AuthenticationService service;
 
-    /** The DAO. */
+    /** The data access object. */
     @Autowired
     private UserDao userDao;
 

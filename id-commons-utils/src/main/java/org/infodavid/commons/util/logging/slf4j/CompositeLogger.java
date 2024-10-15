@@ -1,4 +1,4 @@
-package org.infodavid.commons.util.logging;
+package org.infodavid.commons.util.logging.slf4j;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -16,8 +16,6 @@ public class CompositeLogger implements Logger {
      * @param delegates the delegates
      */
     public CompositeLogger(final Logger... delegates) {
-        super();
-
         if (delegates == null || delegates.length == 0 || delegates[0] == null) {
             throw new IllegalArgumentException("At least one delegate must be specified");
         }

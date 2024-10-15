@@ -246,6 +246,11 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
      */
     @Override
     public void afterPropertiesSet() {
+        // Caution: @Transactionnal on afterPropertiesSet and PostConstruct method is not evaluated
+        if (executor != null) {
+            return; // NOSONAR Already initialized
+        }
+
         getLogger().debug("Initializing socket handler...");
         int threads = Math.min(30, Runtime.getRuntime().availableProcessors() * 5);
         final String threadsCount = applicationContext.getEnvironment().getProperty("socketHandler.threads");

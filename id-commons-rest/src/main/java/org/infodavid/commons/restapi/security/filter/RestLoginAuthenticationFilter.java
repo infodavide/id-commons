@@ -10,7 +10,7 @@ import org.infodavid.commons.restapi.Constants;
 import org.infodavid.commons.restapi.dto.LoginDto;
 import org.infodavid.commons.restapi.dto.UserDto;
 import org.infodavid.commons.restapi.mapper.UserMapper;
-import org.infodavid.commons.security.AnonymousAuthenticationImpl;
+import org.infodavid.commons.restapi.security.AuthenticationJwtToken;
 import org.infodavid.commons.service.ApplicationService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.util.jackson.JsonUtils;
@@ -67,10 +67,18 @@ public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcess
     @SuppressWarnings("resource")
     @Override
     public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        SecurityContextHolder.getContext().setAuthentication(AnonymousAuthenticationImpl.INSTANCE);
-
         if (!"POST".equals(request.getMethod())) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+        }
+
+        SecurityContextHolder.clearContext();
+
+        if (LOGGER.isDebugEnabled()) {
+            if (SecurityContextHolder.getContext() == null) {
+                LOGGER.debug("No security context available");
+            } else {
+                LOGGER.debug("Security context has authentication: {}", SecurityContextHolder.getContext().getAuthentication());
+            }
         }
 
         LOGGER.debug("Attempting authentication based on username and password passed as JSON in the body of the request");
@@ -98,8 +106,8 @@ public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcess
         final Object principal = result.getPrincipal();
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        if (result instanceof final Authentication token) {
-            response.addHeader(Constants.HTTP_AUTHORIZATION_RESPONSE_HEADER, Constants.HTTP_AUTHORIZATION_HEADER_TOKEN_PREFIX + token);
+        if (result instanceof final AuthenticationJwtToken token) {
+            response.addHeader(Constants.HTTP_AUTHORIZATION_RESPONSE_HEADER, Constants.HTTP_AUTHORIZATION_HEADER_TOKEN_PREFIX + token.getToken());
         }
 
         String inactivityTimeout = String.valueOf(org.infodavid.commons.service.Constants.DEFAULT_SESSION_INACTIVITY_TIMEOUT);
@@ -134,6 +142,19 @@ public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcess
      */
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
+        Authentication authentication = null;
+
+        if (SecurityContextHolder.getContext() != null) {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+        }
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            LOGGER.debug("Already authenticated");
+            chain.doFilter(request, response);
+
+            return;
+        }
+
         if (request instanceof final HttpServletRequest httpServletRequest && FilterUtils.getInstance().isResource(httpServletRequest)) {
             chain.doFilter(request, response);
 

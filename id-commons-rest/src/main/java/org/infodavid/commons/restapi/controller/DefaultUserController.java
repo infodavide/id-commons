@@ -243,13 +243,12 @@ public class DefaultUserController extends AbstractPersistentEntityController<Us
      * Updates the user.
      * @param id  the identifier
      * @param dto the data transfer object
-     * @return the data transfer object
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      * @since 1.0.0
      */
-    @PostMapping(value = "/user/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto update(@PathVariable final String id, @RequestBody final UserDto dto) throws ServiceException, IllegalAccessException {
-        return doUpdate(id, dto);
+    @PostMapping(value = "/user/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void update(@PathVariable final String id, @RequestBody final UserDto dto) throws ServiceException, IllegalAccessException {
+        doUpdate(id, dto);
     }
 }

@@ -40,11 +40,11 @@ public class TestDataInitializer {
         return new UsernamePasswordAuthenticationToken(name, password, Collections.singleton(new SimpleGrantedAuthority(role)));
     }
 
-    /** The application property DAO. */
+    /** The application property data access object. */
     @Autowired
     private ApplicationPropertyDao applicationPropertyDao;
 
-    /** The user DAO. */
+    /** The user data access object. */
     @Autowired
     private UserDao userDao;
 
@@ -55,7 +55,7 @@ public class TestDataInitializer {
     @SuppressWarnings("rawtypes")
     public void initialize() throws Exception {
         LOGGER.info("Initializing data...");
-        // populate mocks of DAO
+        // populate mocks of data access objects
         // properties
         ((AbstractDefaultDaoMock)applicationPropertyDao).clear();
         ApplicationProperty property = new ApplicationProperty(Constants.SCHEMA_VERSION_PROPERTY, PropertyType.STRING, "1.0");

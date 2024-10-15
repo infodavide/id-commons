@@ -53,18 +53,18 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
          * @see org.infodavid.commons.security.AuthenticationBuilder#build(org.infodavid.commons.model.User, java.util.Collection, java.util.Date)
          */
         @Override
-        public AuthenticationJwtToken build(final User user, final Collection<GrantedAuthority> authorities, final Date expirationDate) {
-            if (user == null) {
+        public AuthenticationJwtToken build(final User principal, final Collection<GrantedAuthority> authorities, final Date expirationDate) {
+            if (principal == null) {
                 return null;
             }
 
-            final JwtBuilder builder = Jwts.builder().subject(String.valueOf(user.getId())).issuedAt(new Date());
+            final JwtBuilder builder = Jwts.builder().subject(String.valueOf(principal.getName())).issuedAt(new Date());
 
             if (expirationDate != null) {
                 builder.expiration(expirationDate);
             }
 
-            return new AuthenticationJwtToken(user, authorities, builder.signWith(getSigningKey()).compact());
+            return new AuthenticationJwtToken(principal, authorities, builder.signWith(getSigningKey()).compact());
         }
 
         /**
@@ -125,13 +125,13 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
 
     /**
      * Instantiates a new authentication token.
-     * @param user        the user
+     * @param principal   the principal
      * @param authorities the authorities
      * @param token       the token
      */
-    protected AuthenticationJwtToken(final User user, final Collection<GrantedAuthority> authorities, final String token) {
+    protected AuthenticationJwtToken(final User principal, final Collection<GrantedAuthority> authorities, final String token) {
         this(authorities, token);
-        setDetails(user);
+        setDetails(principal);
     }
 
     /*
@@ -188,6 +188,14 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
     @Override
     public Object getPrincipal() {
         return getUser();
+    }
+
+    /**
+     * Gets the token.
+     * @return the token
+     */
+    public String getToken() {
+        return token;
     }
 
     /**

@@ -111,11 +111,11 @@ public abstract class AbstractEntityController<D extends AbstractDto, E> extends
             return null;
         }
 
-        if (id instanceof Number number) {
+        if (id instanceof final Number number) {
             return Long.valueOf(number.longValue());
         }
 
-        if (id instanceof String string && StringUtils.isNumeric(string)) {
+        if (id instanceof final String string && StringUtils.isNumeric(string)) {
             return Long.valueOf(string);
         }
 
@@ -136,7 +136,7 @@ public abstract class AbstractEntityController<D extends AbstractDto, E> extends
             return true;
         }
 
-        return id instanceof String string && isNumericIdValid(string);
+        return id instanceof final String string && isNumericIdValid(string);
     }
 
     /**
@@ -295,11 +295,10 @@ public abstract class AbstractEntityController<D extends AbstractDto, E> extends
      * Do update.
      * @param id  the identifier
      * @param dto the data transfer object
-     * @return the data transfer object
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    protected E doMapAndUpdate(final String id, final D dto) throws ServiceException, IllegalAccessException {
+    protected void doMapAndUpdate(final String id, final D dto) throws ServiceException, IllegalAccessException {
         getLogger().debug("update request of id: {}, with dto: {}", id, dto);
 
         if (dto == null) {
@@ -311,33 +310,24 @@ public abstract class AbstractEntityController<D extends AbstractDto, E> extends
         final E entity = map(dto);
         getLogger().debug("DTO : {}", dto);
         getLogger().debug("Entity : {}", entity);
-        final E updated = update(entity);
-        getLogger().debug("Updated: {}", entity);
-
-        return updated;
+        update(entity);
     }
 
     /**
      * Do update.
      * @param id  the identifier
      * @param dto the data transfer object
-     * @return the data transfer object
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    protected D doUpdate(final String id, final D dto) throws ServiceException, IllegalAccessException {
+    protected void doUpdate(final String id, final D dto) throws ServiceException, IllegalAccessException {
         getLogger().debug("update request with dto: {}", dto);
 
         if (dto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Constants.BODY_IS_REQUIRED);
         }
 
-        final E entity = doMapAndUpdate(id, dto);
-        getLogger().debug("Updated entity: {}", entity);
-        final D result = map(entity, false);
-        applySecurityFlags(entity, result);
-
-        return result;
+        doMapAndUpdate(id, dto);
     }
 
     /**
@@ -476,9 +466,8 @@ public abstract class AbstractEntityController<D extends AbstractDto, E> extends
     /**
      * Update.
      * @param entity the entity
-     * @return the updated entity
      * @throws ServiceException       the service exception
      * @throws IllegalAccessException the illegal access exception
      */
-    protected abstract E update(final E entity) throws ServiceException, IllegalAccessException;
+    protected abstract void update(final E entity) throws ServiceException, IllegalAccessException;
 }

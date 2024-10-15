@@ -237,7 +237,7 @@ class ApplicationControllerTest extends AbstractControllerTest<PropertyDto, Long
      * @see org.infodavid.web.controller.AbstractControllerTest#update(java.lang.String, org.infodavid.web.dto.AbstractDto)
      */
     @Override
-    protected PropertyDto update(final String id, final PropertyDto dto) throws ServiceException, IllegalAccessException {
-        return controller.update(id, dto);
+    protected void update(final String id, final PropertyDto dto) throws ServiceException, IllegalAccessException {
+        controller.update(id, dto);
     }
 }

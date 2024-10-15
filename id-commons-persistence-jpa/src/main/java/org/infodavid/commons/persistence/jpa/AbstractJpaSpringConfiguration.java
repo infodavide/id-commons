@@ -62,7 +62,7 @@ public abstract class AbstractJpaSpringConfiguration extends AbstractSpringConfi
             Class.forName(DEFAULT_DIALECT_CLASS);
             result.setProperty("hibernate.dialect", DEFAULT_DIALECT_CLASS);
         } catch (final ClassNotFoundException e) {
-            LOGGER.error("Cannot set default dialect, class is not available: {}", DEFAULT_DIALECT_CLASS);
+            LOGGER.error(String.format("Cannot set default dialect, class is not available: %s", DEFAULT_DIALECT_CLASS), e);
         }
 
         return result;

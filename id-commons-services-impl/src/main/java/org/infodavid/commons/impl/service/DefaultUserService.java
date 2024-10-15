@@ -33,6 +33,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import groovy.text.SimpleTemplateEngine;
 import jakarta.persistence.PersistenceException;
@@ -42,6 +43,7 @@ import jakarta.validation.ValidationException;
  * The Class DefaultUserService.<br>
  */
 /* If necessary, declare the bean in the Spring configuration. */
+@Transactional(readOnly = true)
 public class DefaultUserService extends AbstractEntityService<Long, User> implements UserService, InitializingBean {
 
     /** The Constant ANONYMOUS. */
@@ -76,8 +78,11 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
     @Lazy
     private ApplicationService applicationService;
 
-    /** The DAO. */
+    /** The data access object. */
     private final UserDao dao;
+
+    /** The initialized. */
+    private boolean initialized;
 
     /** The template engine. */
     private final SimpleTemplateEngine templateEngine;
@@ -86,7 +91,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
      * Instantiates a new user service.
      * @param applicationContext the application context
      * @param validationHelper   the validation helper
-     * @param dao                the DAO
+     * @param dao                the data access object
      */
     public DefaultUserService(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final UserDao dao) {
         super(applicationContext, Long.class, User.class, validationHelper);
@@ -100,10 +105,15 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
-    public void afterPropertiesSet() throws ServiceException {
-        getLogger().debug("Initializing...");
+    public synchronized void afterPropertiesSet() throws ServiceException {
+        // Caution: @Transactionnal on afterPropertiesSet and PostConstruct method is not evaluated
+        if (initialized) {
+            return; // NOSONAR Already initialized
+        }
 
-        try {
+        getLogger().debug("Initializing...");
+        initialized = true;
+        TransactionUtils.getInstance().doInTransaction("Checking users", LOGGER, getApplicationContext(), () -> {
             Optional<User> optional = dao.findByName(org.infodavid.commons.model.Constants.DEFAULT_ADMINISTRATOR);
 
             if (!optional.isPresent()) {
@@ -129,9 +139,9 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
                 user.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
                 dao.insert(user);
             }
-        } catch (final PersistenceException e) {
-            throw new ServiceException(ExceptionUtils.getRootCause(e));
-        }
+
+            return null;
+        });
 
         getLogger().debug("Initialized");
     }
@@ -542,7 +552,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
      * @see org.infodavid.impl.service.AbstractEntityService#update(org.infodavid.model .PersistentObject)
      */
     @Override
-    public User update(final User value) throws ServiceException, IllegalAccessException {
+    public void update(final User value) throws ServiceException, IllegalAccessException {
         if (value == null) {
             throw new IllegalArgumentException(org.infodavid.commons.impl.service.Constants.ARGUMENT_IS_NULL_OR_EMPTY);
         }
@@ -569,7 +579,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
             final Optional<User> optional = dao.findById(valueToUpdate.getId());
 
             if (!optional.isPresent()) {
-                return null;
+                return;
             }
 
             existing = optional.get();
@@ -586,8 +596,9 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
             existing.setEmail(valueToUpdate.getEmail());
             existing.setPassword(valueToUpdate.getPassword());
             valueToUpdate.getProperties().forEach(p -> existing.getProperties().add(p));
+            super.update(Optional.of(existing), existing);
 
-            return super.update(Optional.of(existing), existing);
+            return;
         }
 
         valueToUpdate.setDeletable(false);
@@ -599,7 +610,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
             valueToUpdate.setExpirationDate(existing.getExpirationDate());
         }
 
-        return super.update(Optional.of(existing), valueToUpdate);
+        super.update(Optional.of(existing), valueToUpdate);
     }
 
     /*

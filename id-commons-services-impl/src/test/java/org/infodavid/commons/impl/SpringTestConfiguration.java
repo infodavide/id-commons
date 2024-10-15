@@ -10,6 +10,7 @@ import org.infodavid.commons.persistence.dao.UserDao;
 import org.infodavid.commons.security.AuthenticationService;
 import org.infodavid.commons.service.SchedulerService;
 import org.infodavid.commons.service.UserService;
+import org.infodavid.commons.test.persistence.dao.AbstractDefaultDaoMock;
 import org.infodavid.commons.test.persistence.dao.ApplicationPropertyDaoMock;
 import org.infodavid.commons.test.persistence.dao.UserDaoMock;
 import org.springframework.beans.factory.FactoryBean;
@@ -22,6 +23,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * The Class SpringTestConfiguration.
@@ -34,8 +36,8 @@ import org.springframework.test.context.TestPropertySource;
 public class SpringTestConfiguration {
 
     /**
-     * ApplicationProperty DAO.
-     * @return the DAO
+     * ApplicationProperty data access object.
+     * @return the data access object
      * @throws Exception the exception
      */
     @Bean
@@ -79,8 +81,25 @@ public class SpringTestConfiguration {
     }
 
     /**
-     * User DAO.
-     * @return the DAO
+     * Transaction manager.
+     * @param applicationPropertyDao the application property data access object
+     * @param userDao                the user data access object
+     * @return the transaction manager
+     */
+    @SuppressWarnings("rawtypes")
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public PlatformTransactionManager transactionManager(final ApplicationPropertyDao applicationPropertyDao, final UserDao userDao) {
+        final AbstractDefaultDaoMock[] mocks = new AbstractDefaultDaoMock[2];
+        mocks[0] = (AbstractDefaultDaoMock) applicationPropertyDao;
+        mocks[1] = (AbstractDefaultDaoMock) userDao;
+
+        return new PlatformTransactionManagerMock(mocks);
+    }
+
+    /**
+     * User data access object.
+     * @return the data access object
      * @throws Exception the exception
      */
     @Bean
@@ -93,7 +112,7 @@ public class SpringTestConfiguration {
      * User service.
      * @param applicationContext the application context
      * @param validationHelper   the validation helper
-     * @param dao                the DAO
+     * @param dao                the data access object
      * @return the user service
      * @throws Exception the exception
      */

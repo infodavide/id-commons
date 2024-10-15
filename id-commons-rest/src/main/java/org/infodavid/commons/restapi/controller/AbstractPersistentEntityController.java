@@ -89,7 +89,7 @@ public abstract class AbstractPersistentEntityController<D extends AbstractDto, 
      * @see org.infodavid.web.controller.AbstractEntityController#update(java.lang.Object)
      */
     @Override
-    protected E update(final E entity) throws ServiceException, IllegalAccessException {
-        return getService().update(entity);
+    protected void update(final E entity) throws ServiceException, IllegalAccessException {
+        getService().update(entity);
     }
 }

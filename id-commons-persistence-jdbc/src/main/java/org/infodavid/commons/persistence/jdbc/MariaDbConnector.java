@@ -203,7 +203,7 @@ public class MariaDbConnector extends AbstractDatabaseConnector {
                 if (database.getPoolMinSize() <= 0) {
                     config.setMinimumIdle(1);
                 } else {
-                    config.setMinimumIdle(database.getPoolMaxSize());
+                    config.setMinimumIdle(database.getPoolMinSize());
                 }
 
                 if (database.getPoolMaxSize() <= 0) {

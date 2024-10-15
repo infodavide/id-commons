@@ -1,4 +1,4 @@
-package org.infodavid.commons.util.logging;
+package org.infodavid.commons.util.logging.logback;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

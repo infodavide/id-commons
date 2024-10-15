@@ -17,11 +17,11 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.infodavid.commons.impl.service.AbstractService;
+import org.infodavid.commons.impl.service.TransactionUtils;
 import org.infodavid.commons.model.ApplicationProperty;
 import org.infodavid.commons.model.PropertyType;
 import org.infodavid.commons.model.User;
 import org.infodavid.commons.persistence.dao.UserDao;
-import org.infodavid.commons.security.AnonymousAuthenticationImpl;
 import org.infodavid.commons.security.AuthenticationBuilder;
 import org.infodavid.commons.security.AuthenticationListener;
 import org.infodavid.commons.security.AuthenticationService;
@@ -34,6 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,6 +43,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +55,7 @@ import jakarta.persistence.PersistenceException;
  * To use this service, the project must extends this class and add the Spring annotation(s).
  */
 /* If necessary, declare the bean in the Spring configuration. */
-@Transactional
+@Transactional(readOnly = true)
 public class DefaultAuthenticationServiceImpl extends AbstractService implements AuthenticationService, ApplicationPropertyChangedListener, InitializingBean {
 
     /** The Constant CACHE_SIZE. */
@@ -83,7 +85,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     /** The listeners. */
     private final Set<AuthenticationListener> listeners = new HashSet<>();
 
-    /** The user DAO. */
+    /** The user data access object. */
     private final UserDao userDao;
 
     /**
@@ -120,35 +122,39 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
      */
     @Override
     public void afterPropertiesSet() throws ServiceException, IllegalAccessException {
+        // Caution: @Transactionnal on afterPropertiesSet and PostConstruct method is not evaluated
         getLogger().debug("Initializing authentication service");
         final ApplicationService applicationService = getApplicationContext().getBean(ApplicationService.class);
-        // We have only one property, listener can be attached before adding or updating it
-        applicationService.addListener(this);
-        final Page<ApplicationProperty> found = applicationService.findByName(org.infodavid.commons.service.Constants.SESSION_INACTIVITY_TIMEOUT_PROPERTY, Pageable.unpaged());
+        TransactionUtils.getInstance().doInTransaction("Checking authentication properties", LOGGER, getApplicationContext(), () -> {
+            final Page<ApplicationProperty> found = applicationService.findByName(org.infodavid.commons.service.Constants.SESSION_INACTIVITY_TIMEOUT_PROPERTY, Pageable.unpaged());
 
-        if (found.isEmpty()) {
-            final ApplicationProperty property = new ApplicationProperty();
-            property.setDeletable(false);
-            property.setReadOnly(false);
-            property.setName(org.infodavid.commons.service.Constants.SESSION_INACTIVITY_TIMEOUT_PROPERTY);
-            property.setType(PropertyType.INTEGER);
-            property.setLabel("Session inactivity timeout (minutes)");
-            property.setValue(org.infodavid.commons.service.Constants.DEFAULT_SESSION_INACTIVITY_TIMEOUT);
-            applicationService.add(property);
-        } else {
-            final ApplicationProperty property = found.getContent().get(0);
-
-            // Ensure value is set
-            if (StringUtils.isEmpty(property.getValue())) {
+            if (found.isEmpty()) {
+                final ApplicationProperty property = new ApplicationProperty();
+                property.setDeletable(false);
+                property.setReadOnly(false);
+                property.setName(org.infodavid.commons.service.Constants.SESSION_INACTIVITY_TIMEOUT_PROPERTY);
+                property.setType(PropertyType.INTEGER);
+                property.setLabel("Session inactivity timeout (minutes)");
                 property.setValue(org.infodavid.commons.service.Constants.DEFAULT_SESSION_INACTIVITY_TIMEOUT);
+                applicationService.add(property);
+            } else {
+                final ApplicationProperty property = found.getContent().get(0);
+
+                // Ensure value is set
+                if (StringUtils.isEmpty(property.getValue())) {
+                    property.setValue(org.infodavid.commons.service.Constants.DEFAULT_SESSION_INACTIVITY_TIMEOUT);
+                }
+
+                property.setDeletable(false);
+                property.setReadOnly(false);
+                property.setType(PropertyType.INTEGER);
+                applicationService.update(property);
             }
 
-            property.setDeletable(false);
-            property.setReadOnly(false);
-            property.setType(PropertyType.INTEGER);
-            applicationService.update(property);
-        }
-
+            return null;
+        });
+        // We have only one property, listener can be attached before adding or updating it
+        applicationService.addListener(this);
         getLogger().debug("Authentication service initialized");
     }
 
@@ -157,7 +163,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
      * @see org.infodavid.commons.security.AuthenticationService#authenticate(java.lang.String, java.lang.String, java.util.Map)
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     public Authentication authenticate(final String login, final String password, final Map<String, String> properties) throws IllegalAccessException, ServiceException, LoginException {
         return doAuthenticate(login, password, properties, null);
     }
@@ -167,7 +173,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
      * @see org.infodavid.commons.security.AuthenticationService#authenticate(java.lang.String, java.lang.String, java.util.Map, org.infodavid.commons.security.AuthenticationBuilder)
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     public Authentication authenticate(final String login, final String password, final Map<String, String> properties, final AuthenticationBuilder builder) throws IllegalAccessException, ServiceException, LoginException {
         return doAuthenticate(login, password, properties, builder);
     }
@@ -199,7 +205,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
      * @throws LoginException         the login exception
      */
     protected Authentication doAuthenticate(final String login, final String password, final Map<String, String> properties, final AuthenticationBuilder builder) throws IllegalAccessException, ServiceException, LoginException {
-        SecurityContextHolder.getContext().setAuthentication(AnonymousAuthenticationImpl.INSTANCE);
+        SecurityContextHolder.clearContext();
 
         if (StringUtils.isEmpty(login) || StringUtils.isEmpty(password)) {
             throw new IllegalAccessException("Username and password are required");
@@ -433,7 +439,9 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
 
         getLogger().trace("Authentication: {}", context.getAuthentication());
 
-        if (context.getAuthentication().getPrincipal() instanceof final User user) { // NOSONAR Use of pattern matching
+        if (context.getAuthentication() instanceof AnonymousAuthenticationToken) { // NOSONAR Use of pattern matching
+            result = org.infodavid.commons.model.Constants.ANONYMOUS_USER;
+        } else if (context.getAuthentication().getPrincipal() instanceof final User user) { // NOSONAR Use of pattern matching
             result = user;
         } else if (context.getAuthentication().getDetails() instanceof final User user) { // NOSONAR Use of pattern matching
             result = user;

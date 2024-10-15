@@ -78,7 +78,7 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
     /** The removal listener. */
     protected final Listener removalListener;
 
-    /** The user DAO. */
+    /** The user data access object. */
     protected final UserDao userDao;
 
     /**

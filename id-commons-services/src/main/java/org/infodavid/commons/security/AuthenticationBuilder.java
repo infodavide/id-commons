@@ -14,10 +14,10 @@ public interface AuthenticationBuilder {
 
     /**
      * Builds the.
-     * @param user           the user
+     * @param principal      the principal
      * @param authorities    the authorities
      * @param expirationDate the expiration date
      * @return the authentication
      */
-    Authentication build(User user, Collection<GrantedAuthority> authorities, Date expirationDate);
+    Authentication build(User principal, Collection<GrantedAuthority> authorities, Date expirationDate);
 }

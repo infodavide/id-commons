@@ -182,7 +182,7 @@ class UserControllerTest extends AbstractControllerTest<UserDto, Long, User> {
      * @see org.infodavid.web.controller.AbstractControllerTest#update(java.lang.String, org.infodavid.web.dto.AbstractDto)
      */
     @Override
-    protected UserDto update(final String id, final UserDto dto) throws ServiceException, IllegalAccessException {
-        return controller.update(id, dto);
+    protected void update(final String id, final UserDto dto) throws ServiceException, IllegalAccessException {
+        controller.update(id, dto);
     }
 }
