@@ -45,7 +45,7 @@ public class TestDataBuilder {
         result.setName("test-" + System.nanoTime());
         result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
         result.setEmail(result.getName() + "@infodavid.org");
-        result.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.USER_ROLE));
+        result.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.USER_ROLE));
 
         return result;
     }

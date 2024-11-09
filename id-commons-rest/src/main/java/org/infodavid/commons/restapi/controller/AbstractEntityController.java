@@ -21,12 +21,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class AbstractEntityController.<br>
  * Mappings declared above are relative to the servlet mappings declared in the application configuration (WebApplicationInitializer or a subclass).
  * @param <D> the generic type
  * @param <E> the element type
  */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractEntityController<D extends AbstractDto, E> extends AbstractController {
 
     /**
@@ -159,12 +163,6 @@ public abstract class AbstractEntityController<D extends AbstractDto, E> extends
         }
 
         return null;
-    }
-
-    /**
-     * Instantiates a new abstract controller.
-     */
-    protected AbstractEntityController() {
     }
 
     /**

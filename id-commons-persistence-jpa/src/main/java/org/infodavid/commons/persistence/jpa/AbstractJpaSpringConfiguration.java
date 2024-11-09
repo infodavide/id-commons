@@ -6,8 +6,6 @@ import java.util.Properties;
 
 import org.infodavid.commons.model.User;
 import org.infodavid.commons.persistence.jdbc.AbstractSpringConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -24,19 +22,18 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManagerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class AbstractJpaSpringConfiguration.
  */
+@Slf4j
 @EnableTransactionManagement
 @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
 public abstract class AbstractJpaSpringConfiguration extends AbstractSpringConfiguration {
 
     /** The Constant DEFAULT_DIALECT_CLASS. */
     private static final String DEFAULT_DIALECT_CLASS = "org.hibernate.dialect.MySQL5Dialect";
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJpaSpringConfiguration.class);
 
     /** The property sources placeholder configurer. */
     private static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer;

@@ -13,15 +13,14 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class TcpServer.
  */
+@Slf4j
 public class TcpServer extends AbstractTcpComponent {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(TcpServer.class);
 
     /**
      * The main method.

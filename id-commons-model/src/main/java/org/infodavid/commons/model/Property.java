@@ -9,22 +9,22 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Transient;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * The Class Property.
  */
 @Embeddable
 @Access(AccessType.PROPERTY)
+@NoArgsConstructor
+@Setter
+@Getter
 public class Property extends AbstractProperty<Property> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 4650115076573283055L;
-
-    /**
-     * Instantiates a new property.
-     */
-    public Property() {
-    }
 
     /**
      * Instantiates a new property.

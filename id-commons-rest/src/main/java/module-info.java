@@ -57,4 +57,5 @@ module org.infodavid.commons.restapi {
     requires transitive spring.webmvc;
     requires transitive spring.websocket;
     requires jjwt.api;
+    requires lombok;
 }

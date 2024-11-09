@@ -19,14 +19,15 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hsqldb.jdbc.JDBCDataSource;
 import org.infodavid.commons.model.Database;
 import org.infodavid.commons.persistence.DatabaseConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class HsqldbDataSourceProvider.
  */
+@Slf4j
 public class HsqldbDataSourceProvider implements DatabaseConnector {
 
     /** The Constant CONNECTION_STRING_PATTERN. */
@@ -40,9 +41,6 @@ public class HsqldbDataSourceProvider implements DatabaseConnector {
 
     /** The Constant INSERT_DATA_SCRIPT_PATH_PATTERN. */
     private static final String INSERT_DATA_SCRIPT_PATH_PATTERN = "sql/%s_insert_data.sql";
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(HsqldbDataSourceProvider.class);
 
     /** The Constant NAME. */
     private static final String NAME = "hsqldb";

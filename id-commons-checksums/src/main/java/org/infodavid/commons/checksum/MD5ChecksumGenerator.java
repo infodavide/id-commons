@@ -5,20 +5,16 @@ import java.io.InputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import lombok.NoArgsConstructor;
+
 /**
  * The Class MD5ChecksumGenerator.
  */
+@NoArgsConstructor
 public final class MD5ChecksumGenerator extends AbstractChecksumGenerator {
 
     /** The Constant ALGORITHM. */
     public static final String ALGORITHM = "MD5";
-
-    /**
-     * Instantiates a new MD 5 checksum generator.
-     */
-    public MD5ChecksumGenerator() {
-        // noop
-    }
 
     /*
      * (non-javadoc)

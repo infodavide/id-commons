@@ -1,6 +1,5 @@
 package org.infodavid.commons.util;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -8,33 +7,16 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class ArrayUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class ArrayUtils {
-
-    /** The singleton. */
-    private static WeakReference<ArrayUtils> instance = null;
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized ArrayUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new ArrayUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private ArrayUtils() {
-    }
 
     /**
      * Ends with.

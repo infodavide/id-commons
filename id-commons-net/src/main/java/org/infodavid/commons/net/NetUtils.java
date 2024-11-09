@@ -89,7 +89,7 @@ public abstract sealed class NetUtils permits LinuxNetUtils, WindowsNetUtils {
             // noop
         }
     }
-    
+
     /**
      * Execute.
      * @param command the command
@@ -252,9 +252,9 @@ public abstract sealed class NetUtils permits LinuxNetUtils, WindowsNetUtils {
      * @return the mask
      */
     @SuppressWarnings("boxing")
-    public String getNetmask(int value) {
-        long bits = 0xffffffff ^ (1 << 32 - value) - 1;
-        
+    public String getNetmask(final int value) {
+        final long bits = 0xffffffff ^ (1 << 32 - value) - 1;
+
         return String.format("%d.%d.%d.%d", (bits & 0x0000000000ff000000L) >> 24, (bits & 0x0000000000ff0000) >> 16, (bits & 0x0000000000ff00) >> 8, bits & 0xff);
 
     }
@@ -268,10 +268,10 @@ public abstract sealed class NetUtils permits LinuxNetUtils, WindowsNetUtils {
         final SystemInfo systemInfo = new SystemInfo();
         final String gateway = systemInfo.getOperatingSystem().getNetworkParams().getIpv4DefaultGateway();
 
-        for (NetworkIF iface : systemInfo.getHardware().getNetworkIFs()) {
-            String ipv4 = ArrayUtils.getInstance().first(iface.getIPv4addr());
-            String ipv6 = ArrayUtils.getInstance().first(iface.getIPv6addr());
-            String netmask = getNetmask(ArrayUtils.getInstance().first(iface.getSubnetMasks()).intValue());
+        for (final NetworkIF iface : systemInfo.getHardware().getNetworkIFs()) {
+            final String ipv4 = ArrayUtils.first(iface.getIPv4addr());
+            final String ipv6 = ArrayUtils.first(iface.getIPv6addr());
+            final String netmask = getNetmask(ArrayUtils.first(iface.getSubnetMasks()).intValue());
             results.put(iface.getName(), new org.infodavid.commons.net.NetworkInterface(iface.getName(), iface.getDisplayName(), iface.getMacaddr(), ipv4, ipv6, netmask, gateway, iface.getMTU(), iface.isConnectorPresent()));
         }
 

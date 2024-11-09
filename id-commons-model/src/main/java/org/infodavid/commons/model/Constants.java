@@ -2,9 +2,13 @@ package org.infodavid.commons.model;
 
 import java.util.Date;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Interface Constants.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
 
     /** The administrator role. */
@@ -152,11 +156,5 @@ public final class Constants {
         ANONYMOUS_USER.setModificationDate(ANONYMOUS_USER.getCreationDate());
         ANONYMOUS_USER.setName(ANONYMOUS);
         ANONYMOUS_USER.getRoles().add(ANONYMOUS_ROLE);
-    }
-
-    /**
-     * Instantiates a new constants.
-     */
-    private Constants() {
     }
 }

@@ -13,4 +13,5 @@ module org.infodavid.commons.net {
     requires transitive org.infodavid.commons.util;
     requires transitive org.slf4j;
     requires transitive com.github.oshi;
+    requires lombok;
 }

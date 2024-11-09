@@ -17,12 +17,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.infodavid.commons.util.concurrency.ThreadUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DiscoveryClient.
  */
+@Slf4j
+@Getter
+@Setter
 public class DiscoveryClient {
 
     /**
@@ -68,9 +73,6 @@ public class DiscoveryClient {
         }
     }
 
-    /** The logger. */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryClient.class);
-
     /** The active. */
     private final AtomicBoolean active = new AtomicBoolean(true);
 
@@ -98,7 +100,7 @@ public class DiscoveryClient {
         LOGGER.info("Starting discovery of hosts using UDP port: {}", String.valueOf(discoveryPort)); // NOSONAR Always written
         active.set(true);
 
-        try (ExecutorService executor = ThreadUtils.getInstance().newThreadPoolExecutor(getClass(), LOGGER, 4, Byte.MAX_VALUE); DatagramSocket socket = new DatagramSocket()) {
+        try (ExecutorService executor = ThreadUtils.newThreadPoolExecutor(getClass(), LOGGER, 4, Byte.MAX_VALUE); DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(true);
             socket.setSoTimeout(timeout);
             List<InetAddress> broadcastAddresses;
@@ -155,67 +157,11 @@ public class DiscoveryClient {
     }
 
     /**
-     * Gets the broadcast address.
-     * @return the broadcastAddress
-     */
-    public InetAddress getBroadcastAddress() {
-        return broadcastAddress;
-    }
-
-    /**
-     * Gets the charset.
-     * @return the charset
-     */
-    public Charset getCharset() {
-        return charset;
-    }
-
-    /**
-     * Gets the command.
-     * @return the command
-     */
-    public byte[] getCommand() {
-        return command;
-    }
-
-    /**
-     * Gets the discovery port.
-     * @return the discoveryPort
-     */
-    public int getDiscoveryPort() {
-        return discoveryPort;
-    }
-
-    /**
-     * Gets the timeout.
-     * @return the timeout
-     */
-    public int getTimeout() {
-        return timeout;
-    }
-
-    /**
      * Checks if is active.
      * @return true, if is active
      */
     public boolean isActive() {
         return active.get();
-    }
-
-    /**
-     * Sets the broadcast address.
-     * @param broadcastAddress the broadcastAddress to set
-     */
-    public void setBroadcastAddress(final InetAddress broadcastAddress) {
-        this.broadcastAddress = broadcastAddress;
-    }
-
-    /**
-     * Sets the charset.
-     * @param charset the charset to set
-     */
-    public void setCharset(final Charset charset) {
-        this.charset = charset;
     }
 
     /**

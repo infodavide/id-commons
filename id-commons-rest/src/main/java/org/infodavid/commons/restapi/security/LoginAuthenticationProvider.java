@@ -6,8 +6,6 @@ import java.util.Map;
 import org.infodavid.commons.restapi.RequestUtils;
 import org.infodavid.commons.restapi.security.AuthenticationJwtToken.Builder;
 import org.infodavid.commons.security.AuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -20,15 +18,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class LoginAuthenticationProvider.
  */
 /* If necessary, declare the bean in the Spring configuration. */
+@Slf4j
 public class LoginAuthenticationProvider implements AuthenticationProvider {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoginAuthenticationProvider.class);
 
     /** The authentication token builder. */
     private final Builder authenticationTokenBuilder;
@@ -83,7 +80,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
             plain = authorizationHeader != null && authorizationHeader.toLowerCase().startsWith("basic ");
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.trace("Request:\n{}", RequestUtils.getInstance().getDescription(request));
+                LOGGER.trace("Request:\n{}", RequestUtils.getDescription(request));
             }
         }
 

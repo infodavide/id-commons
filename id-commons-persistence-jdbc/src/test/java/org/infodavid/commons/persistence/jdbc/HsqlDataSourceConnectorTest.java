@@ -50,15 +50,15 @@ class HsqlDataSourceConnectorTest extends TestCase {
         backupDir = temporaryDir.resolve("backup");
 
         if (Files.exists(temporaryDir)) {
-            PathUtils.getInstance().deleteQuietly(temporaryDir);
+            PathUtils.deleteQuietly(temporaryDir);
         }
 
         if (Files.exists(databaseDir)) {
-            PathUtils.getInstance().deleteQuietly(databaseDir);
+            PathUtils.deleteQuietly(databaseDir);
         }
 
         if (Files.exists(backupDir)) {
-            PathUtils.getInstance().deleteQuietly(backupDir);
+            PathUtils.deleteQuietly(backupDir);
         }
 
         Files.createDirectories(temporaryDir);
@@ -142,7 +142,7 @@ class HsqlDataSourceConnectorTest extends TestCase {
         connector.execute(db, Paths.get("target/classes/sql/hsqldb_Common_create.sql"));
         connector.execute(db, Paths.get("target/classes/sql/Common_insert_data.sql"));
         connector.dump(db, backupDir);
-        PathUtils.getInstance().deleteQuietly(databaseDir);
+        PathUtils.deleteQuietly(databaseDir);
         Files.createDirectories(databaseDir);
 
         connector.restore(db, backupDir);

@@ -10,9 +10,14 @@ import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.util.system.CommandExecutorFactory;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * The Class JMapCallable.
  */
+@Setter
+@Getter
 class JMapCallable implements Callable<Map<String,JMapEntry>> {
 
     /** The exclude pattern. */
@@ -28,7 +33,7 @@ class JMapCallable implements Callable<Map<String,JMapEntry>> {
     @Override
     public Map<String,JMapEntry> call() throws Exception {
         final Map<String,JMapEntry> results = new HashMap<>();
-        final File executable = DiagnosticUtils.getInstance().getJmapExecutable();
+        final File executable = DiagnosticUtils.getJmapExecutable();
 
         if (!executable.exists()) {
             throw new UnsupportedOperationException("Executable not found: " + executable.getName());
@@ -47,37 +52,5 @@ class JMapCallable implements Callable<Map<String,JMapEntry>> {
         new JMapParserRunnable(includePattern, excludePattern, output, results).run();
 
         return results;
-    }
-
-    /**
-     * Gets the exclude pattern.
-     * @return the excludePattern
-     */
-    public String getExcludePattern() {
-        return excludePattern;
-    }
-
-    /**
-     * Gets the include pattern.
-     * @return the includePattern
-     */
-    public String getIncludePattern() {
-        return includePattern;
-    }
-
-    /**
-     * Sets the exclude pattern.
-     * @param excludePattern the excludePattern to set
-     */
-    public void setExcludePattern(final String excludePattern) {
-        this.excludePattern = excludePattern;
-    }
-
-    /**
-     * Sets the include pattern.
-     * @param includePattern the includePattern to set
-     */
-    public void setIncludePattern(final String includePattern) {
-        this.includePattern = includePattern;
     }
 }

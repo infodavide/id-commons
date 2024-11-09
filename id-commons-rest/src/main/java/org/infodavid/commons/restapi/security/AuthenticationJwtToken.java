@@ -9,8 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.infodavid.commons.model.User;
 import org.infodavid.commons.security.AuthenticationBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -23,6 +21,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class AuthenticationToken.
@@ -32,10 +32,8 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
     /**
      * The Class Builder.
      */
+    @Slf4j
     public static class Builder implements AuthenticationBuilder {
-
-        /** The Constant LOGGER. */
-        private static final Logger LOGGER = LoggerFactory.getLogger(Builder.class);
 
         /** The secret. */
         private final String secret;
@@ -110,6 +108,7 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
     private static final long serialVersionUID = -175776633936615595L;
 
     /** The token. */
+    @Getter
     private final String token;
 
     /**
@@ -188,14 +187,6 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
     @Override
     public Object getPrincipal() {
         return getUser();
-    }
-
-    /**
-     * Gets the token.
-     * @return the token
-     */
-    public String getToken() {
-        return token;
     }
 
     /**

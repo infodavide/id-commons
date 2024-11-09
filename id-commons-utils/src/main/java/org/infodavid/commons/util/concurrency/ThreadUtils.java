@@ -1,7 +1,6 @@
 package org.infodavid.commons.util.concurrency;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,15 +26,18 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.infodavid.commons.util.exception.CannotAcquireLockException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ThreadUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class ThreadUtils {
 
     /**
@@ -96,12 +98,6 @@ public final class ThreadUtils {
         }
     }
 
-    /** The singleton. */
-    private static WeakReference<ThreadUtils> instance = null;
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtils.class);
-
     /** The Constant MOCKITO_ENABLED. */
     private static final boolean MOCKITO_ENABLED;
 
@@ -139,24 +135,6 @@ public final class ThreadUtils {
         } catch (@SuppressWarnings("unused") IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
             // noop
         }
-    }
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized ThreadUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new ThreadUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private ThreadUtils() {
     }
 
     /**

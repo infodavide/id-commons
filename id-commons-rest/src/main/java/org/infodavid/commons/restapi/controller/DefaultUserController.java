@@ -15,7 +15,6 @@ import org.infodavid.commons.security.AuthenticationService;
 import org.infodavid.commons.service.UserService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +23,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DefaultUserController.<br>
@@ -37,13 +39,12 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @wiki.entity org.infodavid.model.User
  */
 /* If necessary, declare the bean in the Spring configuration. */
+@Slf4j
 public class DefaultUserController extends AbstractPersistentEntityController<UserDto, Long, User> {
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultUserController.class);
-
     /** The service. */
-    protected final UserService service;
+    @Getter
+    private final UserService service;
 
     /**
      * Instantiates a new controller.
@@ -173,15 +174,6 @@ public class DefaultUserController extends AbstractPersistentEntityController<Us
     @Override
     protected Logger getLogger() {
         return LOGGER;
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.controller.AbstractPersistentEntityController#getService()
-     */
-    @Override
-    public UserService getService() {
-        return service;
     }
 
     /**

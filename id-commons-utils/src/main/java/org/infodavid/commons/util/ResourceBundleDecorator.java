@@ -15,12 +15,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ResourceBundleDecorator.
  */
+@NoArgsConstructor
+@Slf4j
 public class ResourceBundleDecorator extends ResourceBundle {
 
     /** The Constant MISSING_RESOURCE_CHAR. */
@@ -29,17 +32,8 @@ public class ResourceBundleDecorator extends ResourceBundle {
     /** The Constant MISSING_RESOURCE_PATTERN. */
     public static final String MISSING_RESOURCE_PATTERN = MISSING_RESOURCE_CHAR + " %s " + MISSING_RESOURCE_CHAR;
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceBundleDecorator.class);
-
     /** The delegates. */
     private final Set<ResourceBundle> delegates = new LinkedHashSet<>();
-
-    /**
-     * Instantiates a new resource bundle decorator.
-     */
-    public ResourceBundleDecorator() {
-    }
 
     /**
      * Instantiates a new resource bundle decorator.
@@ -92,11 +86,9 @@ public class ResourceBundleDecorator extends ResourceBundle {
             return false;
         }
 
-        if (!(obj instanceof ResourceBundleDecorator)) {
+        if (!(obj instanceof final ResourceBundleDecorator other)) {
             return false;
         }
-
-        final ResourceBundleDecorator other = (ResourceBundleDecorator) obj;
 
         return delegates.equals(other.delegates);
     }

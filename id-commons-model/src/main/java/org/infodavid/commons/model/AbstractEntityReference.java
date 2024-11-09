@@ -4,11 +4,18 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * The Class AbstractEntityReference.
  * @param <K> the key type
  */
-public class AbstractEntityReference<K extends Serializable> extends AbstractObject<K> {
+@NoArgsConstructor
+@Setter
+@Getter
+public abstract class AbstractEntityReference<K extends Serializable> extends AbstractObject<K> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -449021796863253704L;
@@ -18,14 +25,9 @@ public class AbstractEntityReference<K extends Serializable> extends AbstractObj
 
     /**
      * Instantiates a new entity reference.
-     */
-    public AbstractEntityReference() {}
-
-    /**
-     * Instantiates a new entity reference.
      * @param source the source
      */
-    public AbstractEntityReference(final AbstractEntityReference<K> source) {
+    protected AbstractEntityReference(final AbstractEntityReference<K> source) {
         super(source);
         displayName = source.displayName;
     }
@@ -35,7 +37,7 @@ public class AbstractEntityReference<K extends Serializable> extends AbstractObj
      * @param id          the identifier
      * @param displayName the display name
      */
-    public AbstractEntityReference(final K id, final String displayName) {
+    protected AbstractEntityReference(final K id, final String displayName) {
         super(id);
         this.displayName = displayName;
     }
@@ -61,12 +63,6 @@ public class AbstractEntityReference<K extends Serializable> extends AbstractObj
         return super.equals(obj);
     }
 
-    /**
-     * Gets the display name.
-     * @return the display name
-     */
-    public String getDisplayName() { return displayName; }
-
     /*
      * (non-javadoc)
      * @see java.lang.Object#hashCode()
@@ -75,12 +71,6 @@ public class AbstractEntityReference<K extends Serializable> extends AbstractObj
     public int hashCode() {
         return super.hashCode();
     }
-
-    /**
-     * Sets the display name.
-     * @param label the display name to set
-     */
-    public void setDisplayName(final String displayName) { this.displayName = displayName; }
 
     /*
      * (non-javadoc)

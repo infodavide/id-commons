@@ -11,16 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class SerializableFilter.
  */
+@Slf4j
 public class SerializableFilter {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SerializableFilter.class);
 
     /**
      * Filter.
@@ -32,19 +29,19 @@ public class SerializableFilter {
             return null;
         }
 
-        if (value instanceof Serializable serializable) {
+        if (value instanceof final Serializable serializable) {
             return serializable;
         }
 
-        if (value instanceof List<?> list) {
+        if (value instanceof final List<?> list) {
             return (Serializable) filterCollection(list, new ArrayList<>());
         }
 
-        if (value instanceof Map<?, ?> map) {
+        if (value instanceof final Map<?, ?> map) {
             return (Serializable) filterMap(map, new HashMap<>());
         }
 
-        if (value instanceof Collection<?> collection) {
+        if (value instanceof final Collection<?> collection) {
             return (Serializable) filterCollection(collection, new LinkedHashSet<>());
         }
 
@@ -75,7 +72,7 @@ public class SerializableFilter {
      * @param result the result
      * @return the map
      */
-    private <K> Map<K, Serializable> filterMap(final Map<K, ?> source, Map<K, Serializable> result) {
+    private <K> Map<K, Serializable> filterMap(final Map<K, ?> source, final Map<K, Serializable> result) {
         for (final Entry<K, ?> sourceEntry : source.entrySet()) {
             final Serializable serializable = filter(sourceEntry.getValue());
 

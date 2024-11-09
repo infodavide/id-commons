@@ -1,6 +1,5 @@
 package org.infodavid.commons.util.collection;
 
-import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,33 +8,16 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class CollectionUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class CollectionUtils {
-
-    /** The singleton. */
-    private static WeakReference<CollectionUtils> instance = null;
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized CollectionUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new CollectionUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private CollectionUtils() {
-    }
 
     /**
      * Returns a mutable set.

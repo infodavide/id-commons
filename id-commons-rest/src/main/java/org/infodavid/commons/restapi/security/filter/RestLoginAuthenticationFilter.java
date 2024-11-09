@@ -14,8 +14,6 @@ import org.infodavid.commons.restapi.security.AuthenticationJwtToken;
 import org.infodavid.commons.service.ApplicationService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.util.jackson.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -35,14 +33,13 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class RestLoginAuthenticationFilter.
  */
+@Slf4j
 public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestLoginAuthenticationFilter.class);
 
     /** The application service. */
     private final ApplicationService applicationService;
@@ -82,7 +79,7 @@ public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcess
         }
 
         LOGGER.debug("Attempting authentication based on username and password passed as JSON in the body of the request");
-        final LoginDto dto = JsonUtils.getInstance().fromJson(IOUtils.toString(request.getReader()), LoginDto.class);
+        final LoginDto dto = JsonUtils.fromJson(IOUtils.toString(request.getReader()), LoginDto.class);
         final String name;
 
         if (dto.name() == null) {
@@ -128,7 +125,7 @@ public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcess
             final UserDto userDto = UserMapper.INSTANCE.map(user);
             // Do not return the password
             userDto.setPassword(null);
-            JsonUtils.getInstance().toJson(response.getOutputStream(), userDto);
+            JsonUtils.toJson(response.getOutputStream(), userDto);
         } else {
             LOGGER.warn("Principal is not a User: {}", principal);
         }
@@ -155,7 +152,7 @@ public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcess
             return;
         }
 
-        if (request instanceof final HttpServletRequest httpServletRequest && FilterUtils.getInstance().isResource(httpServletRequest)) {
+        if (request instanceof final HttpServletRequest httpServletRequest && FilterUtils.isResource(httpServletRequest)) {
             chain.doFilter(request, response);
 
             return;

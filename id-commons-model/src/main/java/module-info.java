@@ -13,4 +13,5 @@ module org.infodavid.commons.model {
     requires transitive jakarta.persistence;
     requires transitive org.apache.commons.lang3;
     requires transitive jakarta.validation;
+    requires lombok;
 }

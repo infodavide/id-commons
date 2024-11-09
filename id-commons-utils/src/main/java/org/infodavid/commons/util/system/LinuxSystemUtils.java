@@ -8,15 +8,14 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class LinuxSystemUtils.
  */
+@Slf4j
 final class LinuxSystemUtils extends SystemUtils {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinuxSystemUtils.class);
 
     /** The Constant BIN_SUDO. */
     private static final String BIN_SUDO = "sudo";

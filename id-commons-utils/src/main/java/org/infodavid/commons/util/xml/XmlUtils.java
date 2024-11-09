@@ -2,7 +2,6 @@ package org.infodavid.commons.util.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -19,11 +18,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class XmlUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class XmlUtils {
 
     /** The Constant ERROR_WHILE_PARSING_OBJECT_FROM_XML. */
@@ -42,30 +45,9 @@ public final class XmlUtils {
         // make EOL not associated to system
         final PrettyPrinter printer = MAPPER.getSerializationConfig().getDefaultPrettyPrinter();
 
-        if (printer instanceof DefaultPrettyPrinter prettyPrinter) {
+        if (printer instanceof final DefaultPrettyPrinter prettyPrinter) {
             prettyPrinter.indentObjectsWith(new DefaultIndenter("  ", System.lineSeparator()));
         }
-    }
-
-    /** The singleton. */
-    private static WeakReference<XmlUtils> instance = null;
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized XmlUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new XmlUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new util.
-     */
-    private XmlUtils() {
     }
 
     /**
@@ -117,7 +99,7 @@ public final class XmlUtils {
 
             final PrettyPrinter printer = MAPPER.getSerializationConfig().constructDefaultPrettyPrinter();
 
-            if (printer instanceof DefaultPrettyPrinter prettyPrinter) {
+            if (printer instanceof final DefaultPrettyPrinter prettyPrinter) {
                 prettyPrinter.indentObjectsWith(new DefaultIndenter("  ", Objects.toString(eol, "\r\n")));
             }
 

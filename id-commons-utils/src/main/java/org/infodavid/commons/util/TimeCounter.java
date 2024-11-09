@@ -2,6 +2,8 @@ package org.infodavid.commons.util;
 
 import java.util.concurrent.Callable;
 
+import lombok.Getter;
+
 /**
  * The Class TimeCounter.
  * @param <V> the value type
@@ -20,6 +22,7 @@ public class TimeCounter<V> {
     }
 
     /** The duration. */
+    @Getter
     private long duration = 0;
 
     /**
@@ -38,13 +41,5 @@ public class TimeCounter<V> {
         }
 
         return result;
-    }
-
-    /**
-     * Gets the duration.
-     * @return the duration
-     */
-    public long getDuration() {
-        return duration;
     }
 }

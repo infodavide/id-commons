@@ -72,7 +72,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
         result.setDisplayName("User " + result.getName());
         result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
         result.setEmail(result.getName() + "@infodavid.org");
-        result.setRoles(CollectionUtils.getInstance().of(Constants.USER_ROLE));
+        result.setRoles(CollectionUtils.of(Constants.USER_ROLE));
 
         return result;
     }

@@ -111,7 +111,7 @@ public interface CommonMapper { // NOSONAR See Mapstruct documentation
      * @return the string
      */
     default String mapLogLevel(final Level value) {
-        return LoggingUtils.getInstance().toString(value);
+        return LoggingUtils.toString(value);
     }
 
     /**
@@ -120,7 +120,7 @@ public interface CommonMapper { // NOSONAR See Mapstruct documentation
      * @return the level
      */
     default Level mapLogLevel(final String value) {
-        return LoggingUtils.getInstance().toLevel(value);
+        return LoggingUtils.toLevel(value);
     }
 
     /**

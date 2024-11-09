@@ -11,21 +11,23 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class CopyDirectoryVisitor.
  */
+@Slf4j
 class CopyDirectoryVisitor extends SimpleFileVisitor<Path> {
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CopyDirectoryVisitor.class);
-
     /** The excluded. */
+    @Getter
     private final Set<String> excluded = new HashSet<>();
 
     /** The include hidden. */
+    @Getter
+    @Setter
     private boolean includeHidden = false;
 
     /** The listener. */
@@ -95,14 +97,6 @@ class CopyDirectoryVisitor extends SimpleFileVisitor<Path> {
         this.listener = listener;
     }
 
-    /**
-     * Gets the excluded.
-     * @return the excluded
-     */
-    public Set<String> getExcluded() {
-        return excluded;
-    }
-
     /*
      * (non-javadoc)
      * @see java.nio.file.SimpleFileVisitor#postVisitDirectory(java.lang.Object, java.io.IOException)
@@ -143,14 +137,6 @@ class CopyDirectoryVisitor extends SimpleFileVisitor<Path> {
         }
 
         return FileVisitResult.CONTINUE;
-    }
-
-    /**
-     * Sets the include hidden.
-     * @param includeHidden the includeHidden to set
-     */
-    public void setIncludeHidden(final boolean includeHidden) {
-        this.includeHidden = includeHidden;
     }
 
     /*

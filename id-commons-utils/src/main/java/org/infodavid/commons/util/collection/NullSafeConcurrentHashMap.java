@@ -3,21 +3,18 @@ package org.infodavid.commons.util.collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.NoArgsConstructor;
+
 /**
  * The Class NullSafeConcurrentHashMap.
  * @param <K> the key type
  * @param <V> the value type
  */
+@NoArgsConstructor
 public class NullSafeConcurrentHashMap<K, V> extends ConcurrentHashMap<K, V> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 8980472784494738989L;
-
-    /**
-     * Instantiates a new null safe concurrent hash map.
-     */
-    public NullSafeConcurrentHashMap() {
-    }
 
     /**
      * Instantiates a new null safe concurrent hash map.

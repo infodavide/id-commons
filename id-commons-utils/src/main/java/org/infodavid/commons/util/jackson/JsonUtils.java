@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -25,18 +24,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class JsonUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class JsonUtils {
 
     /** The Constant ERROR_WHILE_PARSING_OBJECT_FROM_JSON. */
     private static final String ERROR_WHILE_PARSING_OBJECT_FROM_JSON = "Error while parsing object from JSON: ";
-
-    /** The singleton. */
-    private static WeakReference<JsonUtils> instance = null;
 
     /** The mapper. */
     private static final ObjectMapper MAPPER;
@@ -62,7 +62,7 @@ public final class JsonUtils {
                 }
 
                 if (targetType == Boolean.class) {
-                    return ObjectUtils.getInstance().toBoolean(value);
+                    return ObjectUtils.toBoolean(value);
                 }
 
                 return super.handleWeirdStringValue(context, targetType, value, message);
@@ -71,27 +71,9 @@ public final class JsonUtils {
         // make EOL not associated to system
         final PrettyPrinter printer = MAPPER.getSerializationConfig().getDefaultPrettyPrinter();
 
-        if (printer instanceof DefaultPrettyPrinter prettyPrinter) {
+        if (printer instanceof final DefaultPrettyPrinter prettyPrinter) {
             prettyPrinter.indentObjectsWith(new DefaultIndenter("  ", System.lineSeparator()));
         }
-    }
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized JsonUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new JsonUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new util.
-     */
-    private JsonUtils() {
     }
 
     /**

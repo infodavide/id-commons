@@ -5,6 +5,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * The Class RetryHelper.
  * @param <T> the generic type
@@ -12,6 +15,8 @@ import org.slf4j.Logger;
 public class RetryHelper<T> {
 
     /** The continue on errors. */
+    @Getter
+    @Setter
     private Class<? extends Exception>[] continueOnExceptions;
 
     /** The logger. */
@@ -20,17 +25,14 @@ public class RetryHelper<T> {
     /** The max retries. */
     private int maxRetries;
 
-    /** The sleep lock. */
-    private final SleepLock sleepLock = new SleepLock();
-
-    /** The sleep time in ms. */
+    /** The sleep time in milliseconds. */
     private final long sleepTimeInMs;
 
     /**
      * Instantiates a new retry helper.
      * @param logger        the logger
      * @param maxRetries    the max retries
-     * @param sleepTimeInMs the sleep time in ms
+     * @param sleepTimeInMs the sleep time in milliseconds
      */
     public RetryHelper(final Logger logger, final int maxRetries, final long sleepTimeInMs) {
         this.logger = logger;
@@ -39,17 +41,9 @@ public class RetryHelper<T> {
     }
 
     /**
-     * Gets the continue on errors.
-     * @return the continueOnErrors
-     */
-    public Class<? extends Exception>[] getContinueOnErrors() {
-        return continueOnExceptions;
-    }
-
-    /**
      * Run.
      * @param function the function
-     * @return the t
+     * @return the result
      * @throws Exception the exception
      */
     public T run(final Callable<T> function) throws Exception {
@@ -74,7 +68,7 @@ public class RetryHelper<T> {
      */
     @SuppressWarnings("unchecked")
     public void setContinueOnErrors(final Class<? extends Exception>... exceptions) {
-        this.continueOnExceptions = exceptions;
+        continueOnExceptions = exceptions;
     }
 
     /**
@@ -105,41 +99,36 @@ public class RetryHelper<T> {
      */
     private T retry(final Callable<T> function) throws Exception {
         Exception exception;
-        sleepLock.lock();
 
-        try {
-            do {
-                logger.warn("Processing failed, {} retrie(s) remaining. ({})", String.valueOf(maxRetries), function); // NOSONAR Always written
+        do {
+            logger.warn("Processing failed, {} retrie(s) remaining. ({})", String.valueOf(maxRetries), function); // NOSONAR Always written
 
-                try {
-                    return function.call();
-                } catch (final Exception e) {
-                    if (!continueOnErrors(e)) {
-                        throw e;
-                    }
+            try {
+                return function.call();
+            } catch (final Exception e) {
+                if (!continueOnErrors(e)) {
+                    throw e;
+                }
 
-                    if (maxRetries > 0) {
-                        logger.debug("Recovery", e);
-                    }
+                if (maxRetries > 0) {
+                    logger.debug("Recovery", e);
+                }
 
-                    exception = e;
-                    maxRetries--;
+                exception = e;
+                maxRetries--;
 
-                    if (sleepTimeInMs > 0) {
-                        // wait before next try
-                        try {
-                            sleepLock.await(sleepTimeInMs, TimeUnit.MILLISECONDS);
-                        } catch (final InterruptedException e2) {
-                            throw e2;
-                        } catch (final Exception e2) {
-                            logger.trace("An error occured during sleep", e2);
-                        }
+                if (sleepTimeInMs > 0) {
+                    // wait before next try
+                    try {
+                        SleepLock.sleep(sleepTimeInMs, TimeUnit.MILLISECONDS);
+                    } catch (final InterruptedException e2) {
+                        throw e2;
+                    } catch (final Exception e2) {
+                        logger.trace("An error occured during sleep", e2);
                     }
                 }
-            } while (maxRetries > 0);
-        } finally {
-            sleepLock.unlock();
-        }
+            }
+        } while (maxRetries > 0);
 
         throw exception;
     }

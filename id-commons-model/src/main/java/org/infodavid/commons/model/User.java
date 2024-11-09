@@ -27,6 +27,8 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The Class User.</br>
@@ -35,6 +37,8 @@ import jakarta.validation.constraints.Size;
 @Entity
 @Table(name = "users")
 @Access(AccessType.PROPERTY)
+@Setter
+@Getter
 public class User extends AbstractObject<Long> implements PropertiesContainer, Principal {
 
     /** The Constant serialVersionUID. */

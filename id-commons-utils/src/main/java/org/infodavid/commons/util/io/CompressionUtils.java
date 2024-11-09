@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -21,36 +20,19 @@ import org.infodavid.commons.util.exception.LambdaRuntimeException;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class CompressionUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class CompressionUtils {
-
-    /** The singleton. */
-    private static WeakReference<CompressionUtils> instance = null;
 
     /** The Constant ZIP. */
     private static final String ZIP = "zip";
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized CompressionUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new CompressionUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private CompressionUtils() {
-    }
 
     /**
      * Compress.
@@ -79,7 +61,7 @@ public final class CompressionUtils {
      */
     public void compress(final Path path, final String type, final OutputStream out, final byte level, final Collection<String> excluded, final boolean includeHidden, final FileProcessingListener listener) throws IOException {
         if (ZIP.equalsIgnoreCase(type)) {
-            PathUtils.getInstance().zip(path, out, level, excluded, includeHidden, listener);
+            PathUtils.zip(path, out, level, excluded, includeHidden, listener);
 
             return;
         }
@@ -113,7 +95,7 @@ public final class CompressionUtils {
         final Predicate<Path> filter = new FilterPredicate(Collections.emptyList(), excluded, includeHidden);
 
         try (ArchiveOutputStream aos = archiveStreamFactory.createArchiveOutputStream(type, out)) {
-            PathUtils.getInstance().walk(path, filter, p -> {
+            PathUtils.walk(path, filter, p -> {
                 if (path.equals(p)) {
                     return;
                 }
@@ -272,10 +254,9 @@ public final class CompressionUtils {
     public void extract(final Path file, final Path dir, final Collection<String> excluded, final FileProcessingListener listener) throws IOException {
         PathUtils.assertReadable(file);
         PathUtils.assertFile(file);
-        final PathUtils utils = PathUtils.getInstance();
 
-        if (utils.isValidZipFile(file)) {
-            utils.unzip(file, dir, excluded, listener);
+        if (PathUtils.isValidZipFile(file)) {
+            PathUtils.unzip(file, dir, excluded, listener);
 
             return;
         }

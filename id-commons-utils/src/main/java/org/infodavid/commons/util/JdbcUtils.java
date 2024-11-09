@@ -1,6 +1,5 @@
 package org.infodavid.commons.util;
 
-import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.sql.JDBCType;
 import java.sql.SQLException;
@@ -15,15 +14,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class JdbcUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class JdbcUtils {
-
-    /** The singleton. */
-    private static WeakReference<JdbcUtils> instance = null;
 
     /** The Constant MAPPINGS. */
     @SuppressWarnings("rawtypes")
@@ -47,18 +47,6 @@ public final class JdbcUtils {
     }
 
     /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized JdbcUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new JdbcUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
      * Gets the mappings.
      * @return the classes
      */
@@ -68,14 +56,8 @@ public final class JdbcUtils {
     }
 
     /**
-     * Instantiates a new utilities.
-     */
-    private JdbcUtils() {
-    }
-
-    /**
      * Gets the class.
-     * @param jdbcType the jdbc type
+     * @param jdbcType the JDBC type
      * @return the class
      * @throws SQLException the SQL exception
      */

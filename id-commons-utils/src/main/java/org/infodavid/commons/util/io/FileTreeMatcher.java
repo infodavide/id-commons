@@ -15,21 +15,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class FileTreeMatcher.
  */
+@Slf4j
 class FileTreeMatcher implements FileVisitor<Path> {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileTreeMatcher.class);
 
     /** The checksums. */
     private final StringBuilder checksums = new StringBuilder();
 
     /** The differences. */
+    @Getter
     private final Collection<Path> differences = new ArrayList<>();
 
     /** The halt on first. */
@@ -74,14 +74,6 @@ class FileTreeMatcher implements FileVisitor<Path> {
      */
     public String getChecksum() {
         return DigestUtils.md5Hex(checksums.toString().getBytes(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * Gets the differences.
-     * @return the differences
-     */
-    public Collection<Path> getDifferences() {
-        return differences;
     }
 
     /*

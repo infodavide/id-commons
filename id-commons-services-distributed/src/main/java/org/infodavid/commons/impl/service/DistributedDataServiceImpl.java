@@ -11,17 +11,18 @@ import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infodavid.commons.net.NetUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 
 import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DistributedDataService.
  */
 /* If necessary, declare the bean in the Spring configuration. */
+@Slf4j
 public class DistributedDataServiceImpl extends AbstractService {
 
     /** The Constant DEFAULT_CLUSTER_NAME. */
@@ -29,9 +30,6 @@ public class DistributedDataServiceImpl extends AbstractService {
 
     /** The Constant DEFAULT_HOST. */
     private static final String DEFAULT_HOST = "localhost";
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistributedDataServiceImpl.class);
 
     /** The cache manager. */
     private final DefaultCacheManager cacheManager;
@@ -119,5 +117,4 @@ public class DistributedDataServiceImpl extends AbstractService {
 
         LOGGER.debug("Finalized");
     }
-
 }

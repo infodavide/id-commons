@@ -6,8 +6,6 @@ import java.util.Map;
 
 import org.infodavid.commons.model.User;
 import org.infodavid.commons.security.AuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -22,14 +20,13 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class TokenBasedLogoutFilter.
  */
+@Slf4j
 public class JwtTokenLogoutFilter implements Filter {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenLogoutFilter.class);
 
     /** The authentication service. */
     private final AuthenticationService authenticationService;

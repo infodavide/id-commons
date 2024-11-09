@@ -21,14 +21,16 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.infodavid.commons.model.Database;
 import org.infodavid.commons.util.concurrency.RetryHelper;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class HsqlConnector.
  */
+@Slf4j
 public class HsqlConnector extends AbstractDatabaseConnector {
 
     /** The Constant CONNECTION_STRING_PATTERN. */
@@ -39,9 +41,6 @@ public class HsqlConnector extends AbstractDatabaseConnector {
 
     /** The Constant FILE_TYPE. */
     private static final String FILE_TYPE = "file";
-
-    /** The Constant LOGGER. */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(HsqlConnector.class);
 
     /** The Constant NAME. */
     private static final String NAME = "hsqldb";

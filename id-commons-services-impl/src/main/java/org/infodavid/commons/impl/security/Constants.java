@@ -1,8 +1,12 @@
 package org.infodavid.commons.impl.security;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class Constants.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
 
     /** The Constant USER_ALLOWED_PATTERN. */
@@ -19,10 +23,4 @@ public final class Constants {
 
     /** The Constant USER_IS_NULL. */
     public static final String USER_IS_NULL = "User is null (system processing), allowed";
-
-    /**
-     * Avoid instance.
-     */
-    private Constants() {
-    }
 }

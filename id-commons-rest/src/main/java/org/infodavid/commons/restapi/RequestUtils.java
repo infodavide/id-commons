@@ -3,49 +3,26 @@ package org.infodavid.commons.restapi;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.util.jackson.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class RequestUtils.
  */
-public class RequestUtils {
-
-    /** The singleton. */
-    private static WeakReference<RequestUtils> instance = null;
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtils.class);
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized RequestUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new RequestUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private RequestUtils() {
-    }
+@UtilityClass
+@Slf4j
+public final class RequestUtils {
 
     /**
      * Append body.
@@ -53,12 +30,11 @@ public class RequestUtils {
      * @param buffer  the buffer
      */
     public void appendBody(final HttpServletRequest request, final StringBuilder buffer) {
-        final JsonUtils utils = JsonUtils.getInstance();
         buffer.append(";body=\n");
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), request.getCharacterEncoding()))) {
             if (request.getContentType() != null && request.getContentType().startsWith("application/json")) {
-                buffer.append(utils.getMapper().writerWithDefaultPrettyPrinter().writeValueAsString(utils.fromJson(reader.lines().collect(Collectors.joining(System.lineSeparator())))));
+                buffer.append(JsonUtils.getMapper().writerWithDefaultPrettyPrinter().writeValueAsString(JsonUtils.fromJson(reader.lines().collect(Collectors.joining(System.lineSeparator())))));
             } else {
                 buffer.append(reader.lines().collect(Collectors.joining(System.lineSeparator())));
             }
@@ -230,58 +206,55 @@ public class RequestUtils {
     public void getDescription(final WebRequest request, final StringBuilder buffer) {
         buffer.append(request.getDescription(true));
 
-        if (request instanceof final NativeWebRequest nativeRequest) {
-            if (nativeRequest.getNativeRequest() instanceof HttpServletRequest) {
-                final HttpServletRequest httpServletRequest = (HttpServletRequest) nativeRequest.getNativeRequest();
-                appendHeaders(httpServletRequest, buffer);
-                appendParameters(httpServletRequest, buffer);
+        if (request instanceof final NativeWebRequest nativeRequest && nativeRequest.getNativeRequest() instanceof final HttpServletRequest httpServletRequest) {
+            appendHeaders(httpServletRequest, buffer);
+            appendParameters(httpServletRequest, buffer);
 
-                if (StringUtils.isNotEmpty(httpServletRequest.getLocalAddr())) {
-                    buffer.append(";localaddr=");
-                    buffer.append(httpServletRequest.getLocalAddr());
-                }
-
-                buffer.append(";localport=");
-                buffer.append(httpServletRequest.getLocalPort());
-
-                if (StringUtils.isNotEmpty(httpServletRequest.getRemoteAddr())) {
-                    buffer.append(";remoteaddr=");
-                    buffer.append(httpServletRequest.getRemoteAddr());
-                }
-
-                buffer.append(";remoteport=");
-                buffer.append(httpServletRequest.getRemotePort());
-
-                if (StringUtils.isNotEmpty(httpServletRequest.getAuthType())) {
-                    buffer.append(";authtype=");
-                    buffer.append(httpServletRequest.getAuthType());
-                }
-
-                if (StringUtils.isNotEmpty(httpServletRequest.getContentType())) {
-                    buffer.append(";contenttype=");
-                    buffer.append(httpServletRequest.getContentType());
-                }
-
-                if (StringUtils.isNotEmpty(httpServletRequest.getCharacterEncoding())) {
-                    buffer.append(";encoding=");
-                    buffer.append(httpServletRequest.getCharacterEncoding());
-                }
-
-                if (StringUtils.isNotEmpty(httpServletRequest.getMethod())) {
-                    buffer.append(";method=");
-                    buffer.append(httpServletRequest.getMethod());
-                }
-
-                if (StringUtils.isNotEmpty(httpServletRequest.getProtocol())) {
-                    buffer.append(";protocol=");
-                    buffer.append(httpServletRequest.getProtocol());
-                }
-
-                appendCookies(httpServletRequest, buffer);
-                buffer.append(";length=");
-                buffer.append(httpServletRequest.getContentLengthLong());
-                appendBody(httpServletRequest, buffer);
+            if (StringUtils.isNotEmpty(httpServletRequest.getLocalAddr())) {
+                buffer.append(";localaddr=");
+                buffer.append(httpServletRequest.getLocalAddr());
             }
+
+            buffer.append(";localport=");
+            buffer.append(httpServletRequest.getLocalPort());
+
+            if (StringUtils.isNotEmpty(httpServletRequest.getRemoteAddr())) {
+                buffer.append(";remoteaddr=");
+                buffer.append(httpServletRequest.getRemoteAddr());
+            }
+
+            buffer.append(";remoteport=");
+            buffer.append(httpServletRequest.getRemotePort());
+
+            if (StringUtils.isNotEmpty(httpServletRequest.getAuthType())) {
+                buffer.append(";authtype=");
+                buffer.append(httpServletRequest.getAuthType());
+            }
+
+            if (StringUtils.isNotEmpty(httpServletRequest.getContentType())) {
+                buffer.append(";contenttype=");
+                buffer.append(httpServletRequest.getContentType());
+            }
+
+            if (StringUtils.isNotEmpty(httpServletRequest.getCharacterEncoding())) {
+                buffer.append(";encoding=");
+                buffer.append(httpServletRequest.getCharacterEncoding());
+            }
+
+            if (StringUtils.isNotEmpty(httpServletRequest.getMethod())) {
+                buffer.append(";method=");
+                buffer.append(httpServletRequest.getMethod());
+            }
+
+            if (StringUtils.isNotEmpty(httpServletRequest.getProtocol())) {
+                buffer.append(";protocol=");
+                buffer.append(httpServletRequest.getProtocol());
+            }
+
+            appendCookies(httpServletRequest, buffer);
+            buffer.append(";length=");
+            buffer.append(httpServletRequest.getContentLengthLong());
+            appendBody(httpServletRequest, buffer);
         }
     }
 }

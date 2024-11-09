@@ -11,11 +11,16 @@ import org.infodavid.commons.restapi.annotation.DataTransferObject;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * The Class UserDto.</br>
  * Password of the user is always hashed using MD5 in the DTO and database.
  */
 @DataTransferObject(model = User.class)
+@Getter
+@Setter
 public class UserDto extends AbstractDto {
 
     /** The Constant serialVersionUID. */
@@ -63,86 +68,6 @@ public class UserDto extends AbstractDto {
     /** The role. */
     private Set<String> roles;
 
-    /**
-     * Gets the connections count.
-     * @return the connections count
-     */
-    public int getConnectionsCount() {
-        return connectionsCount;
-    }
-
-    /**
-     * Gets the display name.
-     * @return the display name
-     */
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    /**
-     * Gets the email.
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * Gets the expiration date.
-     * @return the expiration date
-     */
-    public Date getExpirationDate() {
-        return expirationDate;
-    }
-
-    /**
-     * Gets the last connection date.
-     * @return the last connection date
-     */
-    public Date getLastConnectionDate() {
-        return lastConnectionDate;
-    }
-
-    /**
-     * Gets the last IP address.
-     * @return the last IP address
-     */
-    public String getLastIp() {
-        return lastIp;
-    }
-
-    /**
-     * Gets the name.
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Gets the password.
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * Gets the properties.
-     * @return the properties
-     */
-    public List<PropertyDto> getProperties() {
-        return properties;
-    }
-
-    /**
-     * Gets the roles.
-     * @return the roles
-     */
-    public Set<String> getRoles() {
-        return roles;
-    }
-
     /*
      * (non-Javadoc)
      * @see org.infodavid.web.dto.AbstractDto#init()
@@ -160,117 +85,5 @@ public class UserDto extends AbstractDto {
         name = null;
         displayName = null;
         email = null;
-    }
-
-    /**
-     * Checks if is connected.
-     * @return the connected
-     */
-    public boolean isConnected() {
-        return connected;
-    }
-
-    /**
-     * Checks if is locked.
-     * @return true, if is locked
-     */
-    public boolean isLocked() {
-        return locked;
-    }
-
-    /**
-     * Sets the connected.
-     * @param connected the connected to set
-     */
-    public void setConnected(final boolean connected) {
-        this.connected = connected;
-    }
-
-    /**
-     * Sets the connections count.
-     * @param value the new connections count
-     */
-    public void setConnectionsCount(final int value) {
-        connectionsCount = value;
-    }
-
-    /**
-     * Sets the display name.
-     * @param value the new display name
-     */
-    public void setDisplayName(final String value) {
-        displayName = value;
-    }
-
-    /**
-     * Sets the email.
-     * @param value the new email
-     */
-    public void setEmail(final String value) {
-        email = value;
-    }
-
-    /**
-     * Sets the expiration date.
-     * @param value the new expiration date
-     */
-    public void setExpirationDate(final Date value) {
-        expirationDate = value;
-    }
-
-    /**
-     * Sets the last connection date.
-     * @param value the new last connection date
-     */
-    public void setLastConnectionDate(final Date value) {
-        lastConnectionDate = value;
-    }
-
-    /**
-     * Sets the last IP address.
-     * @param value the new last IP address
-     */
-    public void setLastIp(final String value) {
-        lastIp = value;
-    }
-
-    /**
-     * Sets the locked.
-     * @param value the new locked
-     */
-    public void setLocked(final boolean value) {
-        locked = value;
-    }
-
-    /**
-     * Sets the name.
-     * @param name the name to set
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the password.
-     * @param value the new password
-     */
-    public void setPassword(final String value) {
-        password = value;
-    }
-
-    /**
-     * Sets the properties.
-     * @param properties the properties
-     */
-    public void setProperties(final List<PropertyDto> properties) {
-        this.properties = properties;
-    }
-
-    /**
-     * Sets the roles.
-     * @param roles the new roles
-     */
-    public void setRoles(final Set<String> roles) {
-        this.roles = roles;
     }
 }

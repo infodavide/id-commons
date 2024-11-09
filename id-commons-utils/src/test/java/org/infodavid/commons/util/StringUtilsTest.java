@@ -22,8 +22,8 @@ class StringUtilsTest extends TestCase {
      */
     @Test
     void testCompareSameVersions() throws Exception {
-        assertEquals(0, StringUtils.getInstance().compareVersion("1.2.0", "1.2.0"), "Wrong processing");
-        assertEquals(0, StringUtils.getInstance().compareVersion("1.2", "1.2.0"), "Wrong processing");
+        assertEquals(0, StringUtils.compareVersion("1.2.0", "1.2.0"), "Wrong processing");
+        assertEquals(0, StringUtils.compareVersion("1.2", "1.2.0"), "Wrong processing");
     }
 
     /**
@@ -32,8 +32,8 @@ class StringUtilsTest extends TestCase {
      */
     @Test
     void testComparePositiveVersions() throws Exception {
-        assertEquals(1, StringUtils.getInstance().compareVersion("1.2.0", "1.1.2"), "Wrong processing");
-        assertEquals(1, StringUtils.getInstance().compareVersion("1.2", "1.1.2"), "Wrong processing");
+        assertEquals(1, StringUtils.compareVersion("1.2.0", "1.1.2"), "Wrong processing");
+        assertEquals(1, StringUtils.compareVersion("1.2", "1.1.2"), "Wrong processing");
     }
 
     /**
@@ -42,8 +42,8 @@ class StringUtilsTest extends TestCase {
      */
     @Test
     void testCompareNegativeVersions() throws Exception {
-        assertEquals(-1, StringUtils.getInstance().compareVersion("1.1.2", "1.2.0"), "Wrong processing");
-        assertEquals(-1, StringUtils.getInstance().compareVersion("1.1.2", "1.2"), "Wrong processing");
+        assertEquals(-1, StringUtils.compareVersion("1.1.2", "1.2.0"), "Wrong processing");
+        assertEquals(-1, StringUtils.compareVersion("1.1.2", "1.2"), "Wrong processing");
     }
 
     /**
@@ -54,9 +54,9 @@ class StringUtilsTest extends TestCase {
     void testDecode() throws Exception {
         final String value = "È lei la più bella";
 
-        final String encoded = new String(StringUtils.getInstance().encode(value), StandardCharsets.UTF_8);
+        final String encoded = new String(StringUtils.encode(value), StandardCharsets.UTF_8);
 
         assertNotEquals(value, encoded, "Not processed");
-        assertEquals(value, StringUtils.getInstance().decode(encoded), "Wrong processing");
+        assertEquals(value, StringUtils.decode(encoded), "Wrong processing");
     }
 }

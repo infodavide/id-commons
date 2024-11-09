@@ -26,8 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.internal.progress.ThreadSafeMockingProgress;
 import org.mockito.invocation.Invocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class TestCase.
@@ -35,10 +35,8 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 @ExtendWith(LoggingExtension.class)
 //@Timeout(value = 2, unit = TimeUnit.SECONDS)
+@Slf4j
 public class TestCase {
-
-    /** The Constant LOGGER. */
-    public static final Logger LOGGER = LoggerFactory.getLogger(TestCase.class);
 
     /** The Constant RAND. */
     public static final Random RAND = new Random(System.currentTimeMillis());

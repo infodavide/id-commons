@@ -1,47 +1,24 @@
 package org.infodavid.commons.util.collection;
 
-import java.lang.ref.WeakReference;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class MapUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class MapUtils {
 
     /** The Constant DEFAULT_PATH_SEPARATOR. */
     public static final char DEFAULT_PATH_SEPARATOR = '/';
-
-    /** The singleton. */
-    private static WeakReference<MapUtils> instance = null;
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(MapUtils.class);
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized MapUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new MapUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private MapUtils() {
-    }
 
     /**
      * Gets the item.

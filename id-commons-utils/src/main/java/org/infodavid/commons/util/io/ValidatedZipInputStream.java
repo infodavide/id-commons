@@ -8,6 +8,8 @@ import java.util.zip.ZipException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.infodavid.commons.util.NumberUtils;
 
+import lombok.Getter;
+
 /**
  * The Class ValidatedZipInputStream.
  */
@@ -31,18 +33,11 @@ class ValidatedZipInputStream extends FilterInputStream {
     }
 
     /** The signature. */
-    private byte[] signature = new byte[0];
+    @Getter
+    private byte[] signature = {};
 
     /** The read limit. */
     private int readlimit;
-
-    /**
-     * Gets the signature.
-     * @return the signature
-     */
-    public byte[] getSignature() {
-        return signature;
-    }
 
     /**
      * Invokes the delegate's <code>read()</code> method.
@@ -69,7 +64,7 @@ class ValidatedZipInputStream extends FilterInputStream {
     @Override
     public synchronized void mark(final int limit) {
         super.mark(limit);
-        this.readlimit = limit;
+        readlimit = limit;
     }
 
     /*
@@ -91,9 +86,9 @@ class ValidatedZipInputStream extends FilterInputStream {
      */
     private void validate() throws ZipException {
         if (signature.length == 4) {
-            final int integer = NumberUtils.getInstance().toInt(signature);
+            final int integer = NumberUtils.toInt(signature);
 
-            if (((integer != ZIP_SIGNATURE) && (integer != EMPTY_ZIP_SIGNATURE) && (integer != SPANNED_ZIP_SIGNATURE))) {
+            if (integer != ZIP_SIGNATURE && integer != EMPTY_ZIP_SIGNATURE && integer != SPANNED_ZIP_SIGNATURE) {
                 throw new ZipException("Not a valid zip content");
             }
         }

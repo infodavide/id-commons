@@ -1,7 +1,6 @@
 package org.infodavid.commons.util;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -12,44 +11,22 @@ import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ClassLoaderUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class ClassLoaderUtils {
 
     /** The Constant ADD_URL_METHOD. */
     private static final String ADD_URL_METHOD = "addURL";
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassLoaderUtils.class);
-
-    /** The singleton. */
-    private static WeakReference<ClassLoaderUtils> instance = null;
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized ClassLoaderUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new ClassLoaderUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new util.
-     */
-    private ClassLoaderUtils() {
-    }
 
     /**
      * Adds the directory.
@@ -128,7 +105,7 @@ public final class ClassLoaderUtils {
     }
 
     /**
-     * Adds the jar to the classpath.
+     * Adds the jar to the class path.
      * @param file the jar file
      * @throws InvocationTargetException the invocation target exception
      */
@@ -165,7 +142,7 @@ public final class ClassLoaderUtils {
 
     /**
      * Gets the jar path.
-     * @param clazz the clazz
+     * @param clazz the class
      * @return the jar path
      */
     @SuppressWarnings("rawtypes")

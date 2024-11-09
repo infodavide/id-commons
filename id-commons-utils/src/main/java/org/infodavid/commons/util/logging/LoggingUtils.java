@@ -1,7 +1,6 @@
 package org.infodavid.commons.util.logging;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,33 +13,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.github.dtmo.jfiglet.FigFontResources;
 import com.github.dtmo.jfiglet.FigletRenderer;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class LoggingUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class LoggingUtils {
-
-    /** The singleton. */
-    private static WeakReference<LoggingUtils> instance = null;
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized LoggingUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new LoggingUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private LoggingUtils() {
-    }
 
     /**
      * Append banner.
@@ -83,7 +65,7 @@ public final class LoggingUtils {
                 continue;
             }
 
-            StringUtils.getInstance().toString(value, buffer);
+            StringUtils.toString(value, buffer);
         }
 
         buffer.append(StringUtils.CR);

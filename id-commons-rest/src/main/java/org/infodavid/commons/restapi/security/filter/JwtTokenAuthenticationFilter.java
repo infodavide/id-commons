@@ -9,8 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.restapi.Constants;
 import org.infodavid.commons.restapi.security.AuthenticationJwtToken;
 import org.infodavid.commons.security.AuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -26,14 +24,13 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class TokenBasedAuthenticationFilter.
  */
+@Slf4j
 public class JwtTokenAuthenticationFilter implements Filter {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenAuthenticationFilter.class);
 
     /** The authentication service. */
     private final AuthenticationService authenticationService;
@@ -75,7 +72,7 @@ public class JwtTokenAuthenticationFilter implements Filter {
         final HttpServletResponse response = (HttpServletResponse) res;
         String token = null;
 
-        if (!requestMatcher.matches(request) || FilterUtils.getInstance().isResource(request)) {
+        if (!requestMatcher.matches(request) || FilterUtils.isResource(request)) {
             chain.doFilter(request, response);
 
             return;

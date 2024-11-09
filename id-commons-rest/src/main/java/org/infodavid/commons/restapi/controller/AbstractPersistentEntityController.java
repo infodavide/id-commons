@@ -11,6 +11,9 @@ import org.infodavid.commons.service.exception.ServiceException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class AbstractPersistentEntityController.<br>
  * Mappings declared above are relative to the servlet mappings declared in the application configuration (WebApplicationInitializer or a subclass).
@@ -18,13 +21,8 @@ import org.springframework.data.domain.Pageable;
  * @param <K> the key type
  * @param <E> the element type
  */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractPersistentEntityController<D extends AbstractDto, K extends Serializable, E extends PersistentObject<K>> extends AbstractEntityController<D, E> {
-
-    /**
-     * Instantiates a new abstract controller.
-     */
-    protected AbstractPersistentEntityController() {
-    }
 
     /*
      * (non-javadoc)

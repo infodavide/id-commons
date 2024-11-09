@@ -35,4 +35,5 @@ module org.infodavid.commons.util {
     requires transitive org.slf4j;
     requires transitive com.sun.jna.platform;
     requires transitive com.sun.jna;
+    requires lombok;
 }

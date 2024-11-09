@@ -35,7 +35,6 @@ import org.infodavid.commons.util.ObjectUtils;
 import org.infodavid.commons.util.io.PathUtils;
 import org.infodavid.commons.util.system.SystemUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,6 +48,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DefaultApplicationController.<br>
@@ -62,10 +63,8 @@ import jakarta.servlet.http.HttpServletResponse;
  * @wiki.entity org.infodavid.model.Property
  */
 /* If necessary, declare the bean in the Spring configuration. */
+@Slf4j
 public class DefaultApplicationController extends AbstractPersistentEntityController<PropertyDto, Long, ApplicationProperty> {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationController.class);
 
     /** The Constant release note file name */
     private static final String RELEASE_NOTE_FILE_NAME = "Release Note.txt";
@@ -74,7 +73,8 @@ public class DefaultApplicationController extends AbstractPersistentEntityContro
     private WeakReference<Collection<Collection<String>>> releaseNote = new WeakReference<>(null);
 
     /** The service. */
-    protected final ApplicationService service;
+    @Getter
+    private final ApplicationService service;
 
     /**
      * Instantiates a new controller.
@@ -193,7 +193,7 @@ public class DefaultApplicationController extends AbstractPersistentEntityContro
             getLogger().error("Error during processing of the download request", e);
             applyResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, response);
         } finally {
-            PathUtils.getInstance().deleteQuietly(file);
+            PathUtils.deleteQuietly(file);
         }
     }
 
@@ -270,7 +270,7 @@ public class DefaultApplicationController extends AbstractPersistentEntityContro
         getLogger().debug("getHealth request");
 
         final List<ApplicationProperty> found = service.findByName(org.infodavid.commons.model.Constants.APPLICATION_PRODUCTION_ENVIRONMENT_PROPERTY, Pageable.unpaged()).getContent();
-        final HealthInfoDto result = new HealthInfoDto(service.getHealthValue(), !found.isEmpty() && ObjectUtils.getInstance().toBoolean(found.get(0).getValue()), service.getUpTime(), new HashMap<>());
+        final HealthInfoDto result = new HealthInfoDto(service.getHealthValue(), !found.isEmpty() && ObjectUtils.toBoolean(found.get(0).getValue()), service.getUpTime(), new HashMap<>());
         appendApplicationHealth(result);
 
         return result;
@@ -344,15 +344,6 @@ public class DefaultApplicationController extends AbstractPersistentEntityContro
         }
 
         return versions;
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.controller.AbstractPersistentEntityController#getService()
-     */
-    @Override
-    public ApplicationService getService() {
-        return service;
     }
 
     /**

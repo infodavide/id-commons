@@ -5,19 +5,18 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class OutputStreams.
  */
+@NoArgsConstructor
 public class OutputStreams extends OutputStream {
 
     /** The streams. */
+    @Getter
     private final List<OutputStream> streams = new ArrayList<>();
-
-    /**
-     * Instantiates a new output streams.
-     */
-    public OutputStreams() {
-    }
 
     /**
      * Instantiates a new output streams.
@@ -31,14 +30,6 @@ public class OutputStreams extends OutputStream {
             java.util.Objects.requireNonNull(stream);
             this.streams.add(stream);
         }
-    }
-
-    /**
-     * Gets the streams.
-     * @return the streams
-     */
-    public List<OutputStream> getStreams() {
-        return streams;
     }
 
     /*

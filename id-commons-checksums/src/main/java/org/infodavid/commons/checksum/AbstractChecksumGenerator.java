@@ -8,21 +8,21 @@ import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.util.system.CommandExecutorFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class AbstractChecksumGenerator.
  */
+@Slf4j
 public abstract class AbstractChecksumGenerator implements ChecksumGenerator {
 
     /** The Constant ALLOWED_CHARS. */
     private static final String ALLOWED_CHARS = "ABCDEFabcdef0123456789";
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractChecksumGenerator.class);
-
     /** True is command is supported. */
+    @Getter
     private boolean commandSupported;
 
     /**
@@ -110,15 +110,6 @@ public abstract class AbstractChecksumGenerator implements ChecksumGenerator {
         try (InputStream in = Files.newInputStream(file)) {
             return getChecksum(in);
         }
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.util.checksum.ChecksumGenerator#isCommandSupported()
-     */
-    @Override
-    public boolean isCommandSupported() {
-        return commandSupported;
     }
 
     /**

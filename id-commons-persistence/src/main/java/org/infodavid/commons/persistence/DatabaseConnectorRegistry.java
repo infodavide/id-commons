@@ -8,20 +8,14 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DatabaseConnectorRegistry.
  */
+@Slf4j
 public class DatabaseConnectorRegistry {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER;
-
-    static {
-        LOGGER = LoggerFactory.getLogger(DatabaseConnectorRegistry.class);
-    }
 
     /** The connectors. */
     private final Map<String, DatabaseConnector> connectors = new HashMap<>();

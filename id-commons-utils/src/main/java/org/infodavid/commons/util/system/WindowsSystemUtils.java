@@ -10,20 +10,19 @@ import java.time.ZonedDateTime;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.sun.jna.platform.win32.Advapi32Util; // NOSONAR JNA
 import com.sun.jna.platform.win32.Advapi32Util.Account; // NOSONAR JNA
 import com.sun.jna.platform.win32.Win32Exception; // NOSONAR JNA
 import com.sun.jna.platform.win32.WinBase.SYSTEMTIME; // NOSONAR JNA
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class WindowsSystemUtils.
  */
+@Slf4j
 final class WindowsSystemUtils extends SystemUtils {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(WindowsSystemUtils.class);
 
     /** The Constant REBOOT_COMMAND. */
     private static final String[] REBOOT_COMMAND = { "shutdown", "/r", "/f" };

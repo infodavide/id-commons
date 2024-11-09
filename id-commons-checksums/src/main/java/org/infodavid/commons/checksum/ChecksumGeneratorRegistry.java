@@ -9,16 +9,14 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ChecksumGeneratorRegistry.
  */
+@Slf4j
 public final class ChecksumGeneratorRegistry {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChecksumGeneratorRegistry.class);
 
     /** The Constant SINGLETON. */
     private static final ChecksumGeneratorRegistry SINGLETON = new ChecksumGeneratorRegistry();

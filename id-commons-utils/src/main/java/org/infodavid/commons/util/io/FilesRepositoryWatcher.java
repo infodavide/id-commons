@@ -24,17 +24,18 @@ import org.infodavid.commons.util.collection.NullSafeConcurrentHashMap;
 import org.infodavid.commons.util.concurrency.SleepLock;
 import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.infodavid.commons.util.io.FilesRepositoryWatcher.EventEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.RemovalListener;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class FilesRepositoryWatcher.
  */
+@Slf4j
 public class FilesRepositoryWatcher implements Runnable, RemovalListener<Path, EventEntry> {
 
     /**
@@ -162,9 +163,6 @@ public class FilesRepositoryWatcher implements Runnable, RemovalListener<Path, E
             running.set(false);
         }
     }
-
-    /** The Constant LOGGER. Keep it public. */
-    public static final Logger LOGGER = LoggerFactory.getLogger(FilesRepositoryWatcher.class);
 
     /**
      * The cache.<br>
@@ -316,7 +314,7 @@ public class FilesRepositoryWatcher implements Runnable, RemovalListener<Path, E
      */
     public void stop() throws InterruptedException {
         enabled.set(false);
-        ThreadUtils.getInstance().interrupt(thread, sleepLock, 150);
+        ThreadUtils.interrupt(thread, sleepLock, 150);
         observers.values().forEach(EventEntryProcessor::stop); // NOSONAR Lambda
     }
 

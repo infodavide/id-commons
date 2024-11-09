@@ -5,9 +5,13 @@ import java.util.Set;
 
 import org.infodavid.commons.model.User;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class Constants.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
 
     /** The Constant ALL. */
@@ -73,11 +77,5 @@ public final class Constants {
         ANONYMOUS.setModificationDate(ANONYMOUS.getCreationDate());
         ANONYMOUS.setDisplayName(ANONYMOUS.getName());
         ANONYMOUS.setId(Long.valueOf(-1));
-    }
-
-    /**
-     * Instantiates a new constants.
-     */
-    private Constants() {
     }
 }

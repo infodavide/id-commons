@@ -1,6 +1,5 @@
 package org.infodavid.commons.restapi.security.filter;
 
-import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,15 +7,15 @@ import java.util.Set;
 import org.springframework.http.MediaType;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class FilterUtils.
  */
-@SuppressWarnings("static-method")
+@UtilityClass
+@Slf4j
 public final class FilterUtils {
-
-    /** The singleton. */
-    private static WeakReference<FilterUtils> instance = null;
 
     /** The Constant RESOURCE_MEDIA_TYPES. */
     private static final Set<MediaType> RESOURCE_MEDIA_TYPES;
@@ -26,24 +25,6 @@ public final class FilterUtils {
         RESOURCE_MEDIA_TYPES.add(MediaType.IMAGE_GIF);
         RESOURCE_MEDIA_TYPES.add(MediaType.IMAGE_JPEG);
         RESOURCE_MEDIA_TYPES.add(MediaType.IMAGE_PNG);
-    }
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized FilterUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new FilterUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private FilterUtils() {
     }
 
     /**

@@ -8,23 +8,16 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DefaultCommandExecutor.
  */
+@NoArgsConstructor
+@Slf4j
 final class DefaultCommandExecutor implements CommandExecutor {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCommandExecutor.class);
-
-    /**
-     * Instantiates a new default command executor.
-     */
-    public DefaultCommandExecutor() {
-        // noop
-    }
 
     /*
      * (non-javadoc)

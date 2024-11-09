@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,6 +17,7 @@ import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class JsonContentCachingFilter.
@@ -28,10 +27,8 @@ public class JsonContentCachingFilter extends OncePerRequestFilter {
     /**
      * The Class CachedBodyServletInputStream.
      */
+    @Slf4j
     private static class CachedBodyServletInputStream extends ServletInputStream {
-
-        /** The Constant LOGGER. */
-        private static final Logger LOGGER = LoggerFactory.getLogger(CachedBodyServletInputStream.class);
 
         /** The cached body input stream. */
         private final InputStream cachedBodyInputStream;

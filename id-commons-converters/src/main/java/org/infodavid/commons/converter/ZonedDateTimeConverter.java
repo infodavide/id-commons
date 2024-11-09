@@ -67,7 +67,6 @@ public class ZonedDateTimeConverter extends AbstractConverter implements Convert
             return handleMissing(targetType);
         }
 
-        final ConverterUtils utils = ConverterUtils.getInstance();
         Exception exception = null;
 
         if (patterns == null || patterns.length == 0) {
@@ -90,7 +89,7 @@ public class ZonedDateTimeConverter extends AbstractConverter implements Convert
             }
         }
 
-        throw new ConversionException("Error converting '" + utils.toString(sourceType) + "' to '" + utils.toString(targetType) + "' using  patterns '" + displayPatterns + '\'');
+        throw new ConversionException("Error converting '" + ConverterUtils.toString(sourceType) + "' to '" + ConverterUtils.toString(targetType) + "' using  patterns '" + displayPatterns + '\'');
     }
 
     /*

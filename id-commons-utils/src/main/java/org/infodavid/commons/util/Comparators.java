@@ -5,9 +5,13 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class Comparators.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Comparators {
 
     /**
@@ -116,10 +120,6 @@ public class Comparators {
          * (non-javadoc)
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
-        /*
-         * (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
         @Override
         public int compare(final String o1, final String o2) {
             if (o1 == o2) { // NOSONAR Compare references
@@ -138,11 +138,5 @@ public class Comparators {
 
             return o1.compareTo(o2);
         }
-    }
-
-    /**
-     * Instantiates a new comparators.
-     */
-    private Comparators() {
     }
 }

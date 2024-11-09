@@ -92,11 +92,11 @@ class MariaDataSourceConnectorTest extends TestCase {
         backupDir = temporaryDir.resolve("backup");
 
         if (Files.exists(temporaryDir)) {
-            PathUtils.getInstance().deleteQuietly(temporaryDir);
+            PathUtils.deleteQuietly(temporaryDir);
         }
 
         if (Files.exists(backupDir)) {
-            PathUtils.getInstance().deleteQuietly(backupDir);
+            PathUtils.deleteQuietly(backupDir);
         }
 
         Files.createDirectories(temporaryDir);

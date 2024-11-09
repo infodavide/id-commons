@@ -14,15 +14,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import lombok.Getter;
+
 /**
  * The Class RegexFileVisitor.
  */
 public class RegexFileVisitor extends SimpleFileVisitor<Path> {
 
     /** The matching files. */
+    @Getter
     private final List<Path> files = new LinkedList<>();
 
     /** The pattern. */
+    @Getter
     private final Collection<Pattern> patterns;
 
     /**
@@ -54,14 +58,6 @@ public class RegexFileVisitor extends SimpleFileVisitor<Path> {
     }
 
     /**
-     * Gets the patterns.
-     * @return the patterns
-     */
-    public Collection<Pattern> getPatterns() {
-        return patterns;
-    }
-
-    /**
      * Accept to add the file in the resulting list.
      * @param file the file
      * @return true, if successful
@@ -79,14 +75,6 @@ public class RegexFileVisitor extends SimpleFileVisitor<Path> {
         }
 
         return false;
-    }
-
-    /**
-     * Gets the files.
-     * @return the files
-     */
-    public Collection<Path> getFiles() {
-        return files;
     }
 
     /*

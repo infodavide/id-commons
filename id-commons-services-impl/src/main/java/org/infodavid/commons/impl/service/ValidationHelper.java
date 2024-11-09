@@ -9,8 +9,6 @@ import java.util.Set;
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.infodavid.commons.model.PersistentObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import jakarta.validation.ConstraintViolation;
@@ -20,15 +18,15 @@ import jakarta.validation.ValidationException;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.groups.Default;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ValidationHelper.
  */
 @Component
+@Slf4j
 public class ValidationHelper {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationHelper.class);
 
     /** The Constant SEPARATOR. */
     private static final char SEPARATOR = ':';
@@ -79,15 +77,8 @@ public class ValidationHelper {
     }
 
     /** The factory. */
+    @Getter
     private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-
-    /**
-     * Gets the factory.
-     * @return the factory
-     */
-    public ValidatorFactory getFactory() {
-        return factory;
-    }
 
     /**
      * Gets the validator.

@@ -2,9 +2,13 @@ package org.infodavid.commons.restapi;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class Constants.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
 
     /** The Constant ADDED_PATTERN. */
@@ -87,10 +91,4 @@ public final class Constants {
 
     /** The Constant USER_IS_NOT_AUTHENTICATED. */
     public static final String USER_IS_NOT_AUTHENTICATED = "User is not authenticated";
-
-    /**
-     * Instantiates a new constants.
-     */
-    private Constants() {
-    }
 }

@@ -17,11 +17,16 @@ import org.springframework.http.MediaType;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * The Class AbstractController.<br>
  * Mappings declared above are relative to the servlet mappings declared in the application configuration (WebApplicationInitializer or a subclass).
  */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractController implements ApplicationContextAware {
 
     /**
@@ -53,16 +58,12 @@ public abstract class AbstractController implements ApplicationContextAware {
     }
 
     /** The context. */
+    @Getter
+    @Setter
     private ApplicationContext applicationContext;
 
     /** The authentication supported. */
     private boolean authenticationSupported = true;
-
-    /**
-     * Instantiates a new abstract controller.
-     */
-    protected AbstractController() {
-    }
 
     /**
      * Apply response.
@@ -83,14 +84,6 @@ public abstract class AbstractController implements ApplicationContextAware {
 
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setStatus(status.value());
-    }
-
-    /**
-     * Gets the application context.
-     * @return the application context
-     */
-    protected ApplicationContext getApplicationContext() {
-        return applicationContext;
     }
 
     /**
@@ -130,14 +123,5 @@ public abstract class AbstractController implements ApplicationContextAware {
         final User user = service.getUser();
 
         return user != null && !user.isLocked() && !user.isExpired() && user.getRoles() != null && !user.getRoles().contains(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE);
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
     }
 }

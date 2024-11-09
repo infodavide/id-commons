@@ -3,20 +3,18 @@ package org.infodavid.commons.test.mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import lombok.Locked;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class BasicAnswer.
  * @param <T> the generic type
  */
+@NoArgsConstructor
 public class BasicAnswer<T> implements Answer<T> {
 
     /** The value. */
     private T value;
-
-    /**
-     * Instantiates a new answer.
-     */
-    public BasicAnswer() {
-    }
 
     /**
      * Instantiates a new answer.
@@ -31,29 +29,26 @@ public class BasicAnswer<T> implements Answer<T> {
      * @see org.mockito.stubbing.Answer#answer(org.mockito.invocation.InvocationOnMock)
      */
     @Override
+    @Locked.Read
     public T answer(final InvocationOnMock invocation) throws Throwable {
-        synchronized (this) {
-            return value;
-        }
+        return value;
     }
 
     /**
      * Gets the value.
      * @return the value
      */
+    @Locked.Read
     public T getValue() {
-        synchronized (this) {
-            return value;
-        }
+        return value;
     }
 
     /**
      * Sets the value.
      * @param value the new value
      */
+    @Locked.Write
     public void setValue(final T value) {
-        synchronized (this) {
-            this.value = value;
-        }
+        this.value = value;
     }
 }

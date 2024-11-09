@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.infodavid.commons.impl.security.DefaultAuthenticationServiceImpl;
@@ -214,7 +213,7 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
                 getLogger().debug("Filtering {} entities", String.valueOf(entities.size()));
             }
 
-            final List<T> result = entities.stream().map(this::filter).collect(Collectors.toList());
+            final List<T> result = entities.stream().map(this::filter).toList();
 
             if (getLogger().isDebugEnabled()) {
                 getLogger().debug("Filtered {} entities", String.valueOf(result.size()));
@@ -255,8 +254,8 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
      * @return the post processed entity
      */
     protected T filter(final T entity) {
-        if (entity instanceof PropertiesContainer) {
-            final PropertiesDecorator properties = ((PropertiesContainer) entity).getProperties();
+        if (entity instanceof final PropertiesContainer container) {
+            final PropertiesDecorator properties = container.getProperties();
             getDefaultProperties().stream().filter(p -> !properties.contains(p.getScope(), p.getName())).forEach(properties::add);
         }
 
@@ -434,8 +433,8 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     protected T preUpdate(final Optional<T> existing, final T value) throws IllegalAccessException, ServiceException {
         final AuthenticationService authenticationService = getAuthenticationService(); // NOSONAR Use getter to initialize field
 
-        if (existing.isPresent() && value instanceof PropertiesContainer) {
-            validateProperties(((PropertiesContainer) existing.get()).getProperties(), ((PropertiesContainer) value).getProperties());
+        if (existing.isPresent() && value instanceof final PropertiesContainer container) {
+            validateProperties(((PropertiesContainer) existing.get()).getProperties(), container.getProperties());
         }
 
         if (authenticationService != null && !authenticationService.hasRole(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE) && value.getId() instanceof Number) {

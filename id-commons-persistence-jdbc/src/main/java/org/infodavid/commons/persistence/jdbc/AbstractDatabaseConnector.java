@@ -265,7 +265,6 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
      */
     protected boolean upgradeDatabase(final String database, final Connection connection, final String currentVersion) throws IOException, SQLException {
         getLogger().debug("Checking if a database upgrade is available for {} database", database);
-        final org.infodavid.commons.util.StringUtils utils = org.infodavid.commons.util.StringUtils.getInstance();
 
         if (StringUtils.isEmpty(currentVersion)) {
             getLogger().warn("Schema has no version, upgrade check skipped");
@@ -281,7 +280,7 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
         for (final Resource resource : resolver.getResources(String.format(UPGRADE_SCRIPT_PATTERN, getName(), database))) {
             final String version = StringUtils.substringBetween(resource.getFilename(), UPGRADE_SCRIPT_TOKEN1, Constants.SQL_FILE_EXTENSION);
 
-            if (utils.compareVersion(currentVersion, version) < 0) {
+            if (org.infodavid.commons.util.StringUtils.compareVersion(currentVersion, version) < 0) {
                 getLogger().debug("Found valid database upgrade script: {}", resource.getFilename());
                 resources.add(resource);
             }
@@ -291,7 +290,7 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
             final String v1 = StringUtils.substringBetween(r1.getFilename(), UPGRADE_SCRIPT_TOKEN1, Constants.SQL_FILE_EXTENSION);
             final String v2 = StringUtils.substringBetween(r2.getFilename(), UPGRADE_SCRIPT_TOKEN1, Constants.SQL_FILE_EXTENSION);
 
-            return utils.compareVersion(v1, v2);
+            return org.infodavid.commons.util.StringUtils.compareVersion(v1, v2);
         });
         boolean result = false;
 
@@ -320,7 +319,6 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
      */
     protected boolean upgradeTriggers(final String database, final Connection connection, final String delimiter, final String currentVersion) throws IOException, SQLException {
         getLogger().debug("Checking if a triggers upgrade is available for {} database", database);
-        final org.infodavid.commons.util.StringUtils utils = org.infodavid.commons.util.StringUtils.getInstance();
 
         if (StringUtils.isEmpty(currentVersion)) {
             getLogger().warn("Schema has no version, upgrade check skipped");
@@ -336,7 +334,7 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
         for (final Resource resource : resolver.getResources(String.format(TRIGGERS_UPGRADE_SCRIPT_PATTERN, getName(), database))) {
             final String version = StringUtils.substringBetween(resource.getFilename(), TRIGGERS_UPGRADE_SCRIPT_TOKEN1, Constants.SQL_FILE_EXTENSION);
 
-            if (utils.compareVersion(currentVersion, version) < 0) {
+            if (org.infodavid.commons.util.StringUtils.compareVersion(currentVersion, version) < 0) {
                 getLogger().debug("Found valid triggers upgrade script: {}", resource.getFilename());
                 resources.add(resource);
             }
@@ -346,7 +344,7 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
             final String v1 = StringUtils.substringBetween(r1.getFilename(), TRIGGERS_UPGRADE_SCRIPT_TOKEN1, Constants.SQL_FILE_EXTENSION);
             final String v2 = StringUtils.substringBetween(r2.getFilename(), TRIGGERS_UPGRADE_SCRIPT_TOKEN1, Constants.SQL_FILE_EXTENSION);
 
-            return utils.compareVersion(v1, v2);
+            return org.infodavid.commons.util.StringUtils.compareVersion(v1, v2);
         });
         boolean result = false;
 

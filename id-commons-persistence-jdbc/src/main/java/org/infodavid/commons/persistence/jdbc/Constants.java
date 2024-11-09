@@ -1,8 +1,12 @@
 package org.infodavid.commons.persistence.jdbc;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Interface Constants.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
 
     /** The Constant COMMENT_COLUMN. */
@@ -79,10 +83,4 @@ public final class Constants {
 
     /** The VALUE_COLUMN. */
     public static final String VALUE_COLUMN = "value";
-
-    /**
-     * Instantiates a new constants.
-     */
-    private Constants() {
-    }
 }

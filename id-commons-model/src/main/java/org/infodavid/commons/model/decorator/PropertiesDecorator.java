@@ -16,6 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.model.Property;
 import org.infodavid.commons.model.PropertyType;
 
+import lombok.Getter;
+import lombok.experimental.Delegate;
+
 /**
  * The Class PropertiesDecorator.
  */
@@ -28,6 +31,8 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
     private static final long serialVersionUID = -6168960167743665458L;
 
     /** The delegate. */
+    @Delegate
+    @Getter
     private final Set<Property> delegate;
 
     /**
@@ -252,8 +257,8 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
         } else {
             previousObject = property.getObject();
 
-            if (value instanceof Property) {
-                property.setValue(((Property) value).getValue());
+            if (value instanceof final Property p) {
+                property.setValue(p.getValue());
             } else {
                 property.setValue(value);
             }
@@ -308,23 +313,6 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
     }
 
     /**
-     * Clear.
-     */
-    @Override
-    public void clear() {
-        delegate.clear();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.util.Set#contains(java.lang.Object)
-     */
-    @Override
-    public boolean contains(final Object o) {
-        return delegate.contains(o);
-    }
-
-    /**
      * Contains.
      * @param scope the scope
      * @param name  the name
@@ -332,15 +320,6 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      */
     public boolean contains(final String scope, final String name) {
         return get(scope, name) != null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.util.Set#containsAll(java.util.Collection)
-     */
-    @Override
-    public boolean containsAll(final Collection<?> c) {
-        return delegate.containsAll(c);
     }
 
     /**
@@ -407,14 +386,6 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
         }
 
         return delegate.stream().filter(p -> Objects.equals(p.getScope(), s) && Objects.equals(p.getName(), name)).findFirst().orElse(null);
-    }
-
-    /**
-     * Gets the delegate.
-     * @return the delegate
-     */
-    public Set<Property> getDelegate() {
-        return delegate;
     }
 
     /**
@@ -532,24 +503,6 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
 
     /*
      * (non-Javadoc)
-     * @see java.util.Set#isEmpty()
-     */
-    @Override
-    public boolean isEmpty() {
-        return delegate.isEmpty();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.util.Set#iterator()
-     */
-    @Override
-    public Iterator<Property> iterator() {
-        return delegate.iterator();
-    }
-
-    /*
-     * (non-Javadoc)
      * @see java.util.Set#remove(java.lang.Object)
      */
     @Override
@@ -624,51 +577,6 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
         }
 
         return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.util.Set#removeAll(java.util.Collection)
-     */
-    @Override
-    public boolean removeAll(final Collection<?> c) {
-        return delegate.removeAll(c);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.util.Set#retainAll(java.util.Collection)
-     */
-    @Override
-    public boolean retainAll(final Collection<?> c) {
-        return delegate.retainAll(c);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.util.Set#size()
-     */
-    @Override
-    public int size() {
-        return delegate.size();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.util.Set#toArray()
-     */
-    @Override
-    public Object[] toArray() {
-        return delegate.toArray();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.util.Set#toArray(java.lang.Object[])
-     */
-    @Override
-    public <T> T[] toArray(final T[] a) {
-        return delegate.toArray(a);
     }
 
     /*

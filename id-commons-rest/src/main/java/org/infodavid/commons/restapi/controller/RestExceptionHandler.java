@@ -6,8 +6,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.infodavid.commons.restapi.RequestUtils;
 import org.infodavid.commons.restapi.exception.TooManyRequestsException;
 import org.infodavid.commons.service.exception.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -35,11 +33,13 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class RestExceptionHandler.
  */
 @ControllerAdvice
+@Slf4j
 public class RestExceptionHandler {
 
     /**
@@ -62,14 +62,11 @@ public class RestExceptionHandler {
          */
         @Override
         public ResponseEntity<Object> handleHttpMessageNotReadable(final HttpMessageNotReadableException e, final HttpHeaders headers, final HttpStatusCode status, final WebRequest request) {
-            LOGGER.error("Request could not be read: {}", RequestUtils.getInstance().getDescription(request)); // NOSONAR Always written
+            LOGGER.error("Request could not be read: {}", RequestUtils.getDescription(request)); // NOSONAR Always written
 
             return handleExceptionInternal(e, null, headers, status, request);
         }
     }
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     /**
      * Gets the request URI.
@@ -77,8 +74,8 @@ public class RestExceptionHandler {
      * @return the URI
      */
     private static String getRequestUri(final WebRequest request) {
-        if (request instanceof ServletWebRequest) {
-            return ((ServletWebRequest) request).getRequest().getRequestURI();
+        if (request instanceof final ServletWebRequest swr) {
+            return swr.getRequest().getRequestURI();
         }
 
         return null;

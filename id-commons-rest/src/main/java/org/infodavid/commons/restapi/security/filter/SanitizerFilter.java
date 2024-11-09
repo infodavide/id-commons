@@ -7,8 +7,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 
 import com.google.json.JsonSanitizer;
@@ -20,24 +18,18 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class SanitizerFilter.
  */
+@NoArgsConstructor
+@Slf4j
 public class SanitizerFilter implements Filter {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SanitizerFilter.class);
 
     /** The max content length. */
     private int maxContentLength = 100 * 1024;
-
-    /**
-     * Instantiates a new sanitizer filter.
-     */
-    public SanitizerFilter() {
-        super();
-    }
 
     /*
      * (non-Javadoc)
@@ -85,7 +77,7 @@ public class SanitizerFilter implements Filter {
             sanitized = JsonSanitizer.sanitize(IOUtils.toString(reader)).getBytes(charset);
         }
 
-        if (request instanceof HttpServletRequest httpServletRequest) {
+        if (request instanceof final HttpServletRequest httpServletRequest) {
             chain.doFilter(new RewrittenHttpServletRequestWrapper(httpServletRequest, sanitized), response);
 
             return;

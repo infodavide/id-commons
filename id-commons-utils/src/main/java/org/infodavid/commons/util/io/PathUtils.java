@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
-import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.file.CopyOption;
@@ -50,16 +49,18 @@ import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.infodavid.commons.util.exception.LambdaRuntimeException;
 import org.infodavid.commons.util.system.SystemUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class PathUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class PathUtils {
 
     /**
@@ -84,8 +85,7 @@ public final class PathUtils {
          */
         @Override
         public void run() {
-            final PathUtils utils = PathUtils.getInstance();
-            paths.forEach(utils::deleteQuietly);
+            paths.forEach(PathUtils::deleteQuietly);
         }
     }
 
@@ -97,12 +97,6 @@ public final class PathUtils {
 
     /** The Constant FILE_NOT_FOUND. */
     private static final String FILE_NOT_FOUND = "File not found: ";
-
-    /** The singleton. */
-    private static WeakReference<PathUtils> instance = null;
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PathUtils.class);
 
     /** The Constant OS_SPECIFIC_EXCLUDED_SET. */
     public static final Set<String> OS_SPECIFIC_EXCLUDED_SET;
@@ -124,11 +118,9 @@ public final class PathUtils {
                 return false;
             }
 
-            if (!(obj instanceof GroupPrincipal)) {
+            if (!(obj instanceof final GroupPrincipal other)) {
                 return false;
             }
-
-            final GroupPrincipal other = (GroupPrincipal) obj;
 
             return getName().equals(other.getName());
         }
@@ -254,18 +246,6 @@ public final class PathUtils {
     }
 
     /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized PathUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new PathUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
      * Checks if is empty.
      * @param path the path
      * @return true, if is empty
@@ -355,12 +335,6 @@ public final class PathUtils {
         } while (current != null && current.getFileName() != null);
 
         return false;
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private PathUtils() {
     }
 
     /**
@@ -1040,7 +1014,7 @@ public final class PathUtils {
                     } else {
                         try {
                             printFile(p, indent + 1, buffer);
-                        } catch (IOException e) {
+                        } catch (final IOException e) {
                             LOGGER.debug("An error occured while processing file: " + p, e); // NOSONAR Not with a throwable
                         }
                     }
@@ -1212,7 +1186,7 @@ public final class PathUtils {
             } catch (final RuntimeException e) {
                 IOException cause;
 
-                if (e.getCause() instanceof IOException exception) {
+                if (e.getCause() instanceof final IOException exception) {
                     cause = exception;
                 } else {
                     cause = new IOException(e);
@@ -1328,7 +1302,7 @@ public final class PathUtils {
             } catch (final RuntimeException e) {
                 IOException cause;
 
-                if (e.getCause() instanceof IOException exception) {
+                if (e.getCause() instanceof final IOException exception) {
                     cause = exception;
                 } else {
                     cause = new IOException(e);

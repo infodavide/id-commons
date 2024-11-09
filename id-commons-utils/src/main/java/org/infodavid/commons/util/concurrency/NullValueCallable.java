@@ -2,10 +2,14 @@ package org.infodavid.commons.util.concurrency;
 
 import java.util.concurrent.Callable;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class NullValueCallable.
  * @param <T> the generic type
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NullValueCallable<T> implements Callable<T> {
 
     /** The Constant INSTANCE. */
@@ -20,13 +24,6 @@ public class NullValueCallable<T> implements Callable<T> {
     @SuppressWarnings("unchecked")
     public static final <T> Callable<T> instance() {
         return INSTANCE;
-    }
-
-    /**
-     * Instantiates a new null value callable.
-     */
-    private NullValueCallable() {
-        super();
     }
 
     /*

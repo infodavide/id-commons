@@ -5,20 +5,16 @@ import java.io.InputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import lombok.NoArgsConstructor;
+
 /**
  * The Class SHA384ChecksumGenerator.
  */
+@NoArgsConstructor
 public final class SHA384ChecksumGenerator extends AbstractChecksumGenerator {
 
     /** The Constant ALGORITHM. */
     public static final String ALGORITHM = "SHA-384";
-
-    /**
-     * Instantiates a new SHA 384 checksum generator.
-     */
-    public SHA384ChecksumGenerator() {
-        // noop
-    }
 
     /*
      * (non-javadoc)

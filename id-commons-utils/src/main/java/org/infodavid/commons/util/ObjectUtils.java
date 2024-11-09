@@ -1,6 +1,5 @@
 package org.infodavid.commons.util;
 
-import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -10,33 +9,16 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class ExceptionUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class ObjectUtils {
-
-    /** The singleton. */
-    private static WeakReference<ObjectUtils> instance = null;
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized ObjectUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new ObjectUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private ObjectUtils() {
-    }
 
     /**
      * Equals method taking into account:<br>
@@ -79,11 +61,11 @@ public final class ObjectUtils {
         Class<?> right = object.getClass();
 
         if (from.isPrimitive()) {
-            left = ReflectionUtils.getInstance().getPrimitiveMap().get(from);
+            left = ReflectionUtils.getPrimitiveMap().get(from);
         }
 
         if (right.isPrimitive()) {
-            right = ReflectionUtils.getInstance().getPrimitiveMap().get(right);
+            right = ReflectionUtils.getPrimitiveMap().get(right);
         }
 
         if (ClassUtils.isAssignable(left, right, true)) {
@@ -94,10 +76,10 @@ public final class ObjectUtils {
             if (Number.class.isAssignableFrom(right)) {
                 final Number value = (Number) object;
 
-                return org.infodavid.commons.util.NumberUtils.getInstance().getMaximumValue(left) > value.doubleValue();
+                return org.infodavid.commons.util.NumberUtils.getMaximumValue(left) > value.doubleValue();
             }
 
-            if (object instanceof String string) {
+            if (object instanceof final String string) {
                 final String value = string;
 
                 return NumberUtils.isCreatable(value);
@@ -105,7 +87,7 @@ public final class ObjectUtils {
         }
 
         if (Boolean.class.isAssignableFrom(left)) {
-            if (object instanceof String string) {
+            if (object instanceof final String string) {
                 final String value = string;
 
                 return NumberUtils.isCreatable(value);

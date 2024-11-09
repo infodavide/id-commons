@@ -8,4 +8,5 @@ module org.infodavid.commons.service {
     requires transitive org.infodavid.commons.model;
     requires transitive spring.security.core;
     requires transitive org.infodavid.commons.persistence;
+    requires lombok;
 }

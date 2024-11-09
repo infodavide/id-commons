@@ -13,41 +13,19 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.util.NumberUtils;
 import org.infodavid.commons.util.system.CommandExecutorFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DiagnosticUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class DiagnosticUtils {
-
-    /** The singleton. */
-    private static WeakReference<DiagnosticUtils> instance = null;
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiagnosticUtils.class);
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized DiagnosticUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new DiagnosticUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private DiagnosticUtils() {
-    }
 
     /**
      * Builds the head dump.
@@ -55,7 +33,7 @@ public final class DiagnosticUtils {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public void buildHeadDump(final String path) throws IOException {
-        final File executable = DiagnosticUtils.getInstance().getJmapExecutable();
+        final File executable = getJmapExecutable();
 
         if (!executable.exists()) {
             throw new UnsupportedOperationException("Executable not found: " + executable.getName());
@@ -118,7 +96,7 @@ public final class DiagnosticUtils {
             buffer.append(':');
             buffer.append(entry.instances());
             buffer.append(':');
-            buffer.append(NumberUtils.getInstance().toHumanReadableByteCount(entry.bytes(), true));
+            buffer.append(NumberUtils.toHumanReadableByteCount(entry.bytes(), true));
             buffer.append('\n');
         }
     }

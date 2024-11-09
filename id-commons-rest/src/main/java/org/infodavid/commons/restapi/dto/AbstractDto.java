@@ -11,10 +11,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * The Class AbstractDto.
  */
 @JsonInclude(Include.NON_NULL)
+@Getter
+@Setter
 public abstract class AbstractDto implements Serializable {
 
     /** The Constant serialVersionUID. */
@@ -58,92 +63,12 @@ public abstract class AbstractDto implements Serializable {
     }
 
     /**
-     * Gets the creation date.
-     * @return the creation date
-     */
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    /**
-     * Gets the identifier.
-     * @return the identifier
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * Gets the modification date.
-     * @return the modification date
-     */
-    public Date getModificationDate() {
-        return modificationDate;
-    }
-
-    /**
      * Initializes the object.
      */
     public void init() {
         creationDate = null;
         modificationDate = null;
         id = null;
-    }
-
-    /**
-     * Checks if is deletable.
-     * @return the deletable
-     */
-    public boolean isDeletable() {
-        return deletable;
-    }
-
-    /**
-     * Checks if is editable.
-     * @return the editable
-     */
-    public boolean isEditable() {
-        return editable;
-    }
-
-    /**
-     * Sets the creation date.
-     * @param value the new creation date
-     */
-    public void setCreationDate(final Date value) {
-        creationDate = value;
-    }
-
-    /**
-     * Sets the deletable.
-     * @param deletable the deletable to set
-     */
-    public void setDeletable(final boolean deletable) {
-        this.deletable = deletable;
-    }
-
-    /**
-     * Sets the editable.
-     * @param editable the editable to set
-     */
-    public void setEditable(final boolean editable) {
-        this.editable = editable;
-    }
-
-    /**
-     * Sets the identifier.
-     * @param value the new identifier
-     */
-    public void setId(final String value) {
-        id = value;
-    }
-
-    /**
-     * Sets the modification date.
-     * @param value the new modification date
-     */
-    public void setModificationDate(final Date value) {
-        modificationDate = value;
     }
 
     /*

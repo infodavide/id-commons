@@ -11,11 +11,17 @@ import org.apache.commons.lang3.time.FastDateFormat;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * The Class AbstractProperty.
  * @param <E> the element type
  */
+@NoArgsConstructor
+@Setter
+@Getter
 public abstract class AbstractProperty<E extends AbstractProperty<?>> implements Serializable {
 
     /** The Constant ISO_DATE_TIME_FORMATTER. */
@@ -59,12 +65,6 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
 
     /** The value. */
     private String value;
-
-    /**
-     * Instantiates a new property.
-     */
-    protected AbstractProperty() {
-    }
 
     /**
      * Instantiates a new property.

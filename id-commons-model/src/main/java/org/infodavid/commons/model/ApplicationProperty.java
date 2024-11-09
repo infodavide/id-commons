@@ -16,6 +16,9 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.Min;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * The Class ApplicationProperty.
@@ -23,6 +26,9 @@ import jakarta.validation.constraints.Min;
 @Table(name = "settings")
 @Entity
 @Access(AccessType.PROPERTY)
+@NoArgsConstructor
+@Setter
+@Getter
 public class ApplicationProperty extends AbstractProperty<ApplicationProperty> implements PersistentObject<Long>, Comparable<ApplicationProperty> {
 
     /** The Constant serialVersionUID. */
@@ -36,12 +42,6 @@ public class ApplicationProperty extends AbstractProperty<ApplicationProperty> i
 
     /** The modification date. */
     private Date modificationDate;
-
-    /**
-     * Instantiates a new application property.
-     */
-    public ApplicationProperty() {
-    }
 
     /**
      * Instantiates a new application property.

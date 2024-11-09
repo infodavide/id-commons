@@ -13,7 +13,6 @@ import org.infodavid.commons.util.collection.CollectionUtils;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mockito;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
@@ -22,6 +21,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The Class AbstractSpringTest.
@@ -62,7 +64,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
         result.setName("user" + System.nanoTime());
         result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
         result.setEmail(result.getName() + "@infodavid.org");
-        result.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.USER_ROLE));
+        result.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.USER_ROLE));
 
         return result;
     }
@@ -79,12 +81,14 @@ public abstract class AbstractSpringTest extends TestCase implements Application
         result.setName("user" + System.nanoTime());
         result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
         result.setEmail(result.getName() + "@infodavid.org");
-        result.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.USER_ROLE));
+        result.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.USER_ROLE));
 
         return result;
     }
 
     /** The application context. */
+    @Getter
+    @Setter
     protected ApplicationContext applicationContext;
 
     /** The service. */
@@ -93,15 +97,6 @@ public abstract class AbstractSpringTest extends TestCase implements Application
 
     /** The data builder. */
     protected TestDataBuilder dataBuilder = new TestDataBuilder();
-
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework .context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
 
     /*
      * (non-javadoc)
@@ -133,7 +128,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
 
         user.setName(name);
         user.setPassword(password);
-        user.setRoles(CollectionUtils.getInstance().of(role));
+        user.setRoles(CollectionUtils.of(role));
         final UsernamePasswordAuthenticationToken authentication = newAuthentication(role, user, password);
         authentication.setDetails(user);
         SecurityContextHolder.getContext().setAuthentication(authentication);

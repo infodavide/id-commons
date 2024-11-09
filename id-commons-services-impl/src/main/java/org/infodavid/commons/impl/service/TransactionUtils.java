@@ -1,6 +1,5 @@
 package org.infodavid.commons.impl.service;
 
-import java.lang.ref.WeakReference;
 import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
@@ -10,28 +9,15 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionTemplate;
 
-public class TransactionUtils {
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
-    /** The singleton. */
-    private static WeakReference<TransactionUtils> instance = null;
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized TransactionUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new TransactionUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private TransactionUtils() {
-    }
+/**
+ * The Class TransactionUtils.
+ */
+@UtilityClass
+@Slf4j
+public final class TransactionUtils {
 
     /**
      * Do in transaction.
@@ -50,6 +36,7 @@ public class TransactionUtils {
      * Do in transaction.
      * @param <T>                the generic type
      * @param caller             the caller
+     * @param logger             the logger
      * @param applicationContext the application context
      * @param propagation        the propagation
      * @param isolation          the isolation

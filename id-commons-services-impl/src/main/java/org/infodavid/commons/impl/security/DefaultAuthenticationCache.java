@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -15,8 +13,6 @@ import org.infodavid.commons.model.User;
 import org.infodavid.commons.persistence.dao.UserDao;
 import org.infodavid.commons.security.AuthenticationListener;
 import org.infodavid.commons.security.AuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -25,10 +21,15 @@ import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.RemovalListener;
 
 import jakarta.validation.constraints.Min;
+import lombok.Getter;
+import lombok.Locked;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DefaultAuthenticationCache.
  */
+@Slf4j
 public class DefaultAuthenticationCache implements AuthenticationCache {
 
     /**
@@ -63,17 +64,13 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
         }
     }
 
-    /** The Constant LOGGER. */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(DefaultAuthenticationCache.class);
-
     /** The authentication service. */
+    @Getter
+    @Setter
     private AuthenticationService authenticationService = null;
 
     /** The authentication cache. */
     private Cache<Long, Authentication> cache;
-
-    /** The lock. */
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /** The removal listener. */
     protected final Listener removalListener;
@@ -95,23 +92,9 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
      * @see org.infodavid.commons.impl.security.AuthenticationCache#get(java.lang.Long)
      */
     @Override
+    @Locked.Read
     public Authentication get(final Long userId) {
-        lock.readLock().lock();
-
-        try {
-            return cache.getIfPresent(userId);
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.impl.security.AuthenticationCache#getAuthenticationService()
-     */
-    @Override
-    public AuthenticationService getAuthenticationService() {
-        return authenticationService;
+        return cache.getIfPresent(userId);
     }
 
     /*
@@ -119,18 +102,13 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
      * @see org.infodavid.commons.impl.security.AuthenticationCache#getMap()
      */
     @Override
+    @Locked.Read
     public Map<Long, Authentication> getMap() {
-        lock.readLock().lock();
-
-        try {
-            if (cache == null) {
-                return Collections.emptyMap();
-            }
-
-            return new HashMap<>(cache.asMap());
-        } finally {
-            lock.readLock().unlock();
+        if (cache == null) {
+            return Collections.emptyMap();
         }
+
+        return new HashMap<>(cache.asMap());
     }
 
     /*
@@ -138,6 +116,7 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
      * @see org.infodavid.commons.impl.security.AuthenticationCache#getSize()
      */
     @Override
+    @Locked.Read
     public long getSize() {
         return cache.estimatedSize();
     }
@@ -147,15 +126,10 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
      * @see org.infodavid.commons.impl.security.AuthenticationCache#invalidate()
      */
     @Override
+    @Locked.Write
     public void invalidate() {
-        lock.readLock().lock();
-
-        try {
-            cache.invalidateAll();
-            cache.cleanUp();
-        } finally {
-            lock.readLock().unlock();
-        }
+        cache.invalidateAll();
+        cache.cleanUp();
     }
 
     /*
@@ -163,15 +137,10 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
      * @see org.infodavid.commons.impl.security.AuthenticationCache#invalidate(java.lang.Long)
      */
     @Override
+    @Locked.Write
     public void invalidate(@Min(1) final Long userId) {
-        lock.readLock().lock();
-
-        try {
-            cache.invalidate(userId);
-            cache.cleanUp();
-        } finally {
-            lock.readLock().unlock();
-        }
+        cache.invalidate(userId);
+        cache.cleanUp();
     }
 
     /*
@@ -179,14 +148,9 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
      * @see org.infodavid.commons.impl.security.AuthenticationCache#put(java.lang.Long, org.springframework.security.core.Authentication)
      */
     @Override
+    @Locked.Write
     public void put(@Min(1) final Long userId, final Authentication result) {
-        lock.readLock().lock();
-
-        try {
-            cache.put(userId, result);
-        } finally {
-            lock.readLock().unlock();
-        }
+        cache.put(userId, result);
     }
 
     /*
@@ -194,42 +158,28 @@ public class DefaultAuthenticationCache implements AuthenticationCache {
      * @see org.infodavid.commons.impl.security.AuthenticationCache#reconfigure(int, java.util.concurrent.TimeUnit)
      */
     @Override
+    @Locked.Write
     public void reconfigure(final int expireAfterAccessDuration, final TimeUnit unit) {
-        lock.writeLock().lock();
         LOGGER.debug("Initializing...");
+        Map<Long, Authentication> existing;
 
-        try {
-            Map<Long, Authentication> existing;
-
-            if (cache == null) {
-                existing = Collections.emptyMap();
-            } else {
-                existing = new HashMap<>(cache.asMap());
-            }
-
-            final Caffeine<Long, Authentication> builder = Caffeine.newBuilder().maximumSize(100).removalListener(removalListener);
-
-            if (expireAfterAccessDuration > 0) {
-                LOGGER.info("Building cache using expire after access duration: {} {}", String.valueOf(expireAfterAccessDuration), StringUtils.lowerCase(unit.name())); // NOSONAR Always written
-                builder.expireAfterAccess(expireAfterAccessDuration, unit);
-            } else {
-                LOGGER.info("Building cache without expiration");
-            }
-
-            cache = builder.build();
-            existing.entrySet().forEach(e -> cache.put(e.getKey(), e.getValue()));
-            LOGGER.debug("Initialized");
-        } finally {
-            lock.writeLock().unlock();
+        if (cache == null) {
+            existing = Collections.emptyMap();
+        } else {
+            existing = new HashMap<>(cache.asMap());
         }
-    }
 
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.impl.security.AuthenticationCache#setAuthenticationService(AuthenticationService)
-     */
-    @Override
-    public void setAuthenticationService(final AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+        final Caffeine<Long, Authentication> builder = Caffeine.newBuilder().maximumSize(100).removalListener(removalListener);
+
+        if (expireAfterAccessDuration > 0) {
+            LOGGER.info("Building cache using expire after access duration: {} {}", String.valueOf(expireAfterAccessDuration), StringUtils.lowerCase(unit.name())); // NOSONAR Always written
+            builder.expireAfterAccess(expireAfterAccessDuration, unit);
+        } else {
+            LOGGER.info("Building cache without expiration");
+        }
+
+        cache = builder.build();
+        existing.entrySet().forEach(e -> cache.put(e.getKey(), e.getValue()));
+        LOGGER.debug("Initialized");
     }
 }

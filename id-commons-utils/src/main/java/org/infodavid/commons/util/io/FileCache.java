@@ -18,16 +18,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Weigher;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class FileCache.
  */
+@Slf4j
 public class FileCache {
 
     /**
@@ -51,22 +53,22 @@ public class FileCache {
     /** The Constant DEFAULT_MAXIMUM_WEIGHT. */
     private static final long DEFAULT_MAXIMUM_WEIGHT = 52428800;
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileCache.class);
-
     /** The contents cache. */
     private Cache<URI, Content> contentCache;
 
     /** The enabled. */
+    @Getter
     private boolean enabled = true;
 
     /** The expiration. */
+    @Getter
     private long expiration = DEFAULT_EXPIRATION;
 
     /** The locks cache. */
     private final Cache<URI, Lock> lockCache;
 
     /** The maximum weight. */
+    @Getter
     private long maximumWeight = DEFAULT_MAXIMUM_WEIGHT;
 
     /**
@@ -194,22 +196,6 @@ public class FileCache {
     }
 
     /**
-     * Gets the expiration.
-     * @return the expiration
-     */
-    public long getExpiration() {
-        return expiration;
-    }
-
-    /**
-     * Gets the maximum weight.
-     * @return the maximumWeight
-     */
-    public long getMaximumWeight() {
-        return maximumWeight;
-    }
-
-    /**
      * Gets the size.
      * @return the size
      */
@@ -222,14 +208,6 @@ public class FileCache {
      */
     public void invalidate() {
         contentCache.invalidateAll();
-    }
-
-    /**
-     * Checks if is enabled.
-     * @return the enabled
-     */
-    public boolean isEnabled() {
-        return enabled;
     }
 
     /**
@@ -306,9 +284,9 @@ public class FileCache {
 
             return new Content(IOUtils.toByteArray(in), connection.getLastModified());
         } finally {
-            if (connection instanceof HttpURLConnection closeable) {
+            if (connection instanceof final HttpURLConnection closeable) {
                 closeable.disconnect();
-            } else if (connection instanceof Closeable closeable) {
+            } else if (connection instanceof final Closeable closeable) {
                 closeable.close();
             }
         }
@@ -367,9 +345,9 @@ public class FileCache {
         try {
             return connection.getLastModified();
         } finally {
-            if (connection instanceof HttpURLConnection closeable) {
+            if (connection instanceof final HttpURLConnection closeable) {
                 closeable.disconnect();
-            } else if (connection instanceof Closeable closeable) {
+            } else if (connection instanceof final Closeable closeable) {
                 closeable.close();
             }
         }

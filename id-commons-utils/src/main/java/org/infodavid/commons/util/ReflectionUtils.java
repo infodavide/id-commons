@@ -1,6 +1,5 @@
 package org.infodavid.commons.util;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -14,35 +13,21 @@ import org.apache.commons.lang3.ClassUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class ReflectionUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class ReflectionUtils {
 
-    /** The singleton. */
-    private static WeakReference<ReflectionUtils> instance = null;
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized ReflectionUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new ReflectionUtils());
-        }
-
-        return instance.get();
-    }
-
     /** The primitive map. */
-    private final BidiMap<Class<?>, Class<?>> primitiveMap;
+    private static final BidiMap<Class<?>, Class<?>> primitiveMap;
 
-    /**
-     * Instantiates a new utilities.
-     */
-    private ReflectionUtils() {
+    static {
         primitiveMap = new DualHashBidiMap<>();
         primitiveMap.put(boolean.class, Boolean.class);
         primitiveMap.put(byte.class, Byte.class);
@@ -178,9 +163,7 @@ public final class ReflectionUtils {
         }
 
         if (Number.class.isAssignableFrom(right) && Number.class.isAssignableFrom(left)) {
-            final NumberUtils utils = NumberUtils.getInstance();
-
-            return utils.getMaximumValue(left) > utils.getMaximumValue(right);
+            return NumberUtils.getMaximumValue(left) > NumberUtils.getMaximumValue(right);
         }
 
         return false;

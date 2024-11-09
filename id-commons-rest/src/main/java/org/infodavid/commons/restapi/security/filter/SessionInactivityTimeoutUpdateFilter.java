@@ -44,7 +44,7 @@ public class SessionInactivityTimeoutUpdateFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws ServletException, IOException {
-        if (!requestMatcher.matches(request) || FilterUtils.getInstance().isResource(request)) {
+        if (!requestMatcher.matches(request) || FilterUtils.isResource(request)) {
             chain.doFilter(request, response);
 
             return;

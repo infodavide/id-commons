@@ -2,16 +2,13 @@ package org.infodavid.commons.util.concurrency;
 
 import java.util.concurrent.ExecutorService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ExecutorShutdownThread.
  */
+@Slf4j
 public class ExecutorShutdownThread extends Thread { // NOSONAR
-
-    /** The Constant LOGGER. */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(ExecutorShutdownThread.class);
 
     /**
      * The Class ShutdownRunnable.
@@ -44,7 +41,7 @@ public class ExecutorShutdownThread extends Thread { // NOSONAR
                 LOGGER.info("Stopping executor associated to: {}", caller.getSimpleName());
 
                 try {
-                    ThreadUtils.getInstance().shutdown(executor);
+                    ThreadUtils.shutdown(executor);
                 } catch (final InterruptedException e) {// NOSONAR Exception handled by utilities
                     LOGGER.warn("Thread interrupted", e);
                     Thread.currentThread().interrupt();

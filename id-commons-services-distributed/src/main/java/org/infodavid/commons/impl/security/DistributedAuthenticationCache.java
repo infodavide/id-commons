@@ -18,12 +18,13 @@ import org.infodavid.commons.model.User;
 import org.infodavid.commons.persistence.dao.UserDao;
 import org.infodavid.commons.security.AuthenticationListener;
 import org.infodavid.commons.security.AuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.constraints.Min;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DistributedAuthenticationCache.
@@ -31,12 +32,12 @@ import jakarta.validation.constraints.Min;
 /* If necessary, declare the bean in the Spring configuration. */
 @Transactional
 @org.infinispan.notifications.Listener
+@Slf4j
 public class DistributedAuthenticationCache implements AuthenticationCache {
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistributedAuthenticationCache.class);
-
     /** The authentication service. */
+    @Getter
+    @Setter
     private AuthenticationService authenticationService = null;
 
     /** The service. */
@@ -96,15 +97,6 @@ public class DistributedAuthenticationCache implements AuthenticationCache {
     @Override
     public Authentication get(final Long userId) {
         return cache.get(userId);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.impl.security.AuthenticationCache#getAuthenticationService()
-     */
-    @Override
-    public AuthenticationService getAuthenticationService() {
-        return authenticationService;
     }
 
     /*
@@ -186,14 +178,5 @@ public class DistributedAuthenticationCache implements AuthenticationCache {
     public void reconfigure(final int expireAfterAccessDuration, final TimeUnit unit) {
         expiration = expireAfterAccessDuration;
         expirationUnit = unit;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.impl.security.AuthenticationCache#setAuthenticationService(AuthenticationService)
-     */
-    @Override
-    public void setAuthenticationService(final AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
     }
 }

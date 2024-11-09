@@ -1,6 +1,5 @@
 package org.infodavid.commons.util;
 
-import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,11 +16,15 @@ import org.infodavid.commons.util.system.SystemUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class StringUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class StringUtils {
 
     /** The Constant CR. */
@@ -45,35 +48,14 @@ public final class StringUtils {
     /** The Constant TAB. */
     public static final char TAB = '\t';
 
-    /** The singleton. */
-    private static WeakReference<StringUtils> instance = null;
-
-    /** The rand. */
+    /** The random. */
     private static Random rand = new Random(System.currentTimeMillis());
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized StringUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new StringUtils());
-        }
-
-        return instance.get();
-    }
 
     /** The source. */
     private final byte[] source = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".getBytes(StandardCharsets.UTF_8); // NOSONAR Allow unallocation
 
     /** The target. */
     private final byte[] target = "Qa5Ab8zWZcS0XtdEsDyCr6eRFqViT f9hGpBoYg4jnHkmNlU3Ju2MIv1KO7LwPx".getBytes(StandardCharsets.UTF_8); // NOSONAR Allow unallocation
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private StringUtils() {
-    }
 
     /**
      * Compare version.
@@ -572,7 +554,7 @@ public final class StringUtils {
     public void toString(final Object object, final StringBuilder buffer) {
         if (object == null) {
             buffer.append("null");
-        } else if (object instanceof Throwable throwable) {
+        } else if (object instanceof final Throwable throwable) {
             buffer.append(throwable.getClass().getSimpleName());
             buffer.append(": ");
             buffer.append(throwable.getMessage());
@@ -594,9 +576,9 @@ public final class StringUtils {
             } else {
                 toString((Object[]) object, buffer);
             }
-        } else if (object instanceof Collection<?> collection) {
+        } else if (object instanceof final Collection<?> collection) {
             toString(collection, buffer);
-        } else if (object instanceof Map<?, ?> map) {
+        } else if (object instanceof final Map<?, ?> map) {
             toString(map, buffer);
         } else {
             buffer.append(object);

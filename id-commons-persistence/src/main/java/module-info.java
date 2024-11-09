@@ -8,4 +8,5 @@ module org.infodavid.commons.persistence {
     requires transitive org.infodavid.commons.model;
     requires transitive org.slf4j;
     requires transitive spring.data.commons;
+    requires lombok;
 }

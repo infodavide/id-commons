@@ -8,28 +8,23 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DeletionVisitor.
  */
+@NoArgsConstructor
+@Slf4j
 final class DeletionVisitor extends SimpleFileVisitor<Path> {
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeletionVisitor.class);
-
     /** The exception. */
+    @Getter
     private IOException exception = null;
 
     /** The listener. */
     private FileProcessingListener listener = null;
-
-    /**
-     * Instantiates a new consumer.
-     */
-    public DeletionVisitor() {
-    }
 
     /**
      * Instantiates a new consumer.
@@ -109,13 +104,5 @@ final class DeletionVisitor extends SimpleFileVisitor<Path> {
                 }
             }
         }
-    }
-
-    /**
-     * Gets the exception.
-     * @return the exception
-     */
-    public IOException getException() {
-        return exception;
     }
 }

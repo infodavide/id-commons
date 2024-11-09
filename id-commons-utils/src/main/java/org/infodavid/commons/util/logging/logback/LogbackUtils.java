@@ -1,7 +1,6 @@
 package org.infodavid.commons.util.logging.logback;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,12 +29,15 @@ import ch.qos.logback.core.sift.AppenderTracker;
 import ch.qos.logback.core.spi.AbstractComponentTracker;
 import ch.qos.logback.core.spi.AppenderAttachable;
 import ch.qos.logback.core.util.FileSize;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class LogbackUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class LogbackUtils {
 
     /** The encoder pattern. */
@@ -43,30 +45,6 @@ public final class LogbackUtils {
 
     /** The Constant ROLLING_SUFFIX. */
     public static final String ROLLING_SUFFIX = "-%d{yyyy-MM-dd}.%i.log.gz";
-
-    /** The singleton. */
-    private static WeakReference<LogbackUtils> instance = null;
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogbackUtils.class);
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized LogbackUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new LogbackUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private LogbackUtils() {
-    }
 
     /**
      * Append banner.

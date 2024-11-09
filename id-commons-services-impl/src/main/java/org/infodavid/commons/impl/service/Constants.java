@@ -2,9 +2,13 @@ package org.infodavid.commons.impl.service;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * The Class Constants.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
 
     /** The Constant ADDED_DATA_PATTERN. */
@@ -47,10 +51,4 @@ public final class Constants {
 
     /** The Constant VALUE_IS_NOT_VALID. */
     public static final String VALUE_IS_NOT_VALID = "Value is not valid";
-
-    /**
-     * Avoid instance.
-     */
-    private Constants() {
-    }
 }

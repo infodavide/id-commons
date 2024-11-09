@@ -18,61 +18,76 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.spi.FilterReply;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The Class DuplicatedMessageFilter.
  */
 public class DuplicatedMessageFilter extends TurboFilter {
 
-    /** The Constant MAX_KEY_LENGTH. */
-    private static final byte MAX_KEY_LENGTH = 100;
+    /** The Constant DEFAULT_ALLOWED_REPETITIONS. */
+    private static final byte DEFAULT_ALLOWED_REPETITIONS = 5;
 
     /** The Constant DEFAULT_CACHE_SIZE. */
     private static final byte DEFAULT_CACHE_SIZE = 100;
 
-    /** The Constant DEFAULT_ALLOWED_REPETITIONS. */
-    private static final byte DEFAULT_ALLOWED_REPETITIONS = 5;
-
     /** The Constant DEFAULT_EXPIRE_AFTER_WRITE_SECONDS. */
     private static final byte DEFAULT_EXPIRE_AFTER_WRITE_SECONDS = 30;
 
+    /** The Constant MAX_KEY_LENGTH. */
+    private static final byte MAX_KEY_LENGTH = 100;
+
+    /**
+     * Exclude markers.
+     * @param markersToExclude the markers to exclude
+     * @return the list
+     */
+    private static List<Marker> excludeMarkers(final String markersToExclude) {
+        final List<String> listOfMarkers = Arrays.asList(markersToExclude.split("\\s*,\\s*"));
+
+        return listOfMarkers.stream().map(MarkerFactory::getMarker).toList();
+    }
+
+    /**
+     * Parameters as string.
+     * @param params the parameters
+     * @param logger the logger
+     * @return the string
+     */
+    private static String paramsAsString(final Object[] params, final Logger logger) {
+        if (params != null && StringUtils.startsWith(logger.getName(), "org.infodavid")) {
+            return Arrays.stream(params).map(Object::toString).collect(joining("_"));
+        }
+
+        return "";
+    }
+
     /** The allowed repetitions. */
+    @Getter
+    @Setter
     private int allowedRepetitions = DEFAULT_ALLOWED_REPETITIONS;
 
+    /** The cache. */
+    private Cache<String, Integer> cache;
+
     /** The cache size. */
+    @Getter
+    @Setter
     private int cacheSize = DEFAULT_CACHE_SIZE;
 
-    /** The expire after write seconds. */
-    private int expireAfterWriteSeconds = DEFAULT_EXPIRE_AFTER_WRITE_SECONDS;
-
     /** The exclude markers. */
+    @Getter
+    @Setter
     private String excludeMarkers = "";
 
     /** The exclude markers list. */
     private List<Marker> excludeMarkersList = new ArrayList<>();
 
-    /** The cache. */
-    private Cache<String, Integer> cache;
-
-    /**
-     * Start.
-     */
-    @Override
-    public void start() {
-        cache = Caffeine.newBuilder().expireAfterWrite(expireAfterWriteSeconds, TimeUnit.SECONDS).initialCapacity(cacheSize).maximumSize(cacheSize).build();
-        excludeMarkersList = excludeMarkers(excludeMarkers);
-        super.start();
-    }
-
-    /**
-     * Stop.
-     */
-    @Override
-    public void stop() {
-        cache.invalidateAll();
-        cache = null;
-        super.stop();
-    }
+    /** The expire after write seconds. */
+    @Getter
+    @Setter
+    private int expireAfterWriteSeconds = DEFAULT_EXPIRE_AFTER_WRITE_SECONDS;
 
     /**
      * Decide.
@@ -80,7 +95,7 @@ public class DuplicatedMessageFilter extends TurboFilter {
      * @param logger the logger
      * @param level  the level
      * @param format the format
-     * @param params the params
+     * @param params the parameters
      * @param t      the t
      * @return the filter reply
      */
@@ -107,91 +122,22 @@ public class DuplicatedMessageFilter extends TurboFilter {
     }
 
     /**
-     * Gets the allowed repetitions.
-     * @return the allowed repetitions
+     * Start.
      */
-    public int getAllowedRepetitions() {
-        return allowedRepetitions;
+    @Override
+    public void start() {
+        cache = Caffeine.newBuilder().expireAfterWrite(expireAfterWriteSeconds, TimeUnit.SECONDS).initialCapacity(cacheSize).maximumSize(cacheSize).build();
+        excludeMarkersList = excludeMarkers(excludeMarkers);
+        super.start();
     }
 
     /**
-     * Sets the allowed repetitions.
-     * @param allowedRepetitions the new allowed repetitions
+     * Stop.
      */
-    public void setAllowedRepetitions(final int allowedRepetitions) {
-        this.allowedRepetitions = allowedRepetitions;
-    }
-
-    /**
-     * Gets the cache size.
-     * @return the cache size
-     */
-    public int getCacheSize() {
-        return cacheSize;
-    }
-
-    /**
-     * Sets the cache size.
-     * @param cacheSize the new cache size
-     */
-    public void setCacheSize(final int cacheSize) {
-        this.cacheSize = cacheSize;
-    }
-
-    /**
-     * Gets the expire after write seconds.
-     * @return the expire after write seconds
-     */
-    public int getExpireAfterWriteSeconds() {
-        return expireAfterWriteSeconds;
-    }
-
-    /**
-     * Sets the expire after write seconds.
-     * @param expireAfterWriteSeconds the new expire after write seconds
-     */
-    public void setExpireAfterWriteSeconds(final int expireAfterWriteSeconds) {
-        this.expireAfterWriteSeconds = expireAfterWriteSeconds;
-    }
-
-    /**
-     * Gets the exclude markers.
-     * @return the exclude markers
-     */
-    public String getExcludeMarkers() {
-        return excludeMarkers;
-    }
-
-    /**
-     * Sets the exclude markers.
-     * @param excludeMarkers the new exclude markers
-     */
-    public void setExcludeMarkers(final String excludeMarkers) {
-        this.excludeMarkers = excludeMarkers;
-    }
-
-    /**
-     * Exclude markers.
-     * @param markersToExclude the markers to exclude
-     * @return the list
-     */
-    private static List<Marker> excludeMarkers(final String markersToExclude) {
-        final List<String> listOfMarkers = Arrays.asList(markersToExclude.split("\\s*,\\s*"));
-
-        return listOfMarkers.stream().map(MarkerFactory::getMarker).toList();
-    }
-
-    /**
-     * Parameters as string.
-     * @param params the parameters
-     * @param logger the logger
-     * @return the string
-     */
-    private static String paramsAsString(final Object[] params, final Logger logger) {
-        if (params != null && StringUtils.startsWith(logger.getName(), "org.infodavid")) {
-            return Arrays.stream(params).map(Object::toString).collect(joining("_"));
-        }
-
-        return "";
+    @Override
+    public void stop() {
+        cache.invalidateAll();
+        cache = null;
+        super.stop();
     }
 }

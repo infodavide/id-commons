@@ -2,27 +2,33 @@ package org.infodavid.commons.model;
 
 import java.util.Objects;
 
-import javax.annotation.processing.Generated;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * The Class Database.</br>
  * Password of the database is always encrypted in the database but raw when getting the details on a specific db and crypted when adding or update an db.
  */
 @MappedSuperclass
+@NoArgsConstructor
+@Setter
+@Getter
 public class Database extends AbstractObject<Long> implements Comparable<Database> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -3625538076719872463L;
 
     /** The database. */
-    @Column(name = "db", length = 48)
+    @NotNull
+    @Size(min = 1, max = Constants.DATABASE_NAME_MAX_LENGTH)
+    @Column(name = "db", length = Constants.DATABASE_NAME_MAX_LENGTH)
     private String database; // NOSONAR Not renamed
 
     /** The data version. */
@@ -30,26 +36,42 @@ public class Database extends AbstractObject<Long> implements Comparable<Databas
     private String dataVersion;
 
     /** The class name. */
-    @Column(name = "driver_class", length = 255)
+    @NotNull
+    @Size(min = 1, max = Constants.DRIVER_CLASS_NAME_MAX_LENGTH)
+    @Column(name = "driver_class", length = Constants.DRIVER_CLASS_NAME_MAX_LENGTH)
     private String driverClassName;
 
     /** The host name. */
-    @Column(name = "hostname", length = 128)
+    @NotNull
+    @Size(min = 1, max = Constants.HOSTNAME_MAX_LENGTH)
+    @Column(name = "hostname", length = Constants.HOSTNAME_MAX_LENGTH)
     private String hostname;
 
+    /** The name. */
+    @NotNull
+    @Size(min = 1, max = Constants.DATABASE_NAME_MAX_LENGTH)
+    @Column(name = "name", length = 48)
+    private String name;
+
     /** The password. */
-    @Column(name = "password", length = 48)
+    @Size(min = 0, max = Constants.PASSWORD_MAX_LENGTH)
+    @Column(name = "password", length = Constants.PASSWORD_MAX_LENGTH)
     private String password;
 
     /** The pool maximum size. */
+    @Min(0)
+    @Max(127)
     @Column(name = "pool_max_size")
     private byte poolMaxSize;
 
     /** The pool minimum size. */
+    @Min(0)
+    @Max(127)
     @Column(name = "pool_min_size")
     private byte poolMinSize;
 
     /** The port. */
+    @Min(1)
     @Column(name = "port")
     private int port;
 
@@ -58,14 +80,10 @@ public class Database extends AbstractObject<Long> implements Comparable<Databas
     private String schemaVersion;
 
     /** The user. */
+    @NotNull
+    @Size(min = 1, max = Constants.USER_NAME_MAX_LENGTH)
     @Column(name = "username", length = 48)
     private String user;
-
-    /**
-     * Instantiates a new database.
-     */
-    public Database() {
-    }
 
     /**
      * Instantiates a new database.
@@ -129,49 +147,6 @@ public class Database extends AbstractObject<Long> implements Comparable<Databas
         return Objects.equals(user, other.user);
     }
 
-    /**
-     * Gets the database.
-     * @return the database
-     */
-    @NotNull
-    @Size(min = 1, max = Constants.DATABASE_NAME_MAX_LENGTH)
-    public String getDatabase() {
-        return database;
-    }
-
-    /**
-     * Gets the data version.
-     * @return the dataVersion
-     */
-    @Generated("Set on the database")
-    public String getDataVersion() {
-        return dataVersion;
-    }
-
-    /**
-     * Gets the driver class name.
-     * @return the driver class name
-     */
-    @NotNull
-    @Size(min = 1, max = Constants.DRIVER_CLASS_NAME_MAX_LENGTH)
-    public String getDriverClassName() {
-        return driverClassName;
-    }
-
-    /**
-     * Gets the host name.
-     * @return the host name
-     */
-    @NotNull
-    @Size(min = 1, max = Constants.HOSTNAME_MAX_LENGTH)
-    public String getHostname() {
-        return hostname;
-    }
-
-    /** The name. */
-    @Column(name = "name", length = 48)
-    private String name;
-
     /*
      * (non-javadoc)
      * @see org.infodavid.model.AbstractObject#getId()
@@ -180,69 +155,6 @@ public class Database extends AbstractObject<Long> implements Comparable<Databas
     @Min(1)
     public Long getId() {
         return super.getId();
-    }
-
-    @NotNull
-    @Size(min = 1, max = Constants.DATABASE_NAME_MAX_LENGTH)
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Gets the password.
-     * @return the password
-     */
-    @Size(min = 0, max = Constants.PASSWORD_MAX_LENGTH)
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * Gets the pool maximum size.
-     * @return the size
-     */
-    @Min(0)
-    @Max(127)
-    public byte getPoolMaxSize() {
-        return poolMaxSize;
-    }
-
-    /**
-     * Gets the pool minimum size.
-     * @return the size
-     */
-    @Min(0)
-    @Max(127)
-    public byte getPoolMinSize() {
-        return poolMinSize;
-    }
-
-    /**
-     * Gets the port.
-     * @return the port
-     */
-    @Min(0)
-    public int getPort() {
-        return port;
-    }
-
-    /**
-     * Gets the schema version.
-     * @return the version
-     */
-    @Generated("Set on the database")
-    public String getSchemaVersion() {
-        return schemaVersion;
-    }
-
-    /**
-     * Gets the user.
-     * @return the user
-     */
-    @NotNull
-    @Size(min = 1, max = Constants.USER_NAME_MAX_LENGTH)
-    public String getUser() {
-        return user;
     }
 
     /*
@@ -257,85 +169,5 @@ public class Database extends AbstractObject<Long> implements Comparable<Databas
         result = prime * result + (database == null ? 0 : database.hashCode());
         result = prime * result + (driverClassName == null ? 0 : driverClassName.hashCode());
         return prime * result + (user == null ? 0 : user.hashCode());
-    }
-
-    /**
-     * Sets the database.
-     * @param database the database to set
-     */
-    public void setDatabase(final String database) {
-        this.database = database;
-    }
-
-    /**
-     * Sets the data version.
-     * @param dataVersion the version to set
-     */
-    public void setDataVersion(final String dataVersion) {
-        this.dataVersion = dataVersion;
-    }
-
-    /**
-     * Sets the driver class name.
-     * @param className the class name to set
-     */
-    public void setDriverClassName(final String className) {
-        driverClassName = className;
-    }
-
-    /**
-     * Sets the host name.
-     * @param hostname the name to set
-     */
-    public void setHostname(final String hostname) {
-        this.hostname = hostname;
-    }
-
-    /**
-     * Sets the password.
-     * @param password the password to set
-     */
-    public void setPassword(final String password) {
-        this.password = password;
-    }
-
-    /**
-     * Sets the pool maximum size.
-     * @param poolMaxSize the size to set
-     */
-    public void setPoolMaxSize(final byte poolMaxSize) {
-        this.poolMaxSize = poolMaxSize;
-    }
-
-    /**
-     * Sets the pool minimum size.
-     * @param poolMinSize the size to set
-     */
-    public void setPoolMinSize(final byte poolMinSize) {
-        this.poolMinSize = poolMinSize;
-    }
-
-    /**
-     * Sets the port.
-     * @param port the port to set
-     */
-    public void setPort(final int port) {
-        this.port = port;
-    }
-
-    /**
-     * Sets the schema version.
-     * @param schemaVersion the version to set
-     */
-    public void setSchemaVersion(final String schemaVersion) {
-        this.schemaVersion = schemaVersion;
-    }
-
-    /**
-     * Sets the user.
-     * @param user the user to set
-     */
-    public void setUser(final String user) {
-        this.user = user;
     }
 }

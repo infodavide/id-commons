@@ -30,6 +30,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.PersistenceException;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 /**
  * The Class AbstractApplicationService.<br>
@@ -46,6 +48,7 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
     private final ApplicationPropertyDao dao;
 
     /** The listeners. */
+    @Getter(value = AccessLevel.PROTECTED)
     private final LinkedHashSet<ApplicationPropertyChangedListener> listeners = new LinkedHashSet<>();
 
     /** The start time. */
@@ -203,7 +206,7 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
         if (value != null && PropertyType.PASSWORD.equals(value.getType()) && StringUtils.isNotEmpty(value.getValue())) {
             // password is decoded and exposed as plain to allow other services to use the property without knowledge of encoding mechanism
             final ApplicationProperty clone = new ApplicationProperty(value);
-            clone.setValue(org.infodavid.commons.util.StringUtils.getInstance().decode(value.getValue()));
+            clone.setValue(org.infodavid.commons.util.StringUtils.decode(value.getValue()));
 
             return clone;
         }
@@ -326,14 +329,6 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
         return Collections.emptyMap();
     }
 
-    /**
-     * Gets the listeners.
-     * @return the listeners
-     */
-    protected LinkedHashSet<ApplicationPropertyChangedListener> getListeners() {
-        return listeners;
-    }
-
     /*
      * (non-javadoc)
      * @see org.infodavid.service.ApplicationService#getRootDirectory()
@@ -413,7 +408,7 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
             // password is encoded in database
             result = new ApplicationProperty(value);
 
-            result.setValue(org.infodavid.commons.util.StringUtils.getInstance().encode(value.getValue()));
+            result.setValue(org.infodavid.commons.util.StringUtils.encode(value.getValue()));
         }
 
         return result;
@@ -458,7 +453,7 @@ public abstract class AbstractApplicationService extends AbstractEntityService<L
             }
 
             // password is encoded in database
-            result.setValue(org.infodavid.commons.util.StringUtils.getInstance().encode(result.getValue()));
+            result.setValue(org.infodavid.commons.util.StringUtils.encode(result.getValue()));
         }
 
         return result;

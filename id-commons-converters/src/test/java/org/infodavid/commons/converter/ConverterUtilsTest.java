@@ -30,7 +30,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleans() throws Exception {
-        assertArrayEquals(new boolean[] { true, false, true, false, true, false, true, false }, ConverterUtils.getInstance().toBooleans("[true,false,yes,no,on,off,1,0]"), "Wrong result");
+        assertArrayEquals(new boolean[] { true, false, true, false, true, false, true, false }, ConverterUtils.toBooleans("[true,false,yes,no,on,off,1,0]"), "Wrong result");
     }
 
     /**
@@ -39,7 +39,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanUsingBoolean() throws Exception {
-        assertEquals(true, ConverterUtils.getInstance().toBoolean(Boolean.TRUE), "Wrong result");
+        assertEquals(true, ConverterUtils.toBoolean(Boolean.TRUE), "Wrong result");
     }
 
     /**
@@ -48,7 +48,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanUsingInteger() throws Exception {
-        assertEquals(true, ConverterUtils.getInstance().toBoolean(Integer.valueOf(1)), "Wrong result");
+        assertEquals(true, ConverterUtils.toBoolean(Integer.valueOf(1)), "Wrong result");
     }
 
     /**
@@ -57,7 +57,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithFalse() throws Exception {
-        assertEquals(false, ConverterUtils.getInstance().toBoolean("false"), "Wrong result");
+        assertEquals(false, ConverterUtils.toBoolean("false"), "Wrong result");
     }
 
     /**
@@ -66,7 +66,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithNo() throws Exception {
-        assertEquals(false, ConverterUtils.getInstance().toBoolean("no"), "Wrong result");
+        assertEquals(false, ConverterUtils.toBoolean("no"), "Wrong result");
     }
 
     /**
@@ -75,7 +75,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithOff() throws Exception {
-        assertEquals(false, ConverterUtils.getInstance().toBoolean("off"), "Wrong result");
+        assertEquals(false, ConverterUtils.toBoolean("off"), "Wrong result");
     }
 
     /**
@@ -84,7 +84,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithOn() throws Exception {
-        assertEquals(true, ConverterUtils.getInstance().toBoolean("on"), "Wrong result");
+        assertEquals(true, ConverterUtils.toBoolean("on"), "Wrong result");
     }
 
     /**
@@ -93,7 +93,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithTrue() throws Exception {
-        assertEquals(true, ConverterUtils.getInstance().toBoolean("true"), "Wrong result");
+        assertEquals(true, ConverterUtils.toBoolean("true"), "Wrong result");
     }
 
     /**
@@ -102,7 +102,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithUsingInteger0() throws Exception {
-        assertEquals(false, ConverterUtils.getInstance().toBoolean(Integer.valueOf(0)), "Wrong result");
+        assertEquals(false, ConverterUtils.toBoolean(Integer.valueOf(0)), "Wrong result");
     }
 
     /**
@@ -111,7 +111,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithUsingInteger1() throws Exception {
-        assertEquals(true, ConverterUtils.getInstance().toBoolean(Integer.valueOf(1)), "Wrong result");
+        assertEquals(true, ConverterUtils.toBoolean(Integer.valueOf(1)), "Wrong result");
     }
 
     /**
@@ -120,7 +120,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithUsingString0() throws Exception {
-        assertEquals(false, ConverterUtils.getInstance().toBoolean("0"), "Wrong result");
+        assertEquals(false, ConverterUtils.toBoolean("0"), "Wrong result");
     }
 
     /**
@@ -129,7 +129,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithUsingString1() throws Exception {
-        assertEquals(true, ConverterUtils.getInstance().toBoolean("1"), "Wrong result");
+        assertEquals(true, ConverterUtils.toBoolean("1"), "Wrong result");
     }
 
     /**
@@ -138,7 +138,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBooleanWithYes() throws Exception {
-        assertEquals(true, ConverterUtils.getInstance().toBoolean("yes"), "Wrong result");
+        assertEquals(true, ConverterUtils.toBoolean("yes"), "Wrong result");
     }
 
     /**
@@ -147,7 +147,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToBytes() throws Exception {
-        assertArrayEquals(new byte[] { Byte.MIN_VALUE, Byte.MAX_VALUE, 0 }, ConverterUtils.getInstance().toBytes("[" + Byte.MIN_VALUE + ',' + Byte.MAX_VALUE + ",0]"), "Wrong result");
+        assertArrayEquals(new byte[] { Byte.MIN_VALUE, Byte.MAX_VALUE, 0 }, ConverterUtils.toBytes("[" + Byte.MIN_VALUE + ',' + Byte.MAX_VALUE + ",0]"), "Wrong result");
     }
 
     /**
@@ -156,7 +156,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToByteUsingByte() throws Exception {
-        assertEquals((byte) 1, ConverterUtils.getInstance().toByte(Byte.valueOf((byte) 1)), "Wrong result");
+        assertEquals((byte) 1, ConverterUtils.toByte(Byte.valueOf((byte) 1)), "Wrong result");
     }
 
     /**
@@ -165,7 +165,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToByteUsingHexString() throws Exception {
-        assertEquals((byte) 127, ConverterUtils.getInstance().toByte("0x7F"), "Wrong result");
+        assertEquals((byte) 127, ConverterUtils.toByte("0x7F"), "Wrong result");
     }
 
     /**
@@ -174,7 +174,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToByteUsingInteger() throws Exception {
-        assertEquals((byte) 1, ConverterUtils.getInstance().toByte(Integer.valueOf(1)), "Wrong result");
+        assertEquals((byte) 1, ConverterUtils.toByte(Integer.valueOf(1)), "Wrong result");
     }
 
     /**
@@ -183,7 +183,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToByteUsingString() throws Exception {
-        assertEquals((byte) 1, ConverterUtils.getInstance().toByte("1"), "Wrong result");
+        assertEquals((byte) 1, ConverterUtils.toByte("1"), "Wrong result");
     }
 
     /**
@@ -192,7 +192,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToDateUsingDate() throws Exception {
-        assertEquals(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant()), ConverterUtils.getInstance().toDate(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant())), "Wrong result");
+        assertEquals(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant()), ConverterUtils.toDate(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant())), "Wrong result");
     }
 
     /**
@@ -201,7 +201,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToDateUsingLong() throws Exception {
-        assertEquals(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant()), ConverterUtils.getInstance().toDate(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant()).getTime()), "Wrong result");
+        assertEquals(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant()), ConverterUtils.toDate(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant()).getTime()), "Wrong result");
     }
 
     /**
@@ -210,7 +210,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToDateUsingString() throws Exception {
-        assertEquals(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant()), ConverterUtils.getInstance().toDate("20230123 01:02:03.000Z"), "Wrong result");
+        assertEquals(Date.from(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")).toInstant()), ConverterUtils.toDate("20230123 01:02:03.000Z"), "Wrong result");
     }
 
     /**
@@ -219,7 +219,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToDoubles() throws Exception {
-        assertArrayEquals(new double[] { Double.MIN_VALUE, Double.MAX_VALUE, 0.0, 1.1 }, ConverterUtils.getInstance().toDoubles("[" + Double.MIN_VALUE + ',' + Double.MAX_VALUE + ",0,1.1]"), 0.0, "Wrong result");
+        assertArrayEquals(new double[] { Double.MIN_VALUE, Double.MAX_VALUE, 0.0, 1.1 }, ConverterUtils.toDoubles("[" + Double.MIN_VALUE + ',' + Double.MAX_VALUE + ",0,1.1]"), 0.0, "Wrong result");
     }
 
     /**
@@ -228,7 +228,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToDoubleUsingDouble() throws Exception {
-        assertEquals(1.1, ConverterUtils.getInstance().toDouble(Double.valueOf(1.1)), 0.0, "Wrong result");
+        assertEquals(1.1, ConverterUtils.toDouble(Double.valueOf(1.1)), 0.0, "Wrong result");
     }
 
     /**
@@ -237,7 +237,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToDoubleUsingFloat() throws Exception {
-        assertEquals(1.1, ConverterUtils.getInstance().toDouble(Float.valueOf(1.1f)), 0.0, "Wrong result");
+        assertEquals(1.1, ConverterUtils.toDouble(Float.valueOf(1.1f)), 0.0, "Wrong result");
     }
 
     /**
@@ -246,7 +246,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToDoubleUsingInteger() throws Exception {
-        assertEquals(1.0, ConverterUtils.getInstance().toDouble(Integer.valueOf(1)), 0.0, "Wrong result");
+        assertEquals(1.0, ConverterUtils.toDouble(Integer.valueOf(1)), 0.0, "Wrong result");
     }
 
     /**
@@ -255,7 +255,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToDoubleUsingString() throws Exception {
-        assertEquals(1.1, ConverterUtils.getInstance().toDouble("1.1"), 0.0, "Wrong result");
+        assertEquals(1.1, ConverterUtils.toDouble("1.1"), 0.0, "Wrong result");
     }
 
     /**
@@ -264,7 +264,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToFloats() throws Exception {
-        assertArrayEquals(new float[] { Float.MIN_VALUE, Float.MAX_VALUE, 0.0f, 1.1f }, ConverterUtils.getInstance().toFloats("[" + Float.MIN_VALUE + ',' + Float.MAX_VALUE + ",0,1.1]"), 0.0f, "Wrong result");
+        assertArrayEquals(new float[] { Float.MIN_VALUE, Float.MAX_VALUE, 0.0f, 1.1f }, ConverterUtils.toFloats("[" + Float.MIN_VALUE + ',' + Float.MAX_VALUE + ",0,1.1]"), 0.0f, "Wrong result");
     }
 
     /**
@@ -273,7 +273,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToFloatUsingDouble() throws Exception {
-        assertEquals(1.1f, ConverterUtils.getInstance().toFloat(Double.valueOf(1.1f)), 0.0f, "Wrong result");
+        assertEquals(1.1f, ConverterUtils.toFloat(Double.valueOf(1.1f)), 0.0f, "Wrong result");
     }
 
     /**
@@ -282,7 +282,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToFloatUsingFloat() throws Exception {
-        assertEquals(1.1f, ConverterUtils.getInstance().toFloat(Float.valueOf(1.1f)), 0.0f, "Wrong result");
+        assertEquals(1.1f, ConverterUtils.toFloat(Float.valueOf(1.1f)), 0.0f, "Wrong result");
     }
 
     /**
@@ -291,7 +291,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToFloatUsingInteger() throws Exception {
-        assertEquals(1.0f, ConverterUtils.getInstance().toFloat(Integer.valueOf(1)), 0.0f, "Wrong result");
+        assertEquals(1.0f, ConverterUtils.toFloat(Integer.valueOf(1)), 0.0f, "Wrong result");
     }
 
     /**
@@ -300,7 +300,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToFloatUsingString() throws Exception {
-        assertEquals(1.1f, ConverterUtils.getInstance().toFloat("1.1"), 0.0f, "Wrong result");
+        assertEquals(1.1f, ConverterUtils.toFloat("1.1"), 0.0f, "Wrong result");
     }
 
     /**
@@ -309,7 +309,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToIntegers() throws Exception {
-        assertArrayEquals(new int[] { Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 1 }, ConverterUtils.getInstance().toIntegers("[" + Integer.MIN_VALUE + ',' + Integer.MAX_VALUE + ",0,1]"), "Wrong result");
+        assertArrayEquals(new int[] { Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 1 }, ConverterUtils.toIntegers("[" + Integer.MIN_VALUE + ',' + Integer.MAX_VALUE + ",0,1]"), "Wrong result");
     }
 
     /**
@@ -318,7 +318,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToIntegerUsingDouble() throws Exception {
-        assertEquals(1, ConverterUtils.getInstance().toInteger(Double.valueOf(1.1)), "Wrong result");
+        assertEquals(1, ConverterUtils.toInteger(Double.valueOf(1.1)), "Wrong result");
     }
 
     /**
@@ -327,7 +327,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToIntegerUsingHexString() throws Exception {
-        assertEquals(129, ConverterUtils.getInstance().toInteger("0x81"), "Wrong result");
+        assertEquals(129, ConverterUtils.toInteger("0x81"), "Wrong result");
     }
 
     /**
@@ -336,7 +336,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToIntegerUsingInteger() throws Exception {
-        assertEquals(1, ConverterUtils.getInstance().toInteger(Integer.valueOf(1)), "Wrong result");
+        assertEquals(1, ConverterUtils.toInteger(Integer.valueOf(1)), "Wrong result");
     }
 
     /**
@@ -345,7 +345,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToIntegerUsingString() throws Exception {
-        assertEquals(1, ConverterUtils.getInstance().toInteger("1"), "Wrong result");
+        assertEquals(1, ConverterUtils.toInteger("1"), "Wrong result");
     }
 
     /**
@@ -354,7 +354,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToLocalDateTimeUsingDate() throws Exception {
-        assertEquals(LocalDateTime.of(2023, 1, 23, 1, 2, 3), ConverterUtils.getInstance().toObject(LocalDateTime.of(2023, 1, 23, 1, 2, 3), LocalDateTime.class), "Wrong result");
+        assertEquals(LocalDateTime.of(2023, 1, 23, 1, 2, 3), ConverterUtils.toObject(LocalDateTime.of(2023, 1, 23, 1, 2, 3), LocalDateTime.class), "Wrong result");
     }
 
     /**
@@ -363,7 +363,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToLocalDateTimeUsingString() throws Exception {
-        assertEquals(LocalDateTime.of(2023, 1, 23, 1, 2, 3), ConverterUtils.getInstance().toObject("20230123 01:02:03.000", LocalDateTime.class), "Wrong result");
+        assertEquals(LocalDateTime.of(2023, 1, 23, 1, 2, 3), ConverterUtils.toObject("20230123 01:02:03.000", LocalDateTime.class), "Wrong result");
     }
 
     /**
@@ -372,7 +372,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToLocalDateUsingDate() throws Exception {
-        assertEquals(LocalDate.of(2023, 1, 23), ConverterUtils.getInstance().toObject(LocalDate.of(2023, 1, 23), LocalDate.class), "Wrong result");
+        assertEquals(LocalDate.of(2023, 1, 23), ConverterUtils.toObject(LocalDate.of(2023, 1, 23), LocalDate.class), "Wrong result");
     }
 
     /**
@@ -381,7 +381,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToLocalDateUsingString() throws Exception {
-        assertEquals(LocalDate.of(2023, 1, 23), ConverterUtils.getInstance().toObject("20230123", LocalDate.class), "Wrong result");
+        assertEquals(LocalDate.of(2023, 1, 23), ConverterUtils.toObject("20230123", LocalDate.class), "Wrong result");
     }
 
     /**
@@ -390,7 +390,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToLongs() throws Exception {
-        assertArrayEquals(new long[] { Long.MIN_VALUE, Long.MAX_VALUE, 0, 1 }, ConverterUtils.getInstance().toLongs("[" + Long.MIN_VALUE + ',' + Long.MAX_VALUE + ",0,1]"), "Wrong result");
+        assertArrayEquals(new long[] { Long.MIN_VALUE, Long.MAX_VALUE, 0, 1 }, ConverterUtils.toLongs("[" + Long.MIN_VALUE + ',' + Long.MAX_VALUE + ",0,1]"), "Wrong result");
     }
 
     /**
@@ -399,7 +399,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToLongUsingDouble() throws Exception {
-        assertEquals(1L, ConverterUtils.getInstance().toLong(Double.valueOf(1.1)), "Wrong result");
+        assertEquals(1L, ConverterUtils.toLong(Double.valueOf(1.1)), "Wrong result");
     }
 
     /**
@@ -408,7 +408,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToLongUsingLong() throws Exception {
-        assertEquals(1L, ConverterUtils.getInstance().toLong(Long.valueOf(1)), "Wrong result");
+        assertEquals(1L, ConverterUtils.toLong(Long.valueOf(1)), "Wrong result");
     }
 
     /**
@@ -417,7 +417,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToLongUsingString() throws Exception {
-        assertEquals(1L, ConverterUtils.getInstance().toLong("1"), "Wrong result");
+        assertEquals(1L, ConverterUtils.toLong("1"), "Wrong result");
     }
 
     /**
@@ -426,7 +426,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToShorts() throws Exception {
-        assertArrayEquals(new short[] { Short.MIN_VALUE, Short.MAX_VALUE, 0, 1 }, ConverterUtils.getInstance().toShorts("[" + Short.MIN_VALUE + ',' + Short.MAX_VALUE + ",0,1]"), "Wrong result");
+        assertArrayEquals(new short[] { Short.MIN_VALUE, Short.MAX_VALUE, 0, 1 }, ConverterUtils.toShorts("[" + Short.MIN_VALUE + ',' + Short.MAX_VALUE + ",0,1]"), "Wrong result");
     }
 
     /**
@@ -435,7 +435,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToShortUsingDouble() throws Exception {
-        assertEquals((short) 1, ConverterUtils.getInstance().toShort(Double.valueOf(1.1)), "Wrong result");
+        assertEquals((short) 1, ConverterUtils.toShort(Double.valueOf(1.1)), "Wrong result");
     }
 
     /**
@@ -444,7 +444,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToShortUsingHexString() throws Exception {
-        assertEquals((short) 129, ConverterUtils.getInstance().toShort("0x81"), "Wrong result");
+        assertEquals((short) 129, ConverterUtils.toShort("0x81"), "Wrong result");
     }
 
     /**
@@ -453,7 +453,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToShortUsingShort() throws Exception {
-        assertEquals((short) 1, ConverterUtils.getInstance().toShort(Short.valueOf((short) 1)), "Wrong result");
+        assertEquals((short) 1, ConverterUtils.toShort(Short.valueOf((short) 1)), "Wrong result");
     }
 
     /**
@@ -462,7 +462,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToShortUsingString() throws Exception {
-        assertEquals((short) 1, ConverterUtils.getInstance().toShort("1"), "Wrong result");
+        assertEquals((short) 1, ConverterUtils.toShort("1"), "Wrong result");
     }
 
     /**
@@ -471,7 +471,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringBooleanArray() throws Exception {
-        assertEquals("[true,false]", ConverterUtils.getInstance().toString(new boolean[] { true, false }));
+        assertEquals("[true,false]", ConverterUtils.toString(new boolean[] { true, false }));
     }
 
     /**
@@ -480,7 +480,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringBooleanObjectArray() throws Exception {
-        assertEquals("[true,false]", ConverterUtils.getInstance().toString(new Boolean[] { Boolean.valueOf(true), Boolean.valueOf(false) }));
+        assertEquals("[true,false]", ConverterUtils.toString(new Boolean[] { Boolean.valueOf(true), Boolean.valueOf(false) }));
     }
 
     /**
@@ -489,7 +489,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringBooleanObjectList() throws Exception {
-        assertEquals("[true,false]", ConverterUtils.getInstance().toString(Arrays.asList(Boolean.valueOf(true), Boolean.valueOf(false))));
+        assertEquals("[true,false]", ConverterUtils.toString(Arrays.asList(Boolean.valueOf(true), Boolean.valueOf(false))));
     }
 
     /**
@@ -502,7 +502,7 @@ class ConverterUtilsTest extends TestCase {
         map.put("1", Boolean.valueOf(true));
         map.put("2", Boolean.valueOf(false));
 
-        assertEquals("{1=true,2=false}", ConverterUtils.getInstance().toString(map));
+        assertEquals("{1=true,2=false}", ConverterUtils.toString(map));
     }
 
     /**
@@ -511,7 +511,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringByteArray() throws Exception {
-        assertEquals("[1,2,3," + Byte.MIN_VALUE + ',' + Byte.MAX_VALUE + "]", ConverterUtils.getInstance().toString(new byte[] { 1, 2, 3, Byte.MIN_VALUE, Byte.MAX_VALUE }));
+        assertEquals("[1,2,3," + Byte.MIN_VALUE + ',' + Byte.MAX_VALUE + "]", ConverterUtils.toString(new byte[] { 1, 2, 3, Byte.MIN_VALUE, Byte.MAX_VALUE }));
     }
 
     /**
@@ -520,7 +520,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringByteObjectArray() throws Exception {
-        assertEquals("[1,2,3," + Byte.MIN_VALUE + ',' + Byte.MAX_VALUE + "]", ConverterUtils.getInstance().toString(new Byte[] { Byte.valueOf((byte) 1), Byte.valueOf((byte) 2), Byte.valueOf((byte) 3), Byte.valueOf(Byte.MIN_VALUE), Byte.valueOf(Byte.MAX_VALUE) }));
+        assertEquals("[1,2,3," + Byte.MIN_VALUE + ',' + Byte.MAX_VALUE + "]", ConverterUtils.toString(new Byte[] { Byte.valueOf((byte) 1), Byte.valueOf((byte) 2), Byte.valueOf((byte) 3), Byte.valueOf(Byte.MIN_VALUE), Byte.valueOf(Byte.MAX_VALUE) }));
     }
 
     /**
@@ -529,7 +529,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringByteObjectList() throws Exception {
-        assertEquals("[1,2,3]", ConverterUtils.getInstance().toString(Arrays.asList(Byte.valueOf((byte) 1), Byte.valueOf((byte) 2), Byte.valueOf((byte) 3))));
+        assertEquals("[1,2,3]", ConverterUtils.toString(Arrays.asList(Byte.valueOf((byte) 1), Byte.valueOf((byte) 2), Byte.valueOf((byte) 3))));
     }
 
     /**
@@ -543,7 +543,7 @@ class ConverterUtilsTest extends TestCase {
         map.put("2", Byte.valueOf((byte) 2));
         map.put("3", Byte.valueOf((byte) 3));
 
-        assertEquals("{1=1,2=2,3=3}", ConverterUtils.getInstance().toString(map), "Wrong result");
+        assertEquals("{1=1,2=2,3=3}", ConverterUtils.toString(map), "Wrong result");
     }
 
     /**
@@ -552,7 +552,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringDoubleArray() throws Exception {
-        assertEquals("[1.1,2.1,3.1," + Double.MIN_VALUE + ',' + Double.MAX_VALUE + "]", ConverterUtils.getInstance().toString(new double[] { 1.1, 2.1, 3.1, Double.MIN_VALUE, Double.MAX_VALUE }), "Wrong result");
+        assertEquals("[1.1,2.1,3.1," + Double.MIN_VALUE + ',' + Double.MAX_VALUE + "]", ConverterUtils.toString(new double[] { 1.1, 2.1, 3.1, Double.MIN_VALUE, Double.MAX_VALUE }), "Wrong result");
     }
 
     /**
@@ -561,7 +561,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringDoubleObjectArray() throws Exception {
-        assertEquals("[1.1,2.1,3.1," + Double.MIN_VALUE + ',' + Double.MAX_VALUE + "]", ConverterUtils.getInstance().toString(new Double[] { Double.valueOf(1.1), Double.valueOf(2.1), Double.valueOf(3.1), Double.valueOf(Double.MIN_VALUE), Double.valueOf(Double.MAX_VALUE) }), "Wrong result");
+        assertEquals("[1.1,2.1,3.1," + Double.MIN_VALUE + ',' + Double.MAX_VALUE + "]", ConverterUtils.toString(new Double[] { Double.valueOf(1.1), Double.valueOf(2.1), Double.valueOf(3.1), Double.valueOf(Double.MIN_VALUE), Double.valueOf(Double.MAX_VALUE) }), "Wrong result");
     }
 
     /**
@@ -570,7 +570,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringDoubleObjectList() throws Exception {
-        assertEquals("[1.1,2.1,3.1]", ConverterUtils.getInstance().toString(Arrays.asList(Double.valueOf(1.1), Double.valueOf(2.1), Double.valueOf(3.1))), "Wrong result");
+        assertEquals("[1.1,2.1,3.1]", ConverterUtils.toString(Arrays.asList(Double.valueOf(1.1), Double.valueOf(2.1), Double.valueOf(3.1))), "Wrong result");
     }
 
     /**
@@ -584,7 +584,7 @@ class ConverterUtilsTest extends TestCase {
         map.put("2", Double.valueOf(2));
         map.put("3", Double.valueOf(3));
 
-        assertEquals("{1=1.0,2=2.0,3=3.0}", ConverterUtils.getInstance().toString(map));
+        assertEquals("{1=1.0,2=2.0,3=3.0}", ConverterUtils.toString(map));
     }
 
     /**
@@ -593,7 +593,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringIntArray() throws Exception {
-        assertEquals("[1,2,3," + Integer.MIN_VALUE + ',' + Integer.MAX_VALUE + "]", ConverterUtils.getInstance().toString(new int[] { 1, 2, 3, Integer.MIN_VALUE, Integer.MAX_VALUE }), "Wrong result");
+        assertEquals("[1,2,3," + Integer.MIN_VALUE + ',' + Integer.MAX_VALUE + "]", ConverterUtils.toString(new int[] { 1, 2, 3, Integer.MIN_VALUE, Integer.MAX_VALUE }), "Wrong result");
     }
 
     /**
@@ -602,7 +602,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringIntegerObjectArray() throws Exception {
-        assertEquals("[1,2,3," + Integer.MIN_VALUE + ',' + Integer.MAX_VALUE + "]", ConverterUtils.getInstance().toString(new Integer[] { Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(Integer.MIN_VALUE), Integer.valueOf(Integer.MAX_VALUE) }), "Wrong result");
+        assertEquals("[1,2,3," + Integer.MIN_VALUE + ',' + Integer.MAX_VALUE + "]", ConverterUtils.toString(new Integer[] { Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(Integer.MIN_VALUE), Integer.valueOf(Integer.MAX_VALUE) }), "Wrong result");
     }
 
     /**
@@ -611,7 +611,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringIntegerObjectList() throws Exception {
-        assertEquals("[1,2,3]", ConverterUtils.getInstance().toString(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))), "Wrong result");
+        assertEquals("[1,2,3]", ConverterUtils.toString(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))), "Wrong result");
     }
 
     /**
@@ -625,7 +625,7 @@ class ConverterUtilsTest extends TestCase {
         map.put("2", Integer.valueOf(2));
         map.put("3", Integer.valueOf(3));
 
-        assertEquals("{1=1,2=2,3=3}", ConverterUtils.getInstance().toString(map), "Wrong result");
+        assertEquals("{1=1,2=2,3=3}", ConverterUtils.toString(map), "Wrong result");
     }
 
     /**
@@ -634,7 +634,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringLongArray() throws Exception {
-        assertEquals("[1,2,3," + Long.MIN_VALUE + ',' + Long.MAX_VALUE + "]", ConverterUtils.getInstance().toString(new long[] { 1, 2, 3, Long.MIN_VALUE, Long.MAX_VALUE }), "Wrong result");
+        assertEquals("[1,2,3," + Long.MIN_VALUE + ',' + Long.MAX_VALUE + "]", ConverterUtils.toString(new long[] { 1, 2, 3, Long.MIN_VALUE, Long.MAX_VALUE }), "Wrong result");
     }
 
     /**
@@ -643,7 +643,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringLongObjectArray() throws Exception {
-        assertEquals("[1,2,3," + Long.MIN_VALUE + ',' + Long.MAX_VALUE + "]", ConverterUtils.getInstance().toString(new Long[] { Long.valueOf(1), Long.valueOf(2), Long.valueOf(3), Long.valueOf(Long.MIN_VALUE), Long.valueOf(Long.MAX_VALUE) }), "Wrong result");
+        assertEquals("[1,2,3," + Long.MIN_VALUE + ',' + Long.MAX_VALUE + "]", ConverterUtils.toString(new Long[] { Long.valueOf(1), Long.valueOf(2), Long.valueOf(3), Long.valueOf(Long.MIN_VALUE), Long.valueOf(Long.MAX_VALUE) }), "Wrong result");
     }
 
     /**
@@ -652,7 +652,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringLongObjectList() throws Exception {
-        assertEquals("[1,2,3]", ConverterUtils.getInstance().toString(Arrays.asList(Long.valueOf(1), Long.valueOf(2), Long.valueOf(3))), "Wrong result");
+        assertEquals("[1,2,3]", ConverterUtils.toString(Arrays.asList(Long.valueOf(1), Long.valueOf(2), Long.valueOf(3))), "Wrong result");
     }
 
     /**
@@ -666,7 +666,7 @@ class ConverterUtilsTest extends TestCase {
         map.put("2", Long.valueOf(2));
         map.put("3", Long.valueOf(3));
 
-        assertEquals("{1=1,2=2,3=3}", ConverterUtils.getInstance().toString(map), "Wrong result");
+        assertEquals("{1=1,2=2,3=3}", ConverterUtils.toString(map), "Wrong result");
     }
 
     /**
@@ -675,7 +675,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringStringArray() throws Exception {
-        assertEquals("[1,2,3]", ConverterUtils.getInstance().toString(new String[] { String.valueOf(1), String.valueOf(2), String.valueOf(3) }), "Wrong result");
+        assertEquals("[1,2,3]", ConverterUtils.toString(new String[] { String.valueOf(1), String.valueOf(2), String.valueOf(3) }), "Wrong result");
     }
 
     /**
@@ -684,7 +684,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToStringStringList() throws Exception {
-        assertEquals("[1,2,3]", ConverterUtils.getInstance().toString(Arrays.asList(String.valueOf(1), String.valueOf(2), String.valueOf(3))), "Wrong result");
+        assertEquals("[1,2,3]", ConverterUtils.toString(Arrays.asList(String.valueOf(1), String.valueOf(2), String.valueOf(3))), "Wrong result");
     }
 
     /**
@@ -698,7 +698,7 @@ class ConverterUtilsTest extends TestCase {
         map.put("2", "2");
         map.put("3", "3");
 
-        assertEquals("{1=1,2=2,3=3}", ConverterUtils.getInstance().toString(map));
+        assertEquals("{1=1,2=2,3=3}", ConverterUtils.toString(map));
     }
 
     /**
@@ -707,7 +707,7 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToZonedDateTimeUsingDate() throws Exception {
-        assertEquals(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")), ConverterUtils.getInstance().toObject(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")), ZonedDateTime.class), "Wrong result");
+        assertEquals(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")), ConverterUtils.toObject(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("UTC")), ZonedDateTime.class), "Wrong result");
     }
 
     /**
@@ -716,6 +716,6 @@ class ConverterUtilsTest extends TestCase {
      */
     @Test
     void testToZonedDateTimeUsingString() throws Exception {
-        assertEquals(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("Z")), ConverterUtils.getInstance().toObject("20230123 01:02:03.000Z", ZonedDateTime.class), "Wrong result");
+        assertEquals(ZonedDateTime.of(2023, 1, 23, 1, 2, 3, 0, ZoneId.of("Z")), ConverterUtils.toObject("20230123 01:02:03.000Z", ZonedDateTime.class), "Wrong result");
     }
 }

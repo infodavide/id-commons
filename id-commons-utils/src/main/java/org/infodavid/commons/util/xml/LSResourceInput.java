@@ -15,34 +15,40 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class LSResourceInput.
  */
+@Slf4j
 public class LSResourceInput implements LSInput {
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LSResourceInput.class);
-
-    /** The base uri. */
+    /** The base URI. */
     private String baseUri = null;
 
     /** The certified text. */
+    @Setter
     private boolean certifiedText = false;
 
     /** The content. */
     private WeakReference<byte[]> content = null;
 
     /** The locations. */
+    @Getter
     private final String[] locations;
 
-    /** The public id. */
+    /** The public identifier. */
+    @Getter
+    @Setter
     private String publicId;
 
-    /** The system id. */
+    /** The system identifier. */
+    @Getter
+    @Setter
     private String systemId;
 
     /**
@@ -154,7 +160,8 @@ public class LSResourceInput implements LSInput {
                     LOGGER.debug("Trying to read schema using location: {}", locations[i] + '/' + path);
                 }
 
-                result = Thread.currentThread().getContextClassLoader().getResourceAsStream(locations[i++] + '/' + path);
+                result = Thread.currentThread().getContextClassLoader().getResourceAsStream(locations[i] + '/' + path);
+                i++;
             }
         }
 
@@ -165,23 +172,6 @@ public class LSResourceInput implements LSInput {
         }
 
         return result;
-    }
-
-    /**
-     * Gets the locations.
-     * @return the locations
-     */
-    public String[] getLocations() {
-        return locations;
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.w3c.dom.ls.LSInput#getPublicId()
-     */
-    @Override
-    public String getPublicId() {
-        return publicId;
     }
 
     /*
@@ -198,15 +188,6 @@ public class LSResourceInput implements LSInput {
         } catch (@SuppressWarnings("unused") final IOException e) {
             return null;
         }
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.w3c.dom.ls.LSInput#getSystemId()
-     */
-    @Override
-    public String getSystemId() {
-        return systemId;
     }
 
     /*
@@ -229,15 +210,6 @@ public class LSResourceInput implements LSInput {
 
     /*
      * (non-javadoc)
-     * @see org.w3c.dom.ls.LSInput#setCertifiedText(boolean)
-     */
-    @Override
-    public void setCertifiedText(final boolean certifiedText) {
-        this.certifiedText = certifiedText;
-    }
-
-    /*
-     * (non-javadoc)
      * @see org.w3c.dom.ls.LSInput#setCharacterStream(java.io.Reader)
      */
     @Override
@@ -256,28 +228,10 @@ public class LSResourceInput implements LSInput {
 
     /*
      * (non-javadoc)
-     * @see org.w3c.dom.ls.LSInput#setPublicId(java.lang.String)
-     */
-    @Override
-    public void setPublicId(final String publicId) {
-        this.publicId = publicId;
-    }
-
-    /*
-     * (non-javadoc)
      * @see org.w3c.dom.ls.LSInput#setStringData(java.lang.String)
      */
     @Override
     public void setStringData(final String stringData) {
         // not used
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.w3c.dom.ls.LSInput#setSystemId(java.lang.String)
-     */
-    @Override
-    public void setSystemId(final String systemId) {
-        this.systemId = systemId;
     }
 }

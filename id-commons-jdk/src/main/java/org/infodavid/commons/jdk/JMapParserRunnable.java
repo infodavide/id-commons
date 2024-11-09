@@ -9,12 +9,15 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.Getter;
+
 /**
  * The Class JMapParserRunnable.
  */
 class JMapParserRunnable implements Runnable {
 
     /** The error. */
+    @Getter
     private Exception error = null;
 
     /** The exclude pattern. */
@@ -54,14 +57,6 @@ class JMapParserRunnable implements Runnable {
         } else {
             includePattern = null;
         }
-    }
-
-    /**
-     * Gets the error.
-     * @return the error
-     */
-    public Exception getError() {
-        return error;
     }
 
     /*

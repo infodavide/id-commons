@@ -21,14 +21,16 @@ import org.infodavid.commons.model.Database;
 import org.infodavid.commons.util.concurrency.RetryHelper;
 import org.infodavid.commons.util.system.CommandExecutorFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * The Class MariaDbConnector.
  */
+@Slf4j
 public class MariaDbConnector extends AbstractDatabaseConnector {
 
     /** The Constant CONNECTION_STRING_PATTERN. */
@@ -42,9 +44,6 @@ public class MariaDbConnector extends AbstractDatabaseConnector {
 
     /** The Constant DRIVER_CLASS_NAME. */
     private static final String DRIVER_CLASS_NAME = "org.mariadb.jdbc.Driver";
-
-    /** The Constant LOGGER. */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(MariaDbConnector.class);
 
     /** The Constant NAME. */
     protected static final String NAME = "mariadb";

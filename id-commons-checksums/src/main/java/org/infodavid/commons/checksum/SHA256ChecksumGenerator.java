@@ -5,20 +5,16 @@ import java.io.InputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import lombok.NoArgsConstructor;
+
 /**
  * The Class SHA256ChecksumGenerator.
  */
+@NoArgsConstructor
 public final class SHA256ChecksumGenerator extends AbstractChecksumGenerator {
 
     /** The Constant ALGORITHM. */
     public static final String ALGORITHM = "SHA-256";
-
-    /**
-     * Instantiates a new SHA 256 checksum generator.
-     */
-    public SHA256ChecksumGenerator() {
-        // noop
-    }
 
     /*
      * (non-javadoc)

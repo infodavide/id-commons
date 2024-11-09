@@ -13,20 +13,18 @@ import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ImplementationLoader.
  * @param <S> the generic type
  */
+@Slf4j
 public class ImplementationLoader<S> {
 
     /** The Constant DEFAULT_RESOURCE_PATH. */
     public static final String DEFAULT_RESOURCE_PATH = "/META-INF/implementations/"; // NOSONAR Not an URL
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImplementationLoader.class);
 
     /**
      * Creates a new implementation loader for the given type, using the current thread's {@linkplain java.lang.Thread#getContextClassLoader context class loader}.

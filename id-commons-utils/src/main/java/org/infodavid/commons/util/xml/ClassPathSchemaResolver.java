@@ -3,21 +3,19 @@ package org.infodavid.commons.util.xml;
 import java.util.Map;
 
 import org.infodavid.commons.util.collection.NullSafeConcurrentHashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ClassPathSchemaResolver.
  */
+@Slf4j
 public class ClassPathSchemaResolver implements LSResourceResolver {
 
     /** The cache. */
     private static final Map<String, LSInput> CACHE = new NullSafeConcurrentHashMap<>();
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassPathSchemaResolver.class);
 
     /** The locations. */
     private final String[] locations;

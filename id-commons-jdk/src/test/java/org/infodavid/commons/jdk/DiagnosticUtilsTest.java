@@ -27,7 +27,7 @@ class DiagnosticUtilsTest extends TestCase {
             path.delete();
         }
 
-        DiagnosticUtils.getInstance().buildHeadDump(path.getAbsolutePath());
+        DiagnosticUtils.buildHeadDump(path.getAbsolutePath());
 
         assertTrue( path.exists(),"File not found");
     }
@@ -39,7 +39,7 @@ class DiagnosticUtilsTest extends TestCase {
     void testCollectDiagnostics() { // NOSONAR No error
         final StringBuilder buffer = new StringBuilder();
 
-        DiagnosticUtils.getInstance().collectDiagnostics(buffer);
+        DiagnosticUtils.collectDiagnostics(buffer);
     }
 
     /**
@@ -48,7 +48,7 @@ class DiagnosticUtilsTest extends TestCase {
      */
     @Test
     void testGc() throws Exception { // NOSONAR No error
-        DiagnosticUtils.getInstance().gc();
+        DiagnosticUtils.gc();
     }
 
     /**
@@ -56,7 +56,7 @@ class DiagnosticUtilsTest extends TestCase {
      */
     @Test
     void testGetActiveLiveThreads() { // NOSONAR No error
-        DiagnosticUtils.getInstance().getActiveLiveThreads(5);
+        DiagnosticUtils.getActiveLiveThreads(5);
     }
 
     /**
@@ -64,6 +64,6 @@ class DiagnosticUtilsTest extends TestCase {
      */
     @Test
     void testGetJavaHeapHistogram() { // NOSONAR No error
-        DiagnosticUtils.getInstance().getJavaHeapHistogram("", "");
+        DiagnosticUtils.getJavaHeapHistogram("", "");
     }
 }

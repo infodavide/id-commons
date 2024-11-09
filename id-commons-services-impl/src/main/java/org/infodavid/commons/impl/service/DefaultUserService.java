@@ -26,7 +26,6 @@ import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.util.collection.CollectionUtils;
 import org.infodavid.commons.util.jackson.JsonUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -38,19 +37,18 @@ import org.springframework.transaction.annotation.Transactional;
 import groovy.text.SimpleTemplateEngine;
 import jakarta.persistence.PersistenceException;
 import jakarta.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DefaultUserService.<br>
  */
 /* If necessary, declare the bean in the Spring configuration. */
 @Transactional(readOnly = true)
+@Slf4j
 public class DefaultUserService extends AbstractEntityService<Long, User> implements UserService, InitializingBean {
 
     /** The Constant ANONYMOUS. */
     public static final User ANONYMOUS;
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultUserService.class);
 
     /** The Constant SUPPORTED_ROLES. */
     protected static final String[] SUPPORTED_ROLES;
@@ -65,7 +63,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
         Arrays.sort(SUPPORTED_ROLES);
         ANONYMOUS = new User();
         ANONYMOUS.setName(org.infodavid.commons.model.Constants.ANONYMOUS);
-        ANONYMOUS.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
+        ANONYMOUS.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
         ANONYMOUS.setDeletable(false);
         ANONYMOUS.setCreationDate(new Date());
         ANONYMOUS.setModificationDate(ANONYMOUS.getCreationDate());
@@ -113,7 +111,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
         getLogger().debug("Initializing...");
         initialized = true;
-        TransactionUtils.getInstance().doInTransaction("Checking users", LOGGER, getApplicationContext(), () -> {
+        TransactionUtils.doInTransaction("Checking users", LOGGER, getApplicationContext(), () -> {
             Optional<User> optional = dao.findByName(org.infodavid.commons.model.Constants.DEFAULT_ADMINISTRATOR);
 
             if (!optional.isPresent()) {
@@ -123,7 +121,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
                 user.setDisplayName("Administrator");
                 user.setEmail("support@infodavid.org");
                 user.setPassword(DigestUtils.md5Hex(org.infodavid.commons.model.Constants.DEFAULT_PASSWORD));
-                user.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
+                user.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
                 dao.insert(user);
             }
 
@@ -136,7 +134,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
                 user.setDisplayName("Anonymous");
                 user.setEmail("support@infodavid.org");
                 user.setPassword(org.infodavid.commons.model.Constants.ANONYMOUS);
-                user.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
+                user.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
                 dao.insert(user);
             }
 
@@ -152,8 +150,6 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
      */
     @Override
     public void export(final OutputStream out) throws ServiceException { // NOSONAR No complexity
-        final JsonUtils utils = JsonUtils.getInstance();
-
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
             final Page<User> users = getDataAccessObject().findAll(Pageable.unpaged());
             writer.write("Name");
@@ -250,7 +246,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
                 writer.write(Constants.CSV_SEPARATOR);
 
                 if (user.getProperties() != null) {
-                    writer.write(utils.toJson(user.getProperties()));
+                    writer.write(JsonUtils.toJson(user.getProperties()));
                 }
 
                 writer.write(Constants.EOL);
@@ -624,7 +620,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
         }
 
         if (value.getRoles() == null) {
-            value.setRoles(CollectionUtils.getInstance().of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
+            value.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
         } else {
             for (final String role : value.getRoles()) {
                 if (Arrays.binarySearch(getSupportedRoles(), role) < 0) {

@@ -13,6 +13,9 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * The Class TcpServer.
  */
@@ -118,18 +121,25 @@ public abstract class AbstractTcpComponent implements Closeable {
     }
 
     /** The charset. */
+    @Getter
+    @Setter
     protected Charset charset = StandardCharsets.ISO_8859_1;
 
     /** The handler. */
     protected final HandlerImpl handler = new HandlerImpl();
 
     /** The listener. */
+    @Getter
+    @Setter
     protected TcpListener listener;
 
     /** The output stream. */
+    @Getter
     private OutputStream out = null;
 
     /** The port. */
+    @Getter
+    @Setter
     private int port;
 
     /**
@@ -138,22 +148,6 @@ public abstract class AbstractTcpComponent implements Closeable {
      */
     protected AbstractTcpComponent(final int port) {
         this.port = port;
-    }
-
-    /**
-     * Gets the charset.
-     * @return the charset
-     */
-    public Charset getCharset() {
-        return charset;
-    }
-
-    /**
-     * Gets the listener.
-     * @return the listener
-     */
-    public TcpListener getListener() {
-        return listener;
     }
 
     /**
@@ -192,14 +186,6 @@ public abstract class AbstractTcpComponent implements Closeable {
         }
 
         return out;
-    }
-
-    /**
-     * Gets the port.
-     * @return the port
-     */
-    public int getPort() {
-        return port;
     }
 
     /**
@@ -242,30 +228,6 @@ public abstract class AbstractTcpComponent implements Closeable {
      */
     public void send(final String message, final byte[] delimiter) throws IOException {
         send(ArrayUtils.addAll(message.getBytes(charset), delimiter));
-    }
-
-    /**
-     * Sets the charset.
-     * @param charset the new charset
-     */
-    public void setCharset(final Charset charset) {
-        this.charset = charset;
-    }
-
-    /**
-     * Sets the listener.
-     * @param listener the new listener
-     */
-    public void setListener(final TcpListener listener) {
-        this.listener = listener;
-    }
-
-    /**
-     * Sets the port.
-     * @param port the new port
-     */
-    public void setPort(final int port) {
-        this.port = port;
     }
 
     /**

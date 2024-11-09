@@ -28,7 +28,6 @@ import org.infodavid.commons.util.collection.NullSafeConcurrentHashMap;
 import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.infodavid.commons.util.jackson.JsonUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +42,18 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import jakarta.annotation.PreDestroy;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DefaultSocketHandler.<br>
  * Keep this class abstract to make it optional for the projects using this module.
  */
+@Slf4j
 public class DefaultSocketHandler extends TextWebSocketHandler implements Runnable, SocketHandler, AuthenticationListener, InitializingBean {
+
+    /** The Constant THREAD_INTERRUPTED. */
+    private static final String THREAD_INTERRUPTED = "Thread interrupted";
 
     /**
      * The Class Sender.
@@ -85,7 +90,7 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
             final TextMessage textMessage;
 
             try {
-                textMessage = new TextMessage(JsonUtils.getInstance().toJson(message));
+                textMessage = new TextMessage(JsonUtils.toJson(message));
             } catch (final Exception e) {
                 getLogger().error(String.format("Error during processing of the message: %s", message), e);
 
@@ -120,9 +125,6 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
 
     /** The Constant AUTHENTICATION_ATTRIBUTE. */
     private static final String AUTHENTICATION_ATTRIBUTE = "authentication";
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultSocketHandler.class);
 
     /** The Constant USER_NAME_ATTRIBUTE. */
     private static final String USER_NAME_ATTRIBUTE = "username";
@@ -168,6 +170,7 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
     private ExecutorService executor;
 
     /** The listeners. */
+    @Getter
     private final Set<SocketMessageListener> listeners = new HashSet<>();
 
     /** The queue of pending messages. */
@@ -259,19 +262,10 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
             threads = Byte.parseByte(threadsCount);
         }
 
-        executor = ThreadUtils.getInstance().newThreadPoolExecutorWithDiscard(getClass(), getLogger(), threads, threads * 2);
+        executor = ThreadUtils.newThreadPoolExecutorWithDiscard(getClass(), getLogger(), threads, threads * 2);
         executor.submit(this);
         authenticationService.addListener(this);
         getLogger().debug("Socket handler initialized");
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.restapi.socket.SocketHandler#getListeners()
-     */
-    @Override
-    public Set<SocketMessageListener> getListeners() {
-        return listeners;
     }
 
     /**
@@ -292,7 +286,7 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
         getLogger().debug("Message received, raw data: {}", textMessage.getPayload());
 
         try {
-            message = JsonUtils.getInstance().fromJson(textMessage.getPayload(), SocketMessage.class);
+            message = JsonUtils.fromJson(textMessage.getPayload(), SocketMessage.class);
         } catch (final IOException e) {
             getLogger().warn(String.format("Message cannot be parsed: %s", textMessage.getPayload()), e); // NOSONAR No template with Throwable
 
@@ -458,9 +452,9 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
         stop();
 
         try {
-            ThreadUtils.getInstance().shutdown(executor);
+            ThreadUtils.shutdown(executor);
         } catch (final InterruptedException e) {// NOSONAR Exception handled by utilities
-            LOGGER.warn("Thread interrupted", e);
+            LOGGER.warn(THREAD_INTERRUPTED, e);
             Thread.currentThread().interrupt();
         }
 
@@ -515,7 +509,7 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
         }
 
         if (interruption != null) {// NOSONAR Exception handled by utilities
-            LOGGER.warn("Thread interrupted", interruption);
+            LOGGER.warn(THREAD_INTERRUPTED, interruption);
             Thread.currentThread().interrupt();
         }
     }
@@ -554,7 +548,7 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
         } catch (final IllegalStateException e) {
             getLogger().warn("Cannot stack message: {}, Reason: {}, Active: {}, queue size: {}, sessions: {}", message, e.getMessage(), String.valueOf(active.get()), String.valueOf(queue.size()), String.valueOf(sessions.size())); // NOSONAR Always written
         } catch (final InterruptedException e) {
-            LOGGER.warn("Thread interrupted", e);
+            LOGGER.warn(THREAD_INTERRUPTED, e);
             Thread.currentThread().interrupt();
         }
     }

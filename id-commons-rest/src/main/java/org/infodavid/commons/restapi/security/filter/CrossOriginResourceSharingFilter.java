@@ -6,28 +6,20 @@ import java.util.Enumeration;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.thetransactioncompany.cors.CORSConfiguration;
 import com.thetransactioncompany.cors.CORSConfigurationLoader;
 
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class CrossOriginResourceSharingFilter.
  */
+@NoArgsConstructor
+@Slf4j
 public class CrossOriginResourceSharingFilter extends com.thetransactioncompany.cors.CORSFilter {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CrossOriginResourceSharingFilter.class);
-
-    /**
-     * Instantiates a new filter.
-     */
-    public CrossOriginResourceSharingFilter() {
-    }
 
     /**
      * Instantiates a new filter.

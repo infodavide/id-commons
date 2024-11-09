@@ -7,10 +7,17 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.infodavid.commons.model.AbstractEntityReference;
 import org.infodavid.commons.restapi.annotation.DataTransferObject;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * The Class EntityReferenceDto.
  */
 @DataTransferObject(model = AbstractEntityReference.class)
+@NoArgsConstructor
+@Getter
+@Setter
 public class EntityReferenceDto implements Serializable {
 
     /** The Constant serialVersionUID. */
@@ -21,13 +28,6 @@ public class EntityReferenceDto implements Serializable {
 
     /** The identifier. */
     private String id;
-
-    /**
-     * Instantiates a new DTO.
-     */
-    public EntityReferenceDto() {
-        //noop
-    }
 
     /**
      * Instantiates a new DTO.
@@ -60,22 +60,6 @@ public class EntityReferenceDto implements Serializable {
         return Objects.equals(id, other.id);
     }
 
-    /**
-     * Gets the display name.
-     * @return the display name
-     */
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    /**
-     * Gets the identifier.
-     * @return the identifier
-     */
-    public String getId() {
-        return id;
-    }
-
     /*
      * (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -83,22 +67,6 @@ public class EntityReferenceDto implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    /**
-     * Sets the display name.
-     * @param displayName the display name to set
-     */
-    public void setDisplayName(final String displayName) {
-        this.displayName = displayName;
-    }
-
-    /**
-     * Sets the identifier.
-     * @param id the identifier to set
-     */
-    public void setId(final String id) {
-        this.id = id;
     }
 
     /*

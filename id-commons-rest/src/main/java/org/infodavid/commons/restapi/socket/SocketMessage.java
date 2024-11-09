@@ -7,9 +7,16 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * The Class SocketMessage.
  */
+@NoArgsConstructor
+@Getter
+@Setter
 public class SocketMessage {
 
     /** The data. */
@@ -38,13 +45,7 @@ public class SocketMessage {
 
     /**
      * Instantiates a new socket message.
-     */
-    public SocketMessage() {
-    }
-
-    /**
-     * Instantiates a new socket message.
-     * @param ack the ack
+     * @param ack the acknowledgment
      */
     public SocketMessage(final boolean ack) {
         data = Boolean.valueOf(ack);
@@ -80,11 +81,9 @@ public class SocketMessage {
             return false;
         }
 
-        if (!(obj instanceof SocketMessage)) {
+        if (!(obj instanceof final SocketMessage other)) {
             return false;
         }
-
-        final SocketMessage other = (SocketMessage) obj;
 
         if (!Objects.equals(hash, other.hash)) {
             return false;
@@ -101,62 +100,6 @@ public class SocketMessage {
         return type == other.type;
     }
 
-    /**
-     * Gets the data.
-     * @return the data
-     */
-    public Object getData() {
-        return data;
-    }
-
-    /**
-     * Gets the hash used to identify messages when compacting the queue of pending messages.
-     * @return the hash
-     */
-    public Integer getHash() {
-        return hash;
-    }
-
-    /**
-     * Gets the principal.
-     * @return the principal
-     */
-    public Principal getPrincipal() {
-        return principal;
-    }
-
-    /**
-     * Gets the session identifier.
-     * @return the session identifier
-     */
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    /**
-     * Gets the thread.
-     * @return the thread
-     */
-    public String getThread() {
-        return thread;
-    }
-
-    /**
-     * Gets the topic.
-     * @return the topic
-     */
-    public String getTopic() {
-        return topic;
-    }
-
-    /**
-     * Gets the type.
-     * @return the type
-     */
-    public SocketMessageType getType() {
-        return type;
-    }
-
     /*
      * (non-javadoc)
      * @see java.lang.Object#hashCode()
@@ -164,62 +107,6 @@ public class SocketMessage {
     @Override
     public int hashCode() {
         return Objects.hash(hash, topic, thread, type);
-    }
-
-    /**
-     * Sets the data.
-     * @param data the data
-     */
-    public void setData(final Object data) {
-        this.data = data;
-    }
-
-    /**
-     * Sets the hash used to identify messages when compacting the queue of pending messages.
-     * @param hash the hash to set
-     */
-    public void setHash(final Integer hash) {
-        this.hash = hash;
-    }
-
-    /**
-     * Sets the principal.
-     * @param principal the new principal
-     */
-    public void setPrincipal(final Principal principal) {
-        this.principal = principal;
-    }
-
-    /**
-     * Sets the session identifier.
-     * @param sessionId the new session identifier
-     */
-    public void setSessionId(final String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    /**
-     * Sets the thread.
-     * @param thread the thread to set
-     */
-    public void setThread(final String thread) {
-        this.thread = thread;
-    }
-
-    /**
-     * Sets the topic.
-     * @param topic the new topic
-     */
-    public void setTopic(final String topic) {
-        this.topic = topic;
-    }
-
-    /**
-     * Sets the type.
-     * @param type the new type
-     */
-    public void setType(final SocketMessageType type) {
-        this.type = type;
     }
 
     /*

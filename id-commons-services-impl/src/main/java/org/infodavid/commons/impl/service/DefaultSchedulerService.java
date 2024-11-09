@@ -14,25 +14,25 @@ import org.infodavid.commons.service.SchedulerService;
 import org.infodavid.commons.util.concurrency.ReentrantLock;
 import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.PreDestroy;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DefaultSchedulerService.
  */
 /* If necessary, declare the bean in the Spring configuration. */
 @Transactional(readOnly = true)
+@Slf4j
 public class DefaultSchedulerService extends AbstractService implements SchedulerService, InitializingBean {
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultSchedulerService.class);
-
     /** The executor. */
+    @Getter
     private ScheduledExecutorService executor;
 
     /** The lock. */
@@ -78,14 +78,6 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
         return Math.min(16, Runtime.getRuntime().availableProcessors() * 5);
     }
 
-    /**
-     * Gets the executor.
-     * @return the executor
-     */
-    public ScheduledExecutorService getExecutor() {
-        return executor;
-    }
-
     /*
      * (non-javadoc)
      * @see org.infodavid.impl.service.AbstractService#getLogger()
@@ -112,7 +104,7 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
             getLogger().debug("Instantiating executor with {} threads...", String.valueOf(threads));
         }
 
-        executor = ThreadUtils.getInstance().newScheduledExecutorService(getClass(), getLogger(), threads);
+        executor = ThreadUtils.newScheduledExecutorService(getClass(), getLogger(), threads);
     }
 
     /**
@@ -144,7 +136,7 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
         lock.lock();
 
         try {
-            ThreadUtils.getInstance().shutdown(executor);
+            ThreadUtils.shutdown(executor);
         } catch (final InterruptedException e) { // NOSONAR Interrupt called at the end
             interruption = e;
         } finally {
@@ -206,7 +198,7 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
         lock.lock();
 
         try {
-            ThreadUtils.getInstance().reset(executor);
+            ThreadUtils.reset(executor);
         } finally {
             lock.unlock();
         }
@@ -279,7 +271,7 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
         lock.lock();
 
         try {
-            return ThreadUtils.getInstance().callAsync(task, executor);
+            return ThreadUtils.callAsync(task, executor);
         } finally {
             lock.unlock();
             log();

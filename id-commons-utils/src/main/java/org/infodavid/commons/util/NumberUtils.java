@@ -1,6 +1,5 @@
 package org.infodavid.commons.util;
 
-import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -16,16 +15,18 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.commons.lang3.mutable.MutableShort;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class NumberUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class NumberUtils {
 
     /** The Constant BINARY_PREFIX. */
@@ -34,33 +35,9 @@ public final class NumberUtils {
     /** The Constant HEX_PREFIX. */
     public static final String HEX_PREFIX = "0x";
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(NumberUtils.class);
-
-    /** The singleton. */
-    private static WeakReference<NumberUtils> instance = null;
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized NumberUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new NumberUtils());
-        }
-
-        return instance.get();
-    }
-
     /** The Constant powers. */
-    private final long[] powers = new long[] { // NOSONAR Allow unallocation
+    private final long[] powers = { // NOSONAR Allow unallocation
             1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private NumberUtils() {
-    }
 
     /**
      * Creates the number.
@@ -78,7 +55,7 @@ public final class NumberUtils {
      * @return true, if successful
      */
     public boolean equals(final Object left, final Object right) {
-        if (left instanceof Number leftNumber) {
+        if (left instanceof final Number leftNumber) {
             if (!(right instanceof Number)) {
                 return false;
             }

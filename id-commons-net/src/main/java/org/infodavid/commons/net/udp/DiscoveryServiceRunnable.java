@@ -11,19 +11,17 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DiscoveryServiceThread.
  */
+@Slf4j
 class DiscoveryServiceRunnable implements Runnable, Thread.UncaughtExceptionHandler {
 
     /** The Constant DEFAULT_CHARSET. */
     public static final Charset DEFAULT_CHARSET = StandardCharsets.US_ASCII;
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryServiceRunnable.class);
 
     /** The Constant DEFAULT_DISCOVERY_COMMAND. */
     protected static final byte[] DEFAULT_DISCOVERY_COMMAND;

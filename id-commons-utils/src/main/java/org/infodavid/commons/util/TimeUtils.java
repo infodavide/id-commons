@@ -1,18 +1,17 @@
 package org.infodavid.commons.util;
 
-import java.lang.ref.WeakReference;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class TimeUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class TimeUtils {
-
-    /** The singleton. */
-    private static WeakReference<TimeUtils> instance = null;
 
     /**
      * The suffix in the delay string for minutes.
@@ -38,24 +37,6 @@ public final class TimeUtils {
      * The suffix in the delay string for seconds.
      */
     private static final String S_UNIT = "s";
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized TimeUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new TimeUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new util.
-     */
-    private TimeUtils() {
-    }
 
     /**
      * Parses the duration (number as text).

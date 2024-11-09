@@ -11,6 +11,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The Class BasicAuthenticationFilter.
@@ -18,6 +20,8 @@ import jakarta.servlet.http.HttpServletResponse;
 public class BasicAuthenticationFilter extends org.springframework.security.web.authentication.www.BasicAuthenticationFilter { // NOSONAR Class name
 
     /** The allowed. */
+    @Getter
+    @Setter
     private boolean allowed = false;
 
     /**
@@ -39,28 +43,12 @@ public class BasicAuthenticationFilter extends org.springframework.security.web.
         super.doFilterInternal(request, response, chain);
     }
 
-    /**
-     * Checks if is allowed.
-     * @return true, if is allowed
-     */
-    public boolean isAllowed() {
-        return allowed;
-    }
-
-    /**
-     * Sets the allowed.
-     * @param allowed the new allowed
-     */
-    public void setAllowed(boolean allowed) {
-        this.allowed = allowed;
-    }
-
     /*
      * (non-javadoc)
      * @see org.springframework.web.filter.OncePerRequestFilter#shouldNotFilter(jakarta.servlet.http.HttpServletRequest)
      */
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(final HttpServletRequest request) throws ServletException {
         return !allowed || super.shouldNotFilter(request);
     }
 }

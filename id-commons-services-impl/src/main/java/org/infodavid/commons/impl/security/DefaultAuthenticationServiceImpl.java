@@ -29,7 +29,6 @@ import org.infodavid.commons.service.ApplicationService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.listener.ApplicationPropertyChangedListener;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -48,6 +47,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.PersistenceException;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class DefaultAuthenticationServiceImpl.<br>
@@ -56,6 +57,7 @@ import jakarta.persistence.PersistenceException;
  */
 /* If necessary, declare the bean in the Spring configuration. */
 @Transactional(readOnly = true)
+@Slf4j
 public class DefaultAuthenticationServiceImpl extends AbstractService implements AuthenticationService, ApplicationPropertyChangedListener, InitializingBean {
 
     /** The Constant CACHE_SIZE. */
@@ -70,9 +72,6 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     /** The Constant INVALID_USERNAME_OR_PASSWORD. */
     private static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password"; // NOSONAR Message
 
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAuthenticationServiceImpl.class);
-
     /** The Constant USER_HAS_NOT_THE_ROLE. */
     public static final String USER_HAS_NOT_THE_ROLE = "User has not the role: %s";
 
@@ -83,6 +82,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     private AuthenticationCache cache;
 
     /** The listeners. */
+    @Getter
     private final Set<AuthenticationListener> listeners = new HashSet<>();
 
     /** The user data access object. */
@@ -123,9 +123,9 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     @Override
     public void afterPropertiesSet() throws ServiceException, IllegalAccessException {
         // Caution: @Transactionnal on afterPropertiesSet and PostConstruct method is not evaluated
-        getLogger().debug("Initializing authentication service");
+        LOGGER.debug("Initializing authentication service");
         final ApplicationService applicationService = getApplicationContext().getBean(ApplicationService.class);
-        TransactionUtils.getInstance().doInTransaction("Checking authentication properties", LOGGER, getApplicationContext(), () -> {
+        TransactionUtils.doInTransaction("Checking authentication properties", LOGGER, getApplicationContext(), () -> {
             final Page<ApplicationProperty> found = applicationService.findByName(org.infodavid.commons.service.Constants.SESSION_INACTIVITY_TIMEOUT_PROPERTY, Pageable.unpaged());
 
             if (found.isEmpty()) {
@@ -155,7 +155,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         });
         // We have only one property, listener can be attached before adding or updating it
         applicationService.addListener(this);
-        getLogger().debug("Authentication service initialized");
+        LOGGER.debug("Authentication service initialized");
     }
 
     /*
@@ -185,7 +185,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
     @Override
     public void checkRole(final String role) throws IllegalAccessException, ServiceException {
         if (hasRole(role)) {
-            getLogger().trace(USER_HAS_ROLE, role);
+            LOGGER.trace(USER_HAS_ROLE, role);
 
             return;
         }
@@ -215,7 +215,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             throw new IllegalAccessException(INVALID_USERNAME);
         }
 
-        getLogger().debug("Trying authentication of user: {}", login);
+        LOGGER.debug("Trying authentication of user: {}", login);
         User user = null;
 
         try {
@@ -236,12 +236,12 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             throw new BadCredentialsException(INVALID_USERNAME_OR_PASSWORD);
         }
         if (StringUtils.isEmpty(user.getPassword())) { // NOSONAR
-            getLogger().warn("Password is empty for user: {}", user.getName());
+            LOGGER.warn("Password is empty for user: {}", user.getName());
 
             throw new BadCredentialsException(INVALID_USERNAME_OR_PASSWORD);
         }
         if (!user.getPassword().equalsIgnoreCase(password)) { // NOSONAR
-            getLogger().warn("Password is wrong for user: {} ({})", user.getName(), password);
+            LOGGER.warn("Password is wrong for user: {} ({})", user.getName(), password);
 
             throw new BadCredentialsException(INVALID_USERNAME_OR_PASSWORD);
         }
@@ -257,7 +257,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         Authentication result = getAuthentication(user);
 
         if (result == null) {
-            getLogger().info("Authentication success for user: {}", user.getName());
+            LOGGER.info("Authentication success for user: {}", user.getName());
 
             final User updated = new User(user);
             final String value = properties == null ? null : properties.get(org.infodavid.commons.service.Constants.IP_ADDRESS_PROPERTY);
@@ -276,7 +276,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
                 throw new ServiceException(ExceptionUtils.getRootCause(e));
             }
 
-            getLogger().trace("Instantiating a new authentication");
+            LOGGER.trace("Instantiating a new authentication");
             final Collection<GrantedAuthority> authorities = new ArrayList<>();
 
             if (user.getRoles() != null) {
@@ -291,16 +291,16 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             }
 
             // caches and force use of transaction
-            getLogger().debug("Caching authentication: {} for user: {}", result, user.getName());
+            LOGGER.debug("Caching authentication: {} for user: {}", result, user.getName());
             cache.put(user.getId(), result);
 
-            if (getLogger().isTraceEnabled()) {
-                getLogger().debug(CACHE_SIZE, String.valueOf(cache.getSize()));
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.debug(CACHE_SIZE, String.valueOf(cache.getSize()));
             }
 
             fireOnLogin(user, properties);
         } else {
-            getLogger().debug("User already authenticated: {}", user.getName());
+            LOGGER.debug("User already authenticated: {}", user.getName());
         }
 
         SecurityContextHolder.getContext().setAuthentication(result);
@@ -318,7 +318,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             try {
                 listener.onLogin(user, properties);
             } catch (final Exception e) {
-                getLogger().warn("Listener cannot process login event: {}", e.getMessage());
+                LOGGER.warn("Listener cannot process login event: {}", e.getMessage());
             }
         }
     }
@@ -333,7 +333,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             try {
                 listener.onLogout(user, properties);
             } catch (final Exception e) {
-                getLogger().warn("Listener cannot process logout event", e);
+                LOGGER.warn("Listener cannot process logout event", e);
             }
         }
     }
@@ -364,7 +364,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
      */
     @Override
     public Authentication getAuthentication(final Long userId) {
-        getLogger().trace("Retrieving authentication for user identifier: {}", userId);
+        LOGGER.trace("Retrieving authentication for user identifier: {}", userId);
 
         if (userId == null || userId.longValue() <= 0) {
             throw new IllegalArgumentException("Given user identifier is invalid");
@@ -373,12 +373,12 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         final Authentication result = cache.get(userId);
 
         if (result == null) {
-            getLogger().trace("No authentication found");
+            LOGGER.trace("No authentication found");
 
             return null;
         }
 
-        getLogger().trace("Found authentication: {}", result);
+        LOGGER.trace("Found authentication: {}", result);
 
         return result;
     }
@@ -389,22 +389,13 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
      */
     @Override
     public Authentication getAuthentication(final User user) {
-        getLogger().trace("Retrieving authentication for user: {}", user);
+        LOGGER.trace("Retrieving authentication for user: {}", user);
 
         if (user == null || user.getId() == null || user.getId().longValue() <= 0) {
             throw new IllegalArgumentException("Given user is invalid");
         }
 
         return getAuthentication(user.getId());
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.security.AuthenticationService#getListeners()
-     */
-    @Override
-    public Set<AuthenticationListener> getListeners() {
-        return listeners;
     }
 
     /*
@@ -426,18 +417,18 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         User result = null;
 
         if (context == null) {
-            getLogger().trace("No security context available");
+            LOGGER.trace("No security context available");
 
             return null;
         }
 
         if (context.getAuthentication() == null) {
-            getLogger().trace("No authentication available");
+            LOGGER.trace("No authentication available");
 
             return null;
         }
 
-        getLogger().trace("Authentication: {}", context.getAuthentication());
+        LOGGER.trace("Authentication: {}", context.getAuthentication());
 
         if (context.getAuthentication() instanceof AnonymousAuthenticationToken) { // NOSONAR Use of pattern matching
             result = org.infodavid.commons.model.Constants.ANONYMOUS_USER;
@@ -447,7 +438,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             result = user;
         }
 
-        getLogger().trace("Current user: {}", result);
+        LOGGER.trace("Current user: {}", result);
 
         return result;
     }
@@ -462,7 +453,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             throw new IllegalArgumentException(GIVEN_AUTHENTICATION_IS_INVALID);
         }
 
-        getLogger().trace("Retrieving user for token: {}", authentication);
+        LOGGER.trace("Retrieving user for token: {}", authentication);
         final Map<Long, Authentication> map = cache.getMap();
 
         for (final Entry<Long, Authentication> entry : map.entrySet()) {
@@ -494,26 +485,26 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         }
 
         if (user == null) {
-            getLogger().trace(Constants.USER_IS_NULL);
+            LOGGER.trace(Constants.USER_IS_NULL);
 
             // We assume that anonymous user is not null and null user is the system itself
             return true;
         }
 
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            getLogger().trace(Constants.USER_HAS_NO_ROLE_DENIED);
+            LOGGER.trace(Constants.USER_HAS_NO_ROLE_DENIED);
 
             return false;
         }
 
         if (user.getRoles().contains(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE)) {
-            getLogger().trace(Constants.USER_IS_AN_ADMINISTRATOR_ALLOWED);
+            LOGGER.trace(Constants.USER_IS_AN_ADMINISTRATOR_ALLOWED);
 
             return true;
         }
 
         final boolean result = user.getRoles().contains(role);
-        getLogger().trace(Constants.USER_HAS_ROLE_PATTERN, role, result);
+        LOGGER.trace(Constants.USER_HAS_ROLE_PATTERN, role, result);
 
         return result;
     }
@@ -545,11 +536,11 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             return false;
         }
 
-        getLogger().warn("Invalidating authentication for user: {}", user.getName());
+        LOGGER.warn("Invalidating authentication for user: {}", user.getName());
         cache.invalidate(user.getId());
 
-        if (getLogger().isTraceEnabled()) {
-            getLogger().debug(CACHE_SIZE, String.valueOf(cache.getSize()));
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.debug(CACHE_SIZE, String.valueOf(cache.getSize()));
         }
 
         return true;
@@ -564,8 +555,8 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
         getAuthenticatedUsers().forEach(u -> invalidate(u, Collections.emptyMap()));
         cache.invalidate();
 
-        if (getLogger().isTraceEnabled()) {
-            getLogger().debug(CACHE_SIZE, String.valueOf(cache.getSize()));
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.debug(CACHE_SIZE, String.valueOf(cache.getSize()));
         }
     }
 
@@ -620,7 +611,7 @@ public class DefaultAuthenticationServiceImpl extends AbstractService implements
             return false;
         }
 
-        getLogger().debug("Unregistering listener: {}", listener);
+        LOGGER.debug("Unregistering listener: {}", listener);
 
         return listeners.remove(listener);
     }

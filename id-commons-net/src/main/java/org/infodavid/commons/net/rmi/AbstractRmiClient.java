@@ -55,11 +55,9 @@ public abstract class AbstractRmiClient extends UnicastRemoteObject implements B
             return false;
         }
 
-        if (!(obj instanceof AbstractRmiClient)) {
+        if (!(obj instanceof final AbstractRmiClient other)) {
             return false;
         }
-
-        final AbstractRmiClient other = (AbstractRmiClient) obj;
 
         return Objects.equals(address, other.address);
     }

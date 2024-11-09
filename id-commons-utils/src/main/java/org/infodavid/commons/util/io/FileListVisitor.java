@@ -6,12 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The Class FileListVisitor.
@@ -19,12 +21,16 @@ import java.util.Set;
 public class FileListVisitor extends SimpleFileVisitor<Path> {
 
     /** The excluded. */
+    @Getter
     private final Set<String> excluded = new HashSet<>();
 
     /** The files. */
+    @Getter
     private final List<Path> files = new LinkedList<>();
 
     /** The include hidden. */
+    @Getter
+    @Setter
     private boolean includeHidden = false;
 
     /**
@@ -35,30 +41,6 @@ public class FileListVisitor extends SimpleFileVisitor<Path> {
      */
     public boolean accept(final Path file) throws IOException {
         return true;
-    }
-
-    /**
-     * Gets the excluded.
-     * @return the excluded
-     */
-    public Set<String> getExcluded() {
-        return excluded;
-    }
-
-    /**
-     * Gets the files.
-     * @return the files
-     */
-    public Collection<Path> getFiles() {
-        return files;
-    }
-
-    /**
-     * Checks if is include hidden.
-     * @return the includeHidden
-     */
-    public boolean isIncludeHidden() {
-        return includeHidden;
     }
 
     /*
@@ -75,14 +57,6 @@ public class FileListVisitor extends SimpleFileVisitor<Path> {
         }
 
         return FileVisitResult.CONTINUE;
-    }
-
-    /**
-     * Sets the include hidden.
-     * @param includeHidden the includeHidden to set
-     */
-    public void setIncludeHidden(final boolean includeHidden) {
-        this.includeHidden = includeHidden;
     }
 
     /*

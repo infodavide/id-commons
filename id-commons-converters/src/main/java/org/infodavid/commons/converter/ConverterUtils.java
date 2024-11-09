@@ -1,6 +1,5 @@
 package org.infodavid.commons.converter;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -13,40 +12,21 @@ import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ConverterUtils.
  */
-@SuppressWarnings("static-method")
 @JsonIgnoreType
+@UtilityClass
+@Slf4j
 public final class ConverterUtils {
 
-    /** The singleton. */
-    private static WeakReference<ConverterUtils> instance = null;
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConverterUtils.class);
-
-    /**
-     * returns the singleton.
-     * @return the singleton
-     */
-    public static synchronized ConverterUtils getInstance() {
-        if (instance == null || instance.get() == null) {
-            instance = new WeakReference<>(new ConverterUtils());
-        }
-
-        return instance.get();
-    }
-
-    /**
-     * Instantiates a new utilities.
-     */
-    private ConverterUtils() {
+    static {
         final ServiceLoader<ConverterWithDefaultType> loader = ServiceLoader.load(ConverterWithDefaultType.class);
         final Iterator<ConverterWithDefaultType> ite = loader.iterator();
 
@@ -560,14 +540,14 @@ public final class ConverterUtils {
             return (T) object;
         }
 
-        Method method = MethodUtils.getMatchingMethod(getClass(), "to" + clazz.getSimpleName() + "Object", Object.class);
+        Method method = MethodUtils.getMatchingMethod(ConverterUtils.class, "to" + clazz.getSimpleName() + "Object", Object.class);
 
         if (method == null) {
-            method = MethodUtils.getMatchingMethod(getClass(), "to" + clazz.getSimpleName(), Object.class);
+            method = MethodUtils.getMatchingMethod(ConverterUtils.class, "to" + clazz.getSimpleName(), Object.class);
         }
 
         if (clazz.isArray()) {
-            method = MethodUtils.getMatchingMethod(getClass(), "to" + StringUtils.capitalize(clazz.getSimpleName()) + 's', Object.class);
+            method = MethodUtils.getMatchingMethod(ConverterUtils.class, "to" + StringUtils.capitalize(clazz.getSimpleName()) + 's', Object.class);
         }
 
         T result = null;
@@ -580,7 +560,7 @@ public final class ConverterUtils {
             LOGGER.debug("Invoking method: {} using: {}", method.getName(), object);
 
             try {
-                result = (T) method.invoke(this, object);
+                result = (T) method.invoke(null, object);
             } catch (@SuppressWarnings("unused") IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 // noop
             }
@@ -687,8 +667,8 @@ public final class ConverterUtils {
         if (string.startsWith("java.lang.") || string.startsWith("java.util.") || string.startsWith("java.math.")) {
             return string.substring("java.lang.".length());
         }
-        if (string.startsWith(getClass().getPackage().getName())) {
-            return string.substring(getClass().getPackage().getName().length());
+        if (string.startsWith(ConverterUtils.class.getPackage().getName())) {
+            return string.substring(ConverterUtils.class.getPackage().getName().length());
         }
 
         return string;
@@ -705,7 +685,7 @@ public final class ConverterUtils {
         }
 
         final StringBuilder buffer = new StringBuilder();
-        org.infodavid.commons.util.StringUtils.getInstance().toString(object, buffer);
+        org.infodavid.commons.util.StringUtils.toString(object, buffer);
 
         return buffer.toString();
     }
@@ -726,7 +706,7 @@ public final class ConverterUtils {
         }
 
         final StringBuilder buffer = new StringBuilder();
-        org.infodavid.commons.util.StringUtils.getInstance().toString(object, buffer);
+        org.infodavid.commons.util.StringUtils.toString(object, buffer);
 
         return buffer.toString();
     }

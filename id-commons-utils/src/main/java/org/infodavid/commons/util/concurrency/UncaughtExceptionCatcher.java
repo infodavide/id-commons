@@ -2,6 +2,8 @@ package org.infodavid.commons.util.concurrency;
 
 import org.slf4j.Logger;
 
+import lombok.Getter;
+
 /**
  * The Class UncaughtExceptionLogger.
  * @param <E> the element type
@@ -12,9 +14,11 @@ public class UncaughtExceptionCatcher<E extends Exception> extends UncaughtExcep
     private final Class<E> exceptionClass;
 
     /** The thread. */
+    @Getter
     private Thread thread;
 
     /** The throwable. */
+    @Getter
     private Throwable throwable;
 
     /**
@@ -42,22 +46,6 @@ public class UncaughtExceptionCatcher<E extends Exception> extends UncaughtExcep
         }
 
         logger.error("An unexpected error occurred", throwable);
-    }
-
-    /**
-     * Gets the thread.
-     * @return the thread
-     */
-    public Thread getThread() {
-        return thread;
-    }
-
-    /**
-     * Gets the throwable.
-     * @return the throwable
-     */
-    public Throwable getThrowable() {
-        return throwable;
     }
 
     /*

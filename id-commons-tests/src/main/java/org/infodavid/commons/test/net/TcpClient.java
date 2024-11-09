@@ -12,15 +12,16 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class TcpClient.
  */
+@Slf4j
 public class TcpClient extends AbstractTcpComponent {
-
-    /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(TcpClient.class);
 
     /**
      * The main method.
@@ -50,18 +51,25 @@ public class TcpClient extends AbstractTcpComponent {
     }
 
     /** The connection retry expiration in milliseconds. */
+    @Getter
+    @Setter
     private int connectionRetryExpiration = 2000;
 
     /** The connection retry interval in milliseconds. */
+    @Getter
+    @Setter
     private int connectionRetryInterval = 200;
 
     /** The echo response enable. */
+    @Getter
+    @Setter
     private boolean echoResponseEnable = false;
 
     /** The future. */
     private ConnectFuture future = null;
 
     /** The host name. */
+    @Setter
     private String hostName = null;
 
     /**
@@ -125,22 +133,6 @@ public class TcpClient extends AbstractTcpComponent {
     }
 
     /**
-     * Gets the connection retry expiration.
-     * @return the connection retry expiration
-     */
-    public int getConnectionRetryExpiration() {
-        return connectionRetryExpiration;
-    }
-
-    /**
-     * Gets the connection retry interval.
-     * @return the connection retry interval
-     */
-    public int getConnectionRetryInterval() {
-        return connectionRetryInterval;
-    }
-
-    /**
      * Gets the host name.
      * @return the host name
      */
@@ -176,14 +168,6 @@ public class TcpClient extends AbstractTcpComponent {
         return future != null && future.isConnected();
     }
 
-    /**
-     * Checks if is echo response enable.
-     * @return true, if is echo response enable
-     */
-    public boolean isEchoResponseEnable() {
-        return echoResponseEnable;
-    }
-
     /*
      * (non-javadoc)
      * @see org.infodavid.test.net.AbstractTcpComponent#send(byte[])
@@ -206,29 +190,5 @@ public class TcpClient extends AbstractTcpComponent {
             LOGGER.info("Writing {} to session: {}", data, session.getRemoteAddress());
             session.write(buffer);
         }
-    }
-
-    /**
-     * Sets the connection retry expiration.
-     * @param connectionRetryExpiration the new connection retry expiration
-     */
-    public void setConnectionRetryExpiration(final int connectionRetryExpiration) {
-        this.connectionRetryExpiration = connectionRetryExpiration;
-    }
-
-    /**
-     * Sets the connection retry interval.
-     * @param connectionRetryInterval the new connection retry interval
-     */
-    public void setConnectionRetryInterval(final int connectionRetryInterval) {
-        this.connectionRetryInterval = connectionRetryInterval;
-    }
-
-    /**
-     * Sets the echo response enable.
-     * @param echoResponseEnable the new echo response enable
-     */
-    public void setEchoResponseEnable(final boolean echoResponseEnable) {
-        this.echoResponseEnable = echoResponseEnable;
     }
 }

@@ -7,32 +7,20 @@ import java.util.Map;
 import org.infodavid.commons.model.User;
 import org.infodavid.commons.security.AuthenticationListener;
 
+import lombok.Getter;
+
 /**
  * The Class AuthenticationListenerImpl.
  */
 class AuthenticationListenerImpl implements AuthenticationListener {
 
     /** The logins. */
+    @Getter
     private final List<Long> logins = new ArrayList<>();
 
     /** The logouts. */
+    @Getter
     private final List<Long> logouts = new ArrayList<>();
-
-    /**
-     * Gets the logins.
-     * @return the logins
-     */
-    public List<Long> getLogins() {
-        return logins;
-    }
-
-    /**
-     * Gets the logouts.
-     * @return the logouts
-     */
-    public List<Long> getLogouts() {
-        return logouts;
-    }
 
     /*
      * (non-javadoc)
