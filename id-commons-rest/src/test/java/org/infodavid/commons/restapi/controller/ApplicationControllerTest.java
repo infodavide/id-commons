@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.refEq;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.infodavid.commons.model.ApplicationProperty;
 import org.infodavid.commons.model.DefaultEntityReference;
 import org.infodavid.commons.model.PropertyType;
@@ -126,7 +124,7 @@ class ApplicationControllerTest extends AbstractControllerTest<PropertyDto, Long
         final Page<ApplicationProperty> page = new PageImpl<>(collection);
         Mockito.when(getController().getService().find(any(Pageable.class))).thenReturn(page);
 
-        final PageDto result = find("", "");
+        final PageDto result = find("", "", "", "");
 
         assertNotNull(result, "Wrong response");
 
@@ -183,30 +181,6 @@ class ApplicationControllerTest extends AbstractControllerTest<PropertyDto, Long
     @Override
     protected DefaultApplicationController getController() {
         return controller;
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.controller.AbstractControllerTest#list(java.lang.String[])
-     */
-    @Override
-    protected PageDto find(final String... params) throws ServiceException {
-        final Object[] arguments = new Object[4];
-
-        if (params != null) {
-            int i = 0;
-
-            for (final String param : params) {
-                arguments[i] = param;
-                i++;
-            }
-        }
-
-        try {
-            return (PageDto) MethodUtils.invokeMethod(controller, true, "find", arguments);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new ServiceException(e);
-        }
     }
 
     /*

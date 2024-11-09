@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -180,9 +182,28 @@ abstract class AbstractControllerTest<D extends AbstractDto, K extends Serializa
      * Find.
      * @param params the request parameters
      * @return the response entity
-     * @throws ServiceException the service exception
+     * @throws Exception the exception
      */
-    protected abstract PageDto find(String... params) throws ServiceException;
+    protected PageDto find(final String... params) throws Exception {
+        for (final Method method : getController().getClass().getMethods()) {
+            if ("find".equals(method.getName())) {
+                final Object[] parameters;
+
+                if (params == null || params.length == 0) {
+                    parameters = new Object[method.getParameterCount()];
+                    Arrays.fill(parameters, "");
+                } else {
+                    parameters = params.clone();
+                }
+
+                method.setAccessible(true);
+
+                return (PageDto) method.invoke(getController(), parameters);
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Gets the.

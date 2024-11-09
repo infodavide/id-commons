@@ -41,8 +41,10 @@ public class ValidationHelper {
         if (!violations.isEmpty()) {
             final StringBuilder buffer = new StringBuilder();
             final StringBuilder message = new StringBuilder();
+            buffer.append("Constraint violations:\n");
 
             for (final ConstraintViolation<Object> violation : violations) {
+                LOGGER.debug("Constraint violation: {}", violation);
                 buffer.append(violation.getPropertyPath());
                 buffer.append(SEPARATOR);
                 buffer.append(violation.getMessage());
@@ -70,7 +72,7 @@ public class ValidationHelper {
             }
 
             final ConstraintViolationException exception = new ConstraintViolationException(message.toString(), violations);
-            LOGGER.warn(buffer.toString(), exception); // NOSONAR Always written
+            LOGGER.warn(buffer.toString()); // NOSONAR Always written
 
             throw exception;
         }
@@ -173,6 +175,7 @@ public class ValidationHelper {
         }
 
         final Validator validator = factory.getValidator();
+        LOGGER.debug("Validating object: {} using validator: {}", value, validator.getClass());
         final Set<ConstraintViolation<Object>> violations = validator.validate(value, Default.class);
 
         assertNoViolation(violations);
@@ -190,6 +193,7 @@ public class ValidationHelper {
         }
 
         final Validator validator = factory.getValidator();
+        LOGGER.debug("Using validator: {}", validator.getClass());
         final Set<ConstraintViolation<Object>> violations = new HashSet<>();
 
         for (final Object value : values) {

@@ -104,7 +104,7 @@ public class RestExceptionHandler {
             IllegalAccessException.class
     })
     protected ResponseEntity<Object> handleAccessError(final Exception e, final WebRequest request) {
-        LOGGER.error(String.format("An access error occurred on: %s", getRequestUri(request)), ExceptionUtils.getRootCause(e)); // NOSONAR Always written
+        LOGGER.error(String.format("An access error occurred on: %s, %s", getRequestUri(request), ExceptionUtils.getRootCause(e).getMessage())); // NOSONAR Always written
 
         return delegate.handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
@@ -119,7 +119,7 @@ public class RestExceptionHandler {
             Exception.class
     })
     protected ResponseEntity<Object> handleError(final Exception e, final WebRequest request) {
-        LOGGER.error(String.format("An error occurred on: %S", getRequestUri(request)), ExceptionUtils.getRootCause(e)); // NOSONAR Always written
+        LOGGER.error(String.format("An error occurred on: %s", getRequestUri(request)), ExceptionUtils.getRootCause(e)); // NOSONAR Always written
 
         return delegate.handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
@@ -165,7 +165,7 @@ public class RestExceptionHandler {
             InterruptedException.class
     })
     protected ResponseEntity<Object> handleInterrupted(final Exception e, final WebRequest request) {
-        LOGGER.error(String.format("An service error occurred on: %s", getRequestUri(request)), ExceptionUtils.getRootCause(e)); // NOSONAR Always written
+        LOGGER.error(String.format("An service error occurred on: %s, %s", getRequestUri(request), ExceptionUtils.getRootCause(e).getMessage())); // NOSONAR Always written
         Thread.currentThread().interrupt();
 
         return delegate.handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
@@ -196,7 +196,7 @@ public class RestExceptionHandler {
             TooManyRequestsException.class
     })
     protected ResponseEntity<Object> handleRequestsLimitError(final Exception e, final WebRequest request) {
-        LOGGER.warn(String.format("An request limit error occurred on: %s", getRequestUri(request)), ExceptionUtils.getRootCause(e)); // NOSONAR Always written
+        LOGGER.warn(String.format("An request limit error occurred on: %s, %s", getRequestUri(request), ExceptionUtils.getRootCause(e).getMessage())); // NOSONAR Always written
 
         return delegate.handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.TOO_MANY_REQUESTS, request);
     }
@@ -227,7 +227,7 @@ public class RestExceptionHandler {
             ValidationException.class
     })
     protected ResponseEntity<Object> handleValidationError(final Exception e, final WebRequest request) {
-        LOGGER.error(String.format("An validation error occurred on: %S", getRequestUri(request)), ExceptionUtils.getRootCause(e)); // NOSONAR Always written
+        LOGGER.error(String.format("An validation error occurred on: %s, %s", getRequestUri(request), ExceptionUtils.getRootCause(e).getMessage())); // NOSONAR Always written
 
         return delegate.handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }

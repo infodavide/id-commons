@@ -5,12 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.infodavid.commons.model.DefaultEntityReference;
 import org.infodavid.commons.model.User;
 import org.infodavid.commons.restapi.dto.PageDto;
@@ -88,7 +86,7 @@ class UserControllerTest extends AbstractControllerTest<UserDto, Long, User> {
         final Page<User> page = new PageImpl<>(Collections.singletonList(newEntity()));
         Mockito.when(getController().getService().find(any(Pageable.class))).thenReturn(page);
 
-        final PageDto result = find("", "");
+        final PageDto result = find("", "", "");
 
         assertNotNull(result, "Wrong response");
 
@@ -133,30 +131,6 @@ class UserControllerTest extends AbstractControllerTest<UserDto, Long, User> {
     @Override
     protected DefaultUserController getController() {
         return controller;
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.web.controller.AbstractControllerTest#list(java.lang.String[])
-     */
-    @Override
-    protected PageDto find(final String... params) throws ServiceException {
-        final Object[] arguments = new Object[3];
-
-        if (params != null) {
-            int i = 0;
-
-            for (final String param : params) {
-                arguments[i] = param;
-                i++;
-            }
-        }
-
-        try {
-            return (PageDto) MethodUtils.invokeMethod(controller, true, "find", arguments);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new ServiceException(e);
-        }
     }
 
     /*
