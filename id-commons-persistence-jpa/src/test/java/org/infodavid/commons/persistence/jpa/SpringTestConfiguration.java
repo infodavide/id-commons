@@ -1,8 +1,6 @@
 package org.infodavid.commons.persistence.jpa;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -13,9 +11,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
@@ -30,18 +29,6 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource("classpath:application-test.properties")
 public class SpringTestConfiguration extends AbstractJpaSpringConfiguration {
 
-    /**
-     * Additional properties.
-     * @return the properties
-     */
-    @Override
-    protected Properties additionalProperties() {
-        final Properties result = super.additionalProperties();
-        result.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-
-        return result;
-    }
-
     /*
      * (non-javadoc)
      * @see org.infodavid.impl.persistence.mybatis.mybatis.AbstractSpringConfiguration#dataSource()
@@ -50,8 +37,11 @@ public class SpringTestConfiguration extends AbstractJpaSpringConfiguration {
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public DataSource dataSource() throws SQLException {
-        final EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        final ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator(false, false, "UTF-8", new ClassPathResource("create_database.sql"));
+        final DriverManagerDataSource result = new DriverManagerDataSource("jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
+        result.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
+        resourceDatabasePopulator.execute(result);
 
-        return builder.setScriptEncoding(StandardCharsets.UTF_8.name()).setType(EmbeddedDatabaseType.HSQL).addScript("create_database.sql").build();
+        return result;
     }
 }

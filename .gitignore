@@ -16,3 +16,7 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 .vscode
+.factorypath
+*.factorypath
+*/.factorypath
+/id-commons-authentication/id-commons-authentication-app/.factorypath

@@ -1,0 +1,3 @@
+INSERT INTO configuration_properties (deletable, read_only, name, creation_date, modification_date, data_type, data, scope, data_type_def, label, mini, maxi, default_data) VALUES
+  (false, true, 'schema.version', NOW(), NOW(), 'STRING', '0.0.1', NULL, NULL, 'DB schema version', NULL, NULL, '1.0.0'),
+  (false, true, 'application.grantedTo', NOW(), NOW(), 'STRING', 'Infodavid', NULL, NULL, 'Customer', NULL, NULL, 'Infodavid');

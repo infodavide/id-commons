@@ -1,27 +1,21 @@
-module org.infodavid.commons.restapi {
-    exports org.infodavid.commons.restapi.dto;
-    exports org.infodavid.commons.restapi.security.filter;
-    exports org.infodavid.commons.restapi.annotation;
-    exports org.infodavid.commons.restapi.exception;
-    exports org.infodavid.commons.restapi.security;
-    exports org.infodavid.commons.restapi.controller;
-    exports org.infodavid.commons.restapi.security.handler;
-    exports org.infodavid.commons.restapi.socket;
-    exports org.infodavid.commons.restapi;
-    exports org.infodavid.commons.restapi.mapper;
-    exports org.infodavid.commons.restapi.configuration;
+module org.infodavid.commons.rest {
+    exports org.infodavid.commons.rest;
+    exports org.infodavid.commons.rest.configuration;
+    exports org.infodavid.commons.rest.security.filter;
+    exports org.infodavid.commons.rest.security.handler;
+    exports org.infodavid.commons.rest.exception;
+    exports org.infodavid.commons.rest.socket;
+    exports org.infodavid.commons.rest.v1.controller;
+    exports org.infodavid.commons.rest.v1.mapper;
 
-    opens org.infodavid.commons.restapi.dto to spring.core, org.apache.commons.lang3;
-    opens org.infodavid.commons.restapi.security.filter to spring.core;
-    opens org.infodavid.commons.restapi.annotation to spring.core;
-    opens org.infodavid.commons.restapi.exception to spring.core;
-    opens org.infodavid.commons.restapi.security to spring.core;
-    opens org.infodavid.commons.restapi.controller to spring.core;
-    opens org.infodavid.commons.restapi.security.handler to spring.core;
-    opens org.infodavid.commons.restapi.socket to spring.core;
-    opens org.infodavid.commons.restapi to spring.core;
-    opens org.infodavid.commons.restapi.mapper to spring.core;
-    opens org.infodavid.commons.restapi.configuration to spring.core;
+    opens org.infodavid.commons.rest;
+    opens org.infodavid.commons.rest.configuration;
+    opens org.infodavid.commons.rest.security.filter;
+    opens org.infodavid.commons.rest.security.handler;
+    opens org.infodavid.commons.rest.exception;
+    opens org.infodavid.commons.rest.socket;
+    opens org.infodavid.commons.rest.v1.controller;
+    opens org.infodavid.commons.rest.v1.mapper;
 
     requires transitive com.fasterxml.jackson.annotation;
     requires transitive com.fasterxml.jackson.core;
@@ -39,9 +33,9 @@ module org.infodavid.commons.restapi {
     requires transitive org.apache.tomcat.embed.core;
     requires transitive org.infodavid.commons.model;
     requires transitive org.infodavid.commons.net;
-    requires transitive org.infodavid.commons.persistence;
     requires transitive org.infodavid.commons.service;
     requires transitive org.infodavid.commons.util;
+    requires transitive org.infodavid.commons.rest.api;
     requires transitive org.mapstruct;
     requires transitive org.slf4j;
     requires transitive spring.beans;
@@ -56,6 +50,7 @@ module org.infodavid.commons.restapi {
     requires transitive spring.web;
     requires transitive spring.webmvc;
     requires transitive spring.websocket;
-    requires jjwt.api;
+    requires transitive jjwt.api;
+    requires transitive io.swagger.v3.oas.annotations;
     requires lombok;
 }

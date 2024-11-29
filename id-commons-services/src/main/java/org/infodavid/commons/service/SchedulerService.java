@@ -5,12 +5,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.infodavid.commons.service.listener.ApplicationPropertyChangedListener;
-
 /**
  * The Interface SchedulerService.
  */
-public interface SchedulerService extends ApplicationPropertyChangedListener {
+public interface SchedulerService {
 
     /**
      * Schedule.

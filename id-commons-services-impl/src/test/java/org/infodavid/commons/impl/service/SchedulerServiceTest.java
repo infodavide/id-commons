@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.infodavid.commons.impl.AbstractSpringTest;
 import org.infodavid.commons.service.SchedulerService;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;

@@ -20,6 +20,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>id-commons-services</artifactId>
             <version>${project.version}</version>
+            <scope>compile</scope> <!-- force scope as it is used in services-tests with scope test -->
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>id-commons-persistence-jpa</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -39,17 +45,6 @@
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-el</artifactId>
             <version>10.1.30</version>
-        </dependency>
-        <!-- Mail -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-        </dependency>
-        <!-- Templating -->
-        <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy-templates</artifactId>
-            <version>4.0.6</version>
         </dependency>
         <!-- Spring -->
         <dependency>
@@ -85,21 +80,9 @@
         <!-- Tests -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>id-commons-tests</artifactId>
+            <artifactId>id-commons-services-tests</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.sleroy</groupId>
-            <artifactId>fakesmtp-junit-runner</artifactId>
-            <version>0.1.1</version>
-            <scope>test</scope>
-        </dependency>
-		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<scope>test</scope>
-		</dependency>
     </dependencies>
     <build>
         <resources>

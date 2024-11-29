@@ -17,10 +17,10 @@ public enum PropertyType {
     ENUM("Enumeration", Enum.class),
     /** The integer. */
     INTEGER("Integer", Integer.class),
-    /** The password. */
-    PASSWORD("Password", String.class),
     /** The JSON value. */
     JSON("JSON", String.class),
+    /** The password. */
+    PASSWORD("Password", String.class),
     /** The string. */
     STRING("Text", String.class);
 

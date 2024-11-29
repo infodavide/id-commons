@@ -1,7 +1,9 @@
 package org.infodavid.commons.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
@@ -9,6 +11,10 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -30,6 +36,36 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 4650115076573283055L;
 
+    /**
+     * Filter by scope.
+     * @param scope      the scope
+     * @param properties the properties
+     * @return the collection
+     */
+    @SuppressWarnings("rawtypes")
+    public static Collection<AbstractProperty> filterByScope(final String scope, final AbstractProperty... properties) {
+        final ArrayList<AbstractProperty> results = new ArrayList<>();
+
+        for (final AbstractProperty property : properties) {
+            if (Objects.equals(property.getScope(), scope)) {
+                results.add(property);
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * Filter by scope.
+     * @param scope      the scope
+     * @param properties the properties
+     * @return the collection
+     */
+    @SuppressWarnings("rawtypes")
+    public static Collection<AbstractProperty> filterByScope(final String scope, final Collection<AbstractProperty> properties) {
+        return properties.stream().filter(p -> Objects.equals(p.getScope(), scope)).toList();
+    }
+
     /** The archiving data. */
     private Date archivingDate;
 
@@ -40,6 +76,8 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
     private boolean deletable = true;
 
     /** The label. */
+    @NotBlank
+    @Size(min = 0, max = 128)
     private String label;
 
     /** The maximum. */
@@ -49,15 +87,19 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
     private Double minimum;
 
     /** The name. */
+    @NotBlank
+    @Size(min = 0, max = 128)
     private String name;
 
     /** The read only. */
     private boolean readOnly;
 
     /** The scope. */
+    @Size(min = 0, max = 128)
     private String scope;
 
     /** The type. */
+    @NotNull
     private PropertyType type;
 
     /** The type definition. */
@@ -104,6 +146,17 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
     }
 
     /**
+     * Instantiates a new property.
+     * @param name  the name
+     * @param type  the type
+     * @param value the value
+     */
+    protected AbstractProperty(final String name, final PropertyType type, final String value) {
+        this(null, name, type);
+        setValue(value);
+    }
+
+    /**
      * Instantiates a new property with a null value.
      * @param scope the scope
      * @param name  the name
@@ -135,8 +188,20 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
         setValue(value);
     }
 
+    /**
+     * Instantiates a new property.
+     * @param scope the scope
+     * @param name  the name
+     * @param type  the type
+     * @param value the value
+     */
+    protected AbstractProperty(final String scope, final String name, final PropertyType type, final String value) {
+        this(scope, name, type);
+        setValue(value);
+    }
+
     /*
-     * (non-javadoc)
+     * (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -234,8 +299,16 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
             if (PropertyType.INTEGER.equals(type)) {
                 return Double.valueOf(value);
             }
-        } catch (@SuppressWarnings("unused") final ParseException | IllegalArgumentException e) {
-            // noop
+
+            if (PropertyType.JSON.equals(type)) {
+                if (typeDefinition == null) {
+                    return Constants.MAPPER.readValue(value, Object.class);
+                }
+
+                return Constants.MAPPER.readValue(value, Class.forName(typeDefinition));
+            }
+        } catch (final ParseException | ClassNotFoundException | IOException e) {
+            throw new IllegalArgumentException(e);
         }
 
         return value;
@@ -275,6 +348,76 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
         return value;
     }
 
+    /**
+     * Gets the value or default.
+     * @param defaultValue the default value
+     * @return the or default
+     */
+    @SuppressWarnings("hiding")
+    @Transient
+    public boolean getValueOrDefault(final boolean defaultValue) {
+        return value == null ? defaultValue : Boolean.parseBoolean(value);
+    }
+
+    /**
+     * Gets the value or default.
+     * @param defaultValue the default value
+     * @return the or default
+     */
+    @SuppressWarnings("hiding")
+    @Transient
+    public double getValueOrDefault(final double defaultValue) {
+        return value == null ? defaultValue : Double.parseDouble(value);
+    }
+
+    /**
+     * Gets the value or default.
+     * @param defaultValue the default value
+     * @return the or default
+     */
+    @SuppressWarnings("hiding")
+    @Transient
+    public int getValueOrDefault(final int defaultValue) {
+        return value == null ? defaultValue : Integer.parseInt(value);
+    }
+
+    /**
+     * Gets the value or default.
+     * @param defaultValue the default value
+     * @return the or default
+     */
+    @SuppressWarnings("hiding")
+    @Transient
+    public long getValueOrDefault(final long defaultValue) {
+        return value == null ? defaultValue : Long.parseLong(value);
+    }
+
+    /**
+     * Gets the value or default.
+     * @param defaultValue the default value
+     * @return the or default
+     */
+    @SuppressWarnings("hiding")
+    @Transient
+    public Object getValueOrDefault(final Object defaultValue) {
+        return value == null ? defaultValue : getObject();
+    }
+
+    /**
+     * Gets the value or default.
+     * @param defaultValue the default value
+     * @return the or default
+     */
+    @SuppressWarnings("hiding")
+    @Transient
+    public String getValueOrDefault(final String defaultValue) {
+        return value == null ? defaultValue : value;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     /*
      * (non-javadoc)
      * @see java.lang.Object#hashCode()
@@ -621,8 +764,25 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
             return setValue((String) null);
         }
 
+        if (value instanceof final String s) {
+            return setValue(s);
+        }
+
         if (PropertyType.DATE.equals(type) && value instanceof Date) {
             return setValue(ISO_DATE_TIME_FORMATTER.format(value));
+        }
+
+        if (PropertyType.JSON.equals(type)) {
+            E result;
+            try {
+                result = setValue(Constants.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(value));
+            } catch (final JsonProcessingException e) {
+                throw new IllegalArgumentException(e);
+            }
+
+            setTypeDefinition(value.getClass().getName());
+
+            return result;
         }
 
         return setValue(String.valueOf(value));
@@ -641,7 +801,7 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
     }
 
     /*
-     * (non-javadoc)
+     * (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

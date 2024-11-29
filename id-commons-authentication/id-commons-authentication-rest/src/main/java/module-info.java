@@ -1,0 +1,53 @@
+module org.infodavid.commons.authentication.rest {
+    exports org.infodavid.commons.authentication.rest;
+    exports org.infodavid.commons.authentication.rest.configuration;
+    exports org.infodavid.commons.authentication.rest.security;
+    exports org.infodavid.commons.authentication.rest.security.filter;
+    exports org.infodavid.commons.authentication.rest.v1.controller;
+    exports org.infodavid.commons.authentication.rest.v1.mapper;
+
+    opens org.infodavid.commons.authentication.rest;
+    opens org.infodavid.commons.authentication.rest.configuration;
+    opens org.infodavid.commons.authentication.rest.security;
+    opens org.infodavid.commons.authentication.rest.security.filter;
+    opens org.infodavid.commons.authentication.rest.v1.controller;
+    opens org.infodavid.commons.authentication.rest.v1.mapper;
+
+    requires transitive com.fasterxml.jackson.annotation;
+    requires transitive com.fasterxml.jackson.core;
+    requires transitive com.fasterxml.jackson.databind;
+    requires transitive jakarta.annotation;
+    requires transitive java.compiler;
+    requires transitive java.logging;
+    requires transitive jakarta.persistence;
+    requires transitive jakarta.validation;
+    requires transitive org.apache.commons.collections4;
+    requires transitive org.apache.commons.io;
+    requires transitive org.apache.commons.lang3;
+    requires transitive org.apache.tomcat.embed.core;
+    requires transitive org.infodavid.commons.model;
+    requires transitive org.infodavid.commons.net;
+    requires transitive org.infodavid.commons.rest;
+    requires transitive org.infodavid.commons.rest.api;
+    requires transitive org.infodavid.commons.service;
+    requires transitive org.infodavid.commons.util;
+    requires transitive org.infodavid.commons.authentication.model;
+    requires transitive org.infodavid.commons.authentication.service;
+    requires transitive org.infodavid.commons.authentication.rest.api;
+    requires transitive org.mapstruct;
+    requires transitive org.slf4j;
+    requires transitive spring.beans;
+    requires transitive spring.context;
+    requires transitive spring.core;
+    requires transitive spring.data.commons;
+    requires transitive spring.jcl;
+    requires transitive spring.messaging;
+    requires transitive spring.security.config;
+    requires transitive spring.security.core;
+    requires transitive spring.security.web;
+    requires transitive spring.web;
+    requires transitive spring.webmvc;
+    requires transitive spring.websocket;
+    requires transitive io.swagger.v3.oas.annotations;
+    requires lombok;
+}

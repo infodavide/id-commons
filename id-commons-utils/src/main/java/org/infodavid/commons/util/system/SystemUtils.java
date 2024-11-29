@@ -42,25 +42,31 @@ public abstract sealed class SystemUtils permits LinuxSystemUtils, WindowsSystem
     /** The Constant METHOD_IS_NOT_SUPPORTED_ON. */
     protected static final String METHOD_IS_NOT_SUPPORTED_ON = "Method is not supported on ";
 
-    /** The instance. */
-    private static SystemUtils singleton = null;
+    /**
+     * The Class SingletonHelper.
+     */
+    private static class SingletonHelper {
+
+        /** The Constant SINGLETON. */
+        private static final SystemUtils SINGLETON;
+
+        static {
+            if (IS_OS_FREE_BSD || IS_OS_LINUX || IS_OS_MAC || IS_OS_MAC_OSX || IS_OS_NET_BSD || IS_OS_OPEN_BSD || IS_OS_UNIX) {
+                SINGLETON = new LinuxSystemUtils();
+            } else if (IS_OS_WINDOWS) {
+                SINGLETON = new WindowsSystemUtils();
+            } else {
+                throw new UnsupportedOperationException(OS_NAME + IS_NOT_SUPPORTED);
+            }
+        }
+    }
 
     /**
      * Gets the single instance.
      * @return single instance
      */
-    public static synchronized SystemUtils getInstance() {
-        if (singleton == null) {
-            if (IS_OS_FREE_BSD || IS_OS_LINUX || IS_OS_MAC || IS_OS_MAC_OSX || IS_OS_NET_BSD || IS_OS_OPEN_BSD || IS_OS_UNIX) {
-                singleton = new LinuxSystemUtils();
-            } else if (IS_OS_WINDOWS) {
-                singleton = new WindowsSystemUtils();
-            } else {
-                throw new UnsupportedOperationException(OS_NAME + IS_NOT_SUPPORTED);
-            }
-        }
-
-        return singleton;
+    public static SystemUtils getInstance() {
+        return SingletonHelper.SINGLETON;
     }
 
     /**
@@ -109,7 +115,7 @@ public abstract sealed class SystemUtils permits LinuxSystemUtils, WindowsSystem
         int code = -1;
 
         try {
-            code = CommandExecutorFactory.getInstance().executeCommand(output, error, command);
+            code = CommandExecutorFactory.getInstance().executeCommand(output, error, null, null, command);
         } catch (final Exception e) {
             getLogger().warn("An error occured while executing command: " + command, e); // NOSONAR Always written
         }

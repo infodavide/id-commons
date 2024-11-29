@@ -1,0 +1,1 @@
+TRUNCATE TABLE configuration_properties;

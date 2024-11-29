@@ -11,10 +11,16 @@ public abstract class AbstractService {
     /** The application context. */
     private final ApplicationContext applicationContext;
 
+    /** The logger. */
+    private Logger logger;
+
     /**
      * Instantiates a new abstract service.
+     * @param logger             the logger
+     * @param applicationContext the application context
      */
-    protected AbstractService(final ApplicationContext applicationContext) {
+    protected AbstractService(final Logger logger, final ApplicationContext applicationContext) {
+        this.logger = logger;
         this.applicationContext = applicationContext;
     }
 
@@ -22,7 +28,7 @@ public abstract class AbstractService {
      * Gets the application context.
      * @return the application context
      */
-    protected ApplicationContext getApplicationContext() {
+    public final ApplicationContext getApplicationContext() {
         return applicationContext;
     }
 
@@ -30,5 +36,7 @@ public abstract class AbstractService {
      * Gets the logger.
      * @return the logger
      */
-    protected abstract Logger getLogger();
+    public final Logger getLogger() {
+        return logger;
+    }
 }

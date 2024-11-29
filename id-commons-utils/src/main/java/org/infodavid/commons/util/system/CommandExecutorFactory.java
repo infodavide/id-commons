@@ -8,28 +8,32 @@ import java.util.ServiceLoader;
  */
 public class CommandExecutorFactory {
 
-    /** The instance. */
-    private static CommandExecutor instance;
+    /**
+     * The Class SingletonHelper.
+     */
+    private static class SingletonHelper {
+
+        /** The Constant SINGLETON. */
+        private static final CommandExecutor SINGLETON;
+
+        static {
+            final ServiceLoader<CommandExecutor> loader = ServiceLoader.load(CommandExecutor.class);
+            final Iterator<CommandExecutor> ite = loader.iterator();
+
+            if (ite.hasNext()) {
+                SINGLETON = ite.next();
+            } else {
+                SINGLETON = new DefaultCommandExecutor();
+            }
+        }
+    }
 
     /**
      * Returns the instance.
      * @return the instance
      */
-    public static synchronized CommandExecutor getInstance() {
-        if (instance != null) {
-            return instance;
-        }
-
-        final ServiceLoader<CommandExecutor> loader = ServiceLoader.load(CommandExecutor.class);
-        final Iterator<CommandExecutor> ite = loader.iterator();
-
-        if (ite.hasNext()) {
-            instance = ite.next();
-        } else {
-            instance = new DefaultCommandExecutor();
-        }
-
-        return instance;
+    public static CommandExecutor getInstance() {
+        return SingletonHelper.SINGLETON;
     }
 
     /**

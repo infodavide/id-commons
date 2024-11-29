@@ -19,6 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.infodavid.commons.test.docker.DockerContainer;
 import org.infodavid.commons.test.extension.LoggingExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,23 +27,35 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.internal.progress.ThreadSafeMockingProgress;
 import org.mockito.invocation.Invocation;
-
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class TestCase.
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 @ExtendWith(LoggingExtension.class)
-//@Timeout(value = 2, unit = TimeUnit.SECONDS)
-@Slf4j
 public class TestCase {
+
+    /** The Constant LOGGER. */
+    public static final Logger LOGGER = LoggerFactory.getLogger(TestCase.class);
+
+    /** The Constant LOCK. */
+    public static final Lock LOCK = new ReentrantLock();
 
     /** The Constant RAND. */
     public static final Random RAND = new Random(System.currentTimeMillis());
 
     /** The timeout. Set it to 0 or a negative value to disable the timeout rule. */
     protected static int timeout = 20;
+
+    /**
+     * Checks if is docker supported.
+     * @return true, if is docker supported
+     */
+    public static boolean isDockerSupported() {
+        return DockerContainer.isDockerHost();
+    }
 
     /**
      * Checks if is integration node.

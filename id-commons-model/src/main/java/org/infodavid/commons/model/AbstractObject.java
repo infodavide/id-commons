@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import javax.annotation.processing.Generated;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.infodavid.commons.model.annotation.ModelObject;
 
@@ -38,7 +40,7 @@ public abstract class AbstractObject<K extends Serializable> implements Persiste
     private Date archivingDate;
 
     /** The creation date. */
-    @Column(name = "cdate")
+    @Column(name = "creation_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
 
@@ -53,8 +55,9 @@ public abstract class AbstractObject<K extends Serializable> implements Persiste
     private K id;
 
     /** The modification date. */
-    @Column(name = "mdate")
+    @Column(name = "modification_date")
     @Temporal(TemporalType.TIMESTAMP)
+    @Generated("Set by the service on add or update")
     @Version
     private Date modificationDate;
 
@@ -109,8 +112,8 @@ public abstract class AbstractObject<K extends Serializable> implements Persiste
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.model.PersistentObject#setCreationDate(java.util.Date)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.model.PersistentObject#setCreationDate(java.util.Date)
      */
     @Override
     public void setCreationDate(final Date value) {

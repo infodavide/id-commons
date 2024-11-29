@@ -9,8 +9,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.infodavid.commons.model.ApplicationProperty;
+import org.infodavid.commons.model.AbstractProperty;
 import org.infodavid.commons.service.SchedulerService;
+import org.infodavid.commons.service.listener.PropertyChangedListener;
 import org.infodavid.commons.util.concurrency.ReentrantLock;
 import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 /* If necessary, declare the bean in the Spring configuration. */
 @Transactional(readOnly = true)
 @Slf4j
-public class DefaultSchedulerService extends AbstractService implements SchedulerService, InitializingBean {
+public class DefaultSchedulerService extends AbstractService implements SchedulerService, PropertyChangedListener, InitializingBean {
 
     /** The executor. */
     @Getter
@@ -47,15 +48,16 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
 
     /**
      * Instantiates a new scheduler service.
+     * @param logger             the logger
      * @param applicationContext the application context
      */
-    public DefaultSchedulerService(final ApplicationContext applicationContext) {
-        super(applicationContext);
+    public DefaultSchedulerService(final Logger logger, final ApplicationContext applicationContext) {
+        super(logger, applicationContext);
         lock = new ReentrantLock(getLogger());
     }
 
     /*
-     * (non-javadoc)
+     * (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
@@ -76,15 +78,6 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
      */
     protected int getDefaultThreadsCount() {
         return Math.min(16, Runtime.getRuntime().availableProcessors() * 5);
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.impl.service.AbstractService#getLogger()
-     */
-    @Override
-    protected Logger getLogger() {
-        return LOGGER;
     }
 
     /**
@@ -153,11 +146,12 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.service.listener.ApplicationPropertyChangedListener#propertyChanged(org.infodavid.model.ApplicationProperty[])
+     * @see org.infodavid.commons.service.listener.PropertyChangedListener#propertyChanged(org.infodavid.commons.model.AbstractProperty[])
      */
     @Override
-    public void propertyChanged(final ApplicationProperty... properties) {
-        for (final ApplicationProperty property : properties) {
+    @SuppressWarnings("rawtypes")
+    public void propertyChanged(final AbstractProperty... properties) {
+        for (final AbstractProperty property : properties) {
             if (org.infodavid.commons.service.Constants.SCHEDULER_THREADS_PROPERTY.equals(property.getName())) {
                 if (!StringUtils.isNumeric(property.getValue())) {
                     getLogger().error("Threads count is invalid: {}", property.getValue());
@@ -206,7 +200,7 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.service.SchedulerService#schedule(java.util.concurrent.Callable, long, java.util.concurrent.TimeUnit)
+     * @see org.infodavid.commons.service.SchedulerService#schedule(java.util.concurrent.Callable, long, java.util.concurrent.TimeUnit)
      */
     @Override
     public <T> ScheduledFuture<T> schedule(final Callable<T> task, final long delay, final TimeUnit unit) {
@@ -223,8 +217,8 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.service.SchedulerService#schedule(java.lang.Runnable, long, java.util.concurrent.TimeUnit)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.service.SchedulerService#schedule(java.lang.Runnable, long, java.util.concurrent.TimeUnit)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -242,8 +236,8 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.service.SchedulerService#scheduleAtFixedRate(java.lang.Runnable, long, long, java.util.concurrent.TimeUnit)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.service.SchedulerService#scheduleAtFixedRate(java.lang.Runnable, long, long, java.util.concurrent.TimeUnit)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -261,8 +255,8 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.service.SchedulerService#submit(java.util.concurrent.Callable)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.service.SchedulerService#submit(java.util.concurrent.Callable)
      */
     @Override
     public <T> CompletableFuture<T> submit(final Callable<T> task) {
@@ -279,8 +273,8 @@ public class DefaultSchedulerService extends AbstractService implements Schedule
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.service.SchedulerService#submit(java.lang.Runnable)
+     * (non-Javadoc)
+     * @see org.infodavid.commons.service.SchedulerService#submit(java.lang.Runnable)
      */
     @Override
     @SuppressWarnings("rawtypes")

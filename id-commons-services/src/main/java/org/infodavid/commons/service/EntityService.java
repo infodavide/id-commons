@@ -57,6 +57,18 @@ public interface EntityService<K extends Serializable, T extends PersistentObjec
     Optional<T> findById(K id) throws ServiceException;
 
     /**
+     * Gets the entity class.
+     * @return the entity class
+     */
+    Class<T> getEntityClass();
+
+    /**
+     * Gets the identifier class.
+     * @return the identifier class
+     */
+    Class<K> getIdentifierClass();
+
+    /**
      * Update.
      * @param values the values
      * @throws ServiceException       the service exception

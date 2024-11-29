@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.util.ArrayUtils;
+import org.infodavid.commons.util.concurrency.SleepLock;
 import org.infodavid.commons.util.system.CommandExecutorFactory;
 import org.slf4j.Logger;
 
@@ -53,25 +54,31 @@ public abstract sealed class NetUtils permits LinuxNetUtils, WindowsNetUtils {
     /** The Constant METHOD_IS_NOT_SUPPORTED_ON. */
     protected static final String METHOD_IS_NOT_SUPPORTED_ON = "Method is not supported on ";
 
-    /** The Constant SINGLETON. */
-    private static NetUtils singleton;
+    /**
+     * The Class SingletonHelper.
+     */
+    private static class SingletonHelper {
+
+        /** The Constant SINGLETON. */
+        private static final NetUtils SINGLETON;
+
+        static {
+            if (IS_OS_FREE_BSD || IS_OS_LINUX || IS_OS_MAC || IS_OS_MAC_OSX || IS_OS_NET_BSD || IS_OS_OPEN_BSD || IS_OS_UNIX) {
+                SINGLETON = new LinuxNetUtils();
+            } else if (IS_OS_WINDOWS) {
+                SINGLETON = new WindowsNetUtils();
+            } else {
+                throw new UnsupportedOperationException(OS_NAME + IS_NOT_SUPPORTED);
+            }
+        }
+    }
 
     /**
      * Gets the single instance.
      * @return single instance
      */
-    public static synchronized NetUtils getInstance() {
-        if (singleton == null) {
-            if (IS_OS_FREE_BSD || IS_OS_LINUX || IS_OS_MAC || IS_OS_MAC_OSX || IS_OS_NET_BSD || IS_OS_OPEN_BSD || IS_OS_UNIX) {
-                singleton = new LinuxNetUtils();
-            } else if (IS_OS_WINDOWS) {
-                singleton = new WindowsNetUtils();
-            } else {
-                throw new UnsupportedOperationException(OS_NAME + IS_NOT_SUPPORTED);
-            }
-        }
-
-        return singleton;
+    public static NetUtils getInstance() {
+        return SingletonHelper.SINGLETON;
     }
 
     /**
@@ -122,7 +129,7 @@ public abstract sealed class NetUtils permits LinuxNetUtils, WindowsNetUtils {
         int code = -1;
 
         try {
-            code = CommandExecutorFactory.getInstance().executeCommand(output, error, command);
+            code = CommandExecutorFactory.getInstance().executeCommand(output, error, null, null, command);
         } catch (final Exception e) {
             getLogger().warn("An error occured while executing command: " + command, e); // NOSONAR Always written
         }
@@ -359,5 +366,34 @@ public abstract sealed class NetUtils permits LinuxNetUtils, WindowsNetUtils {
         if (!reachable) {
             throw new IOException(host + " is not reachable on port " + port);
         }
+    }
+
+    /**
+     * Wait listening.
+     * @param address the address
+     * @param port    the port
+     * @param timeout the timeout
+     * @throws InterruptedException the interrupted exception
+     */
+    public void waitListening(final String address, final int port, final int timeout) throws InterruptedException {
+        int t0 = timeout;
+        boolean disconnected = true;
+
+        do {
+            final long t1 = System.currentTimeMillis();
+
+            try (final Socket socket = new Socket()) {
+                socket.connect(new InetSocketAddress(address, port), 200);
+                disconnected = false;
+            } catch (@SuppressWarnings("unused") final IOException e) {
+                // noop
+            }
+
+            if (disconnected) {
+                SleepLock.sleep(200);
+            }
+
+            t0 -= System.currentTimeMillis() - t1;
+        } while (disconnected && t0 > 0);
     }
 }

@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.infodavid.commons.model.User;
-import org.infodavid.commons.persistence.jdbc.AbstractSpringConfiguration;
+import javax.sql.DataSource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.infodavid.commons.model.PersistentObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -30,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @EnableTransactionManagement
 @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
-public abstract class AbstractJpaSpringConfiguration extends AbstractSpringConfiguration {
+public abstract class AbstractJpaSpringConfiguration {
 
     /** The Constant DEFAULT_DIALECT_CLASS. */
     private static final String DEFAULT_DIALECT_CLASS = "org.hibernate.dialect.MySQL5Dialect";
@@ -47,23 +50,39 @@ public abstract class AbstractJpaSpringConfiguration extends AbstractSpringConfi
     /** The transaction manager. */
     private JpaTransactionManager transactionManager;
 
+    /** The database dialect. */
+    @Value("${database.dialectClassName}")
+    protected String databaseDialectClassName;
+
     /**
      * Additional properties.
      * @return the properties
      */
     protected Properties additionalProperties() {
+        if (StringUtils.isEmpty(databaseDialectClassName)) {
+            databaseDialectClassName = DEFAULT_DIALECT_CLASS;
+        }
+
         final Properties result = new Properties();
         result.setProperty("hibernate.hbm2ddl.auto", "validate");
 
         try {
-            Class.forName(DEFAULT_DIALECT_CLASS);
-            result.setProperty("hibernate.dialect", DEFAULT_DIALECT_CLASS);
+            Class.forName(databaseDialectClassName);
+            result.setProperty("hibernate.dialect", databaseDialectClassName);
         } catch (final ClassNotFoundException e) {
-            LOGGER.error(String.format("Cannot set default dialect, class is not available: %s", DEFAULT_DIALECT_CLASS), e);
+            LOGGER.error(String.format("Cannot set default dialect, class is not available: %s", databaseDialectClassName), e);
         }
 
         return result;
     }
+
+    /**
+     * Instantiate the data source.
+     * @return the data source
+     * @throws SQLException the SQL exception
+     * @throws IOException  Signals that an I/O exception has occurred.
+     */
+    public abstract DataSource dataSource() throws SQLException, IOException;
 
     /**
      * Entity manager factory.
@@ -107,11 +126,11 @@ public abstract class AbstractJpaSpringConfiguration extends AbstractSpringConfi
      * @return the packages to scan
      */
     protected String[] getPackagesToScan() {
-        return new String[] { User.class.getPackageName() };
+        return new String[] { PersistentObject.class.getPackageName() };
     }
 
     /**
-     * Property sources placeholder configurer.
+     * EntityProperty sources placeholder configurer.
      * @return the property sources placeholder configurer
      */
     @Bean

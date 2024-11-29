@@ -1,6 +1,7 @@
 package org.infodavid.commons.util.system;
 
 import java.nio.file.Path;
+import java.util.Map;
 
 /**
  * The Interface CommandExecutor.
@@ -16,20 +17,20 @@ public interface CommandExecutor {
 
     /**
      * Execute.
-     * @param output     the output
-     * @param error      the error
-     * @param workingDir the working directory
-     * @param command    the command line
+     * @param env     the environment variables
+     * @param command the command
      * @return the exit code
      */
-    int executeCommand(StringBuilder output, StringBuilder error, Path workingDir, String[] command);
+    int executeCommand(Map<String, String> env, String... command);
 
     /**
      * Execute.
-     * @param output  the output
-     * @param error   the error
-     * @param command the command line
+     * @param output     the output
+     * @param error      the error
+     * @param workingDir the working directory
+     * @param env        the environment variables
+     * @param command    the command line
      * @return the exit code
      */
-    int executeCommand(StringBuilder output, StringBuilder error, String[] command);
+    int executeCommand(StringBuilder output, StringBuilder error, Path workingDir, Map<String, String> env, String[] command);
 }

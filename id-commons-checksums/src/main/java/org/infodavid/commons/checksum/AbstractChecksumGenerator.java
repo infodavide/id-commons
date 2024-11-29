@@ -89,7 +89,7 @@ public abstract class AbstractChecksumGenerator implements ChecksumGenerator {
 
             final StringBuilder output = new StringBuilder();
             final StringBuilder error = new StringBuilder();
-            final int code = CommandExecutorFactory.getInstance().executeCommand(output, error, new String[] {
+            final int code = CommandExecutorFactory.getInstance().executeCommand(output, error, null, null, new String[] {
                     getCommand(),
                     file.toAbsolutePath().toString()
             });

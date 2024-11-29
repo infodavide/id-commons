@@ -2,6 +2,8 @@ package org.infodavid.commons.util.system;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -20,20 +22,33 @@ import lombok.extern.slf4j.Slf4j;
 final class DefaultCommandExecutor implements CommandExecutor {
 
     /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.util.system.CommandExecutor#executeCommand(java.util.Map, java.lang.String[])
+     */
+    @Override
+    public int executeCommand(final Map<String, String> env, final String... command) {
+        return executeCommand(new StringBuilder(), new StringBuilder(), null, env, command);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.util.system.CommandExecutor#executeCommand(java.lang.String[])
+     */
+    /*
      * (non-javadoc)
      * @see org.infodavid.util.system.CommandExecutor#executeCommand(java.lang.String)
      */
     @Override
     public int executeCommand(final String... command) {
-        return executeCommand(new StringBuilder(), new StringBuilder(), command);
+        return executeCommand(new StringBuilder(), new StringBuilder(), null, Collections.emptyMap(), command);
     }
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.util.system.CommandExecutor#executeCommand(java.lang.StringBuilder, java.lang.StringBuilder, java.nio.file.Path, java.lang.String[])
+     * (non-Javadoc)
+     * @see org.infodavid.commons.util.system.CommandExecutor#executeCommand(java.lang.StringBuilder, java.lang.StringBuilder, java.nio.file.Path, java.util.Map, java.lang.String[])
      */
     @Override
-    public int executeCommand(final StringBuilder output, final StringBuilder error, final Path workingDir, final String[] command) {
+    public int executeCommand(final StringBuilder output, final StringBuilder error, final Path workingDir, final Map<String, String> env, final String[] command) {
         int code = -1;
         final CommandLine commandLine = new CommandLine(command[0]);
 
@@ -56,7 +71,11 @@ final class DefaultCommandExecutor implements CommandExecutor {
         }
 
         try {
-            code = executor.execute(commandLine);
+            if (env == null || env.isEmpty()) {
+                code = executor.execute(commandLine);
+            } else {
+                code = executor.execute(commandLine, env);
+            }
         } catch (final Throwable e) { // NOSONAR
             LOGGER.warn("An error occured while executing command: {}, {}", StringUtils.join(command, ' '), e.getMessage()); // NOSONAR No format when using Throwable
         } finally {
@@ -95,14 +114,5 @@ final class DefaultCommandExecutor implements CommandExecutor {
         }
 
         return 0;
-    }
-
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.util.system.CommandExecutor#executeCommand(java.lang.StringBuilder, java.lang.StringBuilder, java.lang.String[])
-     */
-    @Override
-    public int executeCommand(final StringBuilder output, final StringBuilder error, final String[] command) {
-        return executeCommand(output, error, null, command);
     }
 }

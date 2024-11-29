@@ -8,15 +8,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.infodavid.commons.impl.security.DefaultAuthenticationServiceImpl;
+import org.infodavid.commons.model.EntityProperty;
 import org.infodavid.commons.model.PersistentObject;
 import org.infodavid.commons.model.PropertiesContainer;
-import org.infodavid.commons.model.Property;
 import org.infodavid.commons.model.decorator.PropertiesDecorator;
 import org.infodavid.commons.persistence.dao.DefaultDao;
-import org.infodavid.commons.security.AuthenticationService;
 import org.infodavid.commons.service.exception.ServiceException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.infodavid.commons.service.security.AuthorizationService;
+import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.PersistenceException;
+import lombok.Getter;
 
 /**
  * The Class AbstractEntityService.
@@ -35,13 +35,12 @@ import jakarta.persistence.PersistenceException;
 @Transactional(readOnly = true)
 public abstract class AbstractEntityService<K extends Serializable, T extends PersistentObject<K>> extends AbstractService {
 
-    /** The authentication supported. */
-    private boolean authenticationSupported = true;
-
     /** The entity class. */
+    @Getter
     private final Class<T> entityClass;
 
     /** The identifier class. */
+    @Getter
     private final Class<K> identifierClass;
 
     /** The validation helper. */
@@ -49,13 +48,14 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
 
     /**
      * Instantiates a new abstract entity service.
+     * @param logger             the logger
      * @param applicationContext the application context
      * @param identifierClass    the identifier class
      * @param entityClass        the entity class
      * @param validationHelper   the validation helper
      */
-    protected AbstractEntityService(final ApplicationContext applicationContext, final Class<K> identifierClass, final Class<T> entityClass, final ValidationHelper validationHelper) {
-        super(applicationContext);
+    protected AbstractEntityService(final Logger logger, final ApplicationContext applicationContext, final Class<K> identifierClass, final Class<T> entityClass, final ValidationHelper validationHelper) {
+        super(logger, applicationContext);
         this.entityClass = entityClass;
         this.identifierClass = identifierClass;
         this.validationHelper = validationHelper;
@@ -71,53 +71,6 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     public T add(final T value) throws ServiceException, IllegalAccessException {
         return doAdd(value);
-    }
-
-    /**
-     * Do add.
-     * @param value the value
-     * @return the t
-     * @throws ServiceException       the service exception
-     * @throws IllegalAccessException the illegal access exception
-     */
-    protected T doAdd(final T value) throws ServiceException, IllegalAccessException {
-        getLogger().debug("Adding entity");
-
-        if (getLogger().isDebugEnabled()) {
-            getLogger().debug(Constants.DATA_PATTERN, value);
-        }
-
-        validate(value);
-
-        final T valueToAdd = preInsert(value);
-        final Optional<T> existing = findByUniqueConstraints(value);
-
-        if (existing.isPresent()) {
-            getLogger().warn("Given id: {} matches the entity with a different id: {}", valueToAdd.getId(), existing.get().getId());
-
-            throw new EntityExistsException(String.format(Constants.DATA_ALREADY_EXISTS_PATTERN, existing.get().getId()));
-        }
-
-        try {
-            getDataAccessObject().insert(valueToAdd);
-            value.setId(valueToAdd.getId());
-        } catch (final Exception e) { // NOSONAR
-            getLogger().warn("Cannot add entity", e);
-
-            if (e.getClass().getSimpleName().startsWith("Duplicate")) {
-                throw validationHelper.newConstraintViolationException(getEntityClass(), valueToAdd, Constants.DATA_ALREADY_EXISTS_PATTERN);
-            }
-
-            throw new ServiceException(e.getMessage());
-        }
-
-        if (getLogger().isDebugEnabled()) {
-            getLogger().debug(org.infodavid.commons.impl.service.Constants.ADDED_DATA_PATTERN, valueToAdd);
-        }
-
-        getLogger().debug("Identifier of added entity: {}", String.valueOf(valueToAdd.getId())); // NOSONAR Always written
-
-        return value;
     }
 
     /**
@@ -179,6 +132,53 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     }
 
     /**
+     * Do add.
+     * @param value the value
+     * @return the t
+     * @throws ServiceException       the service exception
+     * @throws IllegalAccessException the illegal access exception
+     */
+    protected T doAdd(final T value) throws ServiceException, IllegalAccessException {
+        getLogger().debug("Adding entity");
+
+        if (getLogger().isDebugEnabled()) {
+            getLogger().debug(Constants.DATA_PATTERN, value);
+        }
+
+        validate(value);
+
+        final T valueToAdd = preInsert(value);
+        final Optional<T> existing = findByUniqueConstraints(value);
+
+        if (existing.isPresent()) {
+            getLogger().warn("Given id: {} matches the entity with a different id: {}", valueToAdd.getId(), existing.get().getId());
+
+            throw new EntityExistsException(String.format(Constants.DATA_ALREADY_EXISTS_PATTERN, existing.get().getId()));
+        }
+
+        try {
+            getDataAccessObject().insert(valueToAdd);
+            value.setId(valueToAdd.getId());
+        } catch (final Exception e) { // NOSONAR
+            getLogger().warn("Cannot add entity", e);
+
+            if (e.getClass().getSimpleName().startsWith("Duplicate")) {
+                throw validationHelper.newConstraintViolationException(getEntityClass(), valueToAdd, Constants.DATA_ALREADY_EXISTS_PATTERN);
+            }
+
+            throw new ServiceException(e.getMessage());
+        }
+
+        if (getLogger().isDebugEnabled()) {
+            getLogger().debug(org.infodavid.commons.impl.service.Constants.ADDED_DATA_PATTERN, valueToAdd);
+        }
+
+        getLogger().debug("Identifier of added entity: {}", String.valueOf(valueToAdd.getId())); // NOSONAR Always written
+
+        return value;
+    }
+
+    /**
      * Do delete by identifier.
      * @param id the identifier
      * @throws ServiceException       the service exception
@@ -203,6 +203,34 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     }
 
     /**
+     * Do update.
+     * @param values the values
+     * @throws ServiceException       the service exception
+     * @throws IllegalAccessException the illegal access exception
+     */
+    protected void doUpdate(final Collection<T> values) throws ServiceException, IllegalAccessException {
+        if (getLogger().isDebugEnabled()) {
+            getLogger().debug("Updating {} entities", String.valueOf(values.size()));
+        }
+
+        for (final T value : values) {
+            // Avoid unique constraint violation by searching for an entity having the same data without considering its identifier
+            update(findByUniqueConstraints(value), value);
+        }
+    }
+
+    /**
+     * Do update.
+     * @param value the value
+     * @throws ServiceException       the service exception
+     * @throws IllegalAccessException the illegal access exception
+     */
+    protected void doUpdate(final T value) throws ServiceException, IllegalAccessException {
+        // Avoid unique constraint violation by searching for an entity having the same data without considering its identifier
+        update(findByUniqueConstraints(value), value);
+    }
+
+    /**
      * Filter the entities.
      * @param entities the entities
      * @return the post processed entities
@@ -223,6 +251,26 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
         }
 
         return entities;
+    }
+
+    /**
+     * Filter the entity.
+     * @param optional the optional
+     * @return the post processed optional
+     */
+    protected Optional<T> filter(final Optional<T> optional) {
+        if (optional == null || !optional.isPresent()) { // NOSONAR Null check
+            return Optional.empty();
+        }
+
+        final T entity = filter(optional.get());
+
+        if (entity == null) {
+            return Optional.empty();
+        }
+
+
+        return Optional.of(entity);
     }
 
     /**
@@ -323,18 +371,10 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     protected abstract Optional<T> findByUniqueConstraints(T value) throws ServiceException;
 
     /**
-     * Gets the authentication service or null if not supported.
-     * @return the authentication service
+     * Gets the authorization service or null if not supported.
+     * @return the service
      */
-    protected final synchronized AuthenticationService getAuthenticationService() {
-        if (authenticationSupported) {
-            try {
-                return getApplicationContext().getBean(AuthenticationService.class);
-            } catch (@SuppressWarnings("unused") final NoSuchBeanDefinitionException e) { // NOSONAR Nothing to do if authentication service is not supported
-                authenticationSupported = false;
-            }
-        }
-
+    protected AuthorizationService getAuthorizationService() {
         return null;
     }
 
@@ -348,24 +388,8 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
      * Gets the default properties.
      * @return the default properties
      */
-    protected Collection<Property> getDefaultProperties() {
+    protected Collection<EntityProperty> getDefaultProperties() {
         return Collections.emptyList();
-    }
-
-    /**
-     * Gets the entity class.
-     * @return the class
-     */
-    public Class<T> getEntityClass() {
-        return entityClass;
-    }
-
-    /**
-     * Gets the identifier class.
-     * @return the class
-     */
-    public Class<K> getIdentifierType() {
-        return identifierClass;
     }
 
     /**
@@ -380,10 +404,10 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
         }
 
         validationHelper.validateId(id);
-        final AuthenticationService authenticationService = getAuthenticationService(); // NOSONAR Use getter to initialize field
+        final AuthorizationService authorizationService = getAuthorizationService(); // NOSONAR Use getter to initialize field
 
-        if (authenticationService != null && !authenticationService.hasRole(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE) && id instanceof Number) {
-            throw new IllegalAccessException(String.format(DefaultAuthenticationServiceImpl.USER_HAS_NOT_THE_ROLE, org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
+        if (authorizationService != null) {
+            authorizationService.assertDeleteAuthorization(authorizationService.getPrincipal(), entityClass, id);
         }
     }
 
@@ -394,10 +418,10 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
      * @throws ServiceException       the service exception
      */
     protected void preDelete(final T value) throws IllegalAccessException, ServiceException {
-        final AuthenticationService authenticationService = getAuthenticationService(); // NOSONAR Use getter to initialize field
+        final AuthorizationService authorizationService = getAuthorizationService(); // NOSONAR Use getter to initialize field
 
-        if (authenticationService != null && !authenticationService.hasRole(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE) && value.getId() instanceof Number) {
-            throw new IllegalAccessException(String.format(DefaultAuthenticationServiceImpl.USER_HAS_NOT_THE_ROLE, org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
+        if (authorizationService != null) {
+            authorizationService.assertDeleteAuthorization(authorizationService.getPrincipal(), entityClass, value.getId());
         }
     }
 
@@ -413,10 +437,10 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
             return value;
         }
 
-        final AuthenticationService authenticationService = getAuthenticationService(); // NOSONAR Use getter to initialize field
+        final AuthorizationService authorizationService = getAuthorizationService(); // NOSONAR Use getter to initialize field
 
-        if (authenticationService != null && !authenticationService.hasRole(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE)) {
-            throw new IllegalAccessException(String.format(DefaultAuthenticationServiceImpl.USER_HAS_NOT_THE_ROLE, org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
+        if (authorizationService != null) {
+            authorizationService.assertAddAuthorization(authorizationService.getPrincipal(), entityClass, value);
         }
 
         return value;
@@ -431,14 +455,14 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
      * @throws ServiceException       the service exception
      */
     protected T preUpdate(final Optional<T> existing, final T value) throws IllegalAccessException, ServiceException {
-        final AuthenticationService authenticationService = getAuthenticationService(); // NOSONAR Use getter to initialize field
+        final AuthorizationService authorizationService = getAuthorizationService(); // NOSONAR Use getter to initialize field
 
         if (existing.isPresent() && value instanceof final PropertiesContainer container) {
             validateProperties(((PropertiesContainer) existing.get()).getProperties(), container.getProperties());
         }
 
-        if (authenticationService != null && !authenticationService.hasRole(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE) && value.getId() instanceof Number) {
-            throw new IllegalAccessException(String.format(DefaultAuthenticationServiceImpl.USER_HAS_NOT_THE_ROLE, org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
+        if (authorizationService != null) {
+            authorizationService.assertUpdateAuthorization(authorizationService.getPrincipal(), entityClass, value.getId());
         }
 
         return value;
@@ -453,23 +477,6 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     public void update(final Collection<T> values) throws ServiceException, IllegalAccessException {
         doUpdate(values);
-    }
-
-    /**
-     * Do update.
-     * @param values the values
-     * @throws ServiceException       the service exception
-     * @throws IllegalAccessException the illegal access exception
-     */
-    protected void doUpdate(final Collection<T> values) throws ServiceException, IllegalAccessException {
-        if (getLogger().isDebugEnabled()) {
-            getLogger().debug("Updating {} entities", String.valueOf(values.size()));
-        }
-
-        for (final T value : values) {
-            // Avoid unique constraint violation by searching for an entity having the same data without considering its identifier
-            update(findByUniqueConstraints(value), value);
-        }
     }
 
     /**
@@ -535,17 +542,6 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
     }
 
     /**
-     * Do update.
-     * @param value the value
-     * @throws ServiceException       the service exception
-     * @throws IllegalAccessException the illegal access exception
-     */
-    protected void doUpdate(final T value) throws ServiceException, IllegalAccessException {
-        // Avoid unique constraint violation by searching for an entity having the same data without considering its identifier
-        update(findByUniqueConstraints(value), value);
-    }
-
-    /**
      * Validate.
      * @param values the values
      * @throws ServiceException the service exception
@@ -579,18 +575,19 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
      * Validate properties.
      * @param existing  the existing properties
      * @param decorator the properties
+     * @throws ServiceException the service exception
      */
-    protected void validateProperties(final PropertiesDecorator existing, final PropertiesDecorator decorator) {
+    protected void validateProperties(final PropertiesDecorator existing, final PropertiesDecorator decorator) throws ServiceException {
         if (existing != null) {
-            for (final Property existingProperty : existing) {
+            for (final EntityProperty existingProperty : existing) {
                 if (existingProperty.isReadOnly()) {
-                    // Property is read only but can be removed
+                    // EntityProperty is read only but can be removed
                     if (decorator.contains(existingProperty.getScope(), existingProperty.getName())) {
-                        final Property clonedProperty = new Property(existingProperty);
+                        final EntityProperty clonedProperty = new EntityProperty(existingProperty);
                         decorator.add(clonedProperty);
                     }
-                } else if (!existingProperty.isDeletable()) { // Property is immutable but its value can be modified
-                    final Property clonedProperty = new Property(existingProperty);
+                } else if (!existingProperty.isDeletable()) { // EntityProperty is immutable but its value can be modified
+                    final EntityProperty clonedProperty = new EntityProperty(existingProperty);
                     clonedProperty.setValue(decorator.get(existingProperty.getScope(), existingProperty.getName()));
                     decorator.add(clonedProperty);
                 }

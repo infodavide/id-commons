@@ -16,17 +16,23 @@ import lombok.extern.slf4j.Slf4j;
  * The Class ChecksumGeneratorRegistry.
  */
 @Slf4j
-public final class ChecksumGeneratorRegistry {
+public final class ChecksumGeneratorRegistry { //NOSONAR Singleton used
 
-    /** The Constant SINGLETON. */
-    private static final ChecksumGeneratorRegistry SINGLETON = new ChecksumGeneratorRegistry();
+    /**
+     * The Class SingletonHelper.
+     */
+    private static class SingletonHelper {
+
+        /** The Constant SINGLETON. */
+        private static final ChecksumGeneratorRegistry SINGLETON = new ChecksumGeneratorRegistry();
+    }
 
     /**
      * Gets the single instance.
      * @return single instance
      */
     public static ChecksumGeneratorRegistry getInstance() {
-        return SINGLETON;
+        return SingletonHelper.SINGLETON;
     }
 
     /** The algorithms. */

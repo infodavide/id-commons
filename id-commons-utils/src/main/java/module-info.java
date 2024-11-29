@@ -25,7 +25,6 @@ module org.infodavid.commons.util {
     requires transitive jfiglet;
     requires transitive jwildcard;
     requires transitive ch.qos.logback.classic;
-    requires transitive ch.qos.logback.core;
     requires transitive org.apache.commons.codec;
     requires transitive org.apache.commons.collections4;
     requires transitive org.apache.commons.compress;

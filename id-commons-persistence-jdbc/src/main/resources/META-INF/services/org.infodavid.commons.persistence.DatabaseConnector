@@ -1,3 +1,0 @@
-org.infodavid.commons.persistence.jdbc.DerbyConnector
-org.infodavid.commons.persistence.jdbc.HsqlConnector
-org.infodavid.commons.persistence.jdbc.MariaDbConnector

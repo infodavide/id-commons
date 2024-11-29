@@ -1,0 +1,2 @@
+org.infodavid.commons.persistence.jdbc.connector.MariaDbConnector
+org.infodavid.commons.persistence.jdbc.connector.PostgreSqlConnector

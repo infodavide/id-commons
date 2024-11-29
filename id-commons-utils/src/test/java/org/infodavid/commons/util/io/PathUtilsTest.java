@@ -211,7 +211,7 @@ class PathUtilsTest extends TestCase {
         }
 
         try (InputStream in = new FileInputStream(file)) {
-            PathUtils.unzip(in, extractedDir.toPath(), Collections.emptySet());
+            CompressionUtils.unzip(in, extractedDir.toPath(), Collections.emptySet());
         }
 
         assertTrue(extractedDir.exists(), "Directory not created");
@@ -242,7 +242,7 @@ class PathUtilsTest extends TestCase {
 
         assertThrows(IOException.class, () -> { // NOSONAR No lambda
             try (InputStream in = new FileInputStream(file)) {
-                PathUtils.unzip(in, extractedDir.toPath(), Collections.emptySet());
+                CompressionUtils.unzip(in, extractedDir.toPath(), Collections.emptySet());
             } finally {
                 FileUtils.deleteQuietly(file);
             }
@@ -268,7 +268,7 @@ class PathUtilsTest extends TestCase {
         }
 
         try (OutputStream out = new FileOutputStream(file)) {
-            PathUtils.zip(sourceDir.toPath(), out, Collections.emptySet(), true);
+            CompressionUtils.zip(sourceDir.toPath(), out, Collections.emptySet(), true);
         }
 
         assertTrue(file.exists(), "File not created");
@@ -303,7 +303,7 @@ class PathUtilsTest extends TestCase {
 
         assertThrows(NoSuchFileException.class, () -> { // NOSONAR No lambda
             try (OutputStream out = new FileOutputStream(file)) {
-                PathUtils.zip(new File("invalid").toPath(), out, Collections.emptySet(), false);
+                CompressionUtils.zip(new File("invalid").toPath(), out, Collections.emptySet(), false);
             }
         }, "Exception not raised or has a wrong type");
         assertTrue(file.exists(), "File not created");

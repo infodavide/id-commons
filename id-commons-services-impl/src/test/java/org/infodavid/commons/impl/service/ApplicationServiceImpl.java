@@ -1,6 +1,5 @@
 package org.infodavid.commons.impl.service;
 
-import org.infodavid.commons.persistence.dao.ApplicationPropertyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
  * The Class ApplicationServiceImpl.
  */
 @Service
-public class ApplicationServiceImpl extends AbstractApplicationService {
+public class ApplicationServiceImpl extends DefaultApplicationService {
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationServiceImpl.class);
@@ -19,12 +18,10 @@ public class ApplicationServiceImpl extends AbstractApplicationService {
     /**
      * Instantiates a new application service.
      * @param applicationContext the application context
-     * @param validationHelper   the validation helper
-     * @param dao                the data access object
      */
     @Autowired
-    protected ApplicationServiceImpl(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final ApplicationPropertyDao dao) {
-        super(applicationContext, validationHelper, dao);
+    protected ApplicationServiceImpl(final ApplicationContext applicationContext) {
+        super(LOGGER, applicationContext);
     }
 
     /*
@@ -47,15 +44,6 @@ public class ApplicationServiceImpl extends AbstractApplicationService {
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.impl.service.AbstractService#getLogger()
-     */
-    @Override
-    protected Logger getLogger() {
-        return LOGGER;
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.infodavid.commons.service.ApplicationService#getName()
      */
     @Override
@@ -70,5 +58,14 @@ public class ApplicationServiceImpl extends AbstractApplicationService {
     @Override
     public String getVersion() {
         return "1.0.0";
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.service.ApplicationService#isProduction()
+     */
+    @Override
+    public boolean isProduction() {
+        return false;
     }
 }

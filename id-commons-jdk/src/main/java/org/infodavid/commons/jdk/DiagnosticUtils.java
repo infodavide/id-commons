@@ -52,7 +52,7 @@ public final class DiagnosticUtils {
         final StringBuilder error = new StringBuilder();
 
         try {
-            if (CommandExecutorFactory.getInstance().executeCommand(output, error, new String[] { executable.getAbsolutePath(), "-dump:live,format=b,file=" + dump.getAbsolutePath(), pid }) != 0 && StringUtils.isNotEmpty(error.toString())) {
+            if (CommandExecutorFactory.getInstance().executeCommand(output, error, dump.getParentFile().toPath(), null, new String[] { executable.getAbsolutePath(), "-dump:live,format=b,file=" + dump.getAbsolutePath(), pid }) != 0 && StringUtils.isNotEmpty(error.toString())) {
                 throw new IOException(error.toString());
             }
         } catch (final IOException e) {

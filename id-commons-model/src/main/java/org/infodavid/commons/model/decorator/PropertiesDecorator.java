@@ -13,7 +13,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.infodavid.commons.model.Property;
+import org.infodavid.commons.model.Constants;
+import org.infodavid.commons.model.EntityProperty;
 import org.infodavid.commons.model.PropertyType;
 
 import lombok.Getter;
@@ -22,7 +23,7 @@ import lombok.experimental.Delegate;
 /**
  * The Class PropertiesDecorator.
  */
-public class PropertiesDecorator implements Set<Property>, Serializable {
+public class PropertiesDecorator implements Set<EntityProperty>, Serializable {
 
     /** The Constant EMPTY. */
     public static final PropertiesDecorator EMPTY = new PropertiesDecorator(Collections.emptySet()); // NOSONAR Immutable
@@ -33,7 +34,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
     /** The delegate. */
     @Delegate
     @Getter
-    private final Set<Property> delegate;
+    private final Set<EntityProperty> delegate;
 
     /**
      * Instantiates a new decorator.
@@ -46,7 +47,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      * Instantiates a new decorator.
      * @param delegate the delegate
      */
-    public PropertiesDecorator(final Set<Property> delegate) {
+    public PropertiesDecorator(final Set<EntityProperty> delegate) {
         this.delegate = delegate;
     }
 
@@ -55,11 +56,11 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      * @param delegate the delegate
      * @param source   the source
      */
-    public PropertiesDecorator(final Set<Property> delegate, final PropertiesDecorator source) {
+    public PropertiesDecorator(final Set<EntityProperty> delegate, final PropertiesDecorator source) {
         this(delegate);
 
-        for (final Property property : source) {
-            add(new Property(property));
+        for (final EntityProperty property : source) {
+            add(new EntityProperty(property));
         }
     }
 
@@ -68,7 +69,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      * @see java.util.Set#add(java.lang.Object)
      */
     @Override
-    public boolean add(final Property property) {
+    public boolean add(final EntityProperty property) {
         if (property == null || StringUtils.isEmpty(property.getName())) {
             return false;
         }
@@ -91,7 +92,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      */
     public void add(final String scope, final String name, final boolean value) {
         if (StringUtils.isEmpty(name)) {
-            return;
+            throw new IllegalArgumentException(Constants.NAME_MUST_NOT_BE_NULL_OR_EMPTY);
         }
 
         String s = scope;
@@ -100,10 +101,10 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             s = null;
         }
 
-        Property property = get(s, name);
+        EntityProperty property = get(s, name);
 
         if (property == null) {
-            property = new Property(s, name, PropertyType.BOOLEAN, String.valueOf(value));
+            property = new EntityProperty(s, name, PropertyType.BOOLEAN, String.valueOf(value));
             // ensure the value is not present to add it
             delegate.remove(property);
             delegate.add(property);
@@ -120,7 +121,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      */
     public void add(final String scope, final String name, final double value) {
         if (StringUtils.isEmpty(name)) {
-            return;
+            throw new IllegalArgumentException(Constants.NAME_MUST_NOT_BE_NULL_OR_EMPTY);
         }
 
         String s = scope;
@@ -129,16 +130,46 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             s = null;
         }
 
-        Property property = get(s, name);
+        EntityProperty property = get(s, name);
 
         if (property == null) {
-            property = new Property(s, name, PropertyType.DOUBLE, String.valueOf(value));
+            property = new EntityProperty(s, name, PropertyType.DOUBLE, String.valueOf(value));
             // ensure the value is not present to add it
             delegate.remove(property);
             delegate.add(property);
         } else {
             property.setValue(value);
         }
+    }
+
+    /**
+     * Put.
+     * @param scope the scope
+     * @param name  the name
+     * @param value the value
+     * @return the property
+     */
+    public EntityProperty add(final String scope, final String name, final EntityProperty value) {
+        if (StringUtils.isEmpty(name)) {
+            throw new IllegalArgumentException(Constants.NAME_MUST_NOT_BE_NULL_OR_EMPTY);
+        }
+
+        final EntityProperty previous = remove(scope, name);
+
+        if (value != null) {
+            String s = scope;
+
+            if (StringUtils.isEmpty(s)) {
+                s = null;
+            }
+
+            final EntityProperty property = new EntityProperty(value);
+            property.setScope(s);
+            property.setName(name);
+            add(property);
+        }
+
+        return previous;
     }
 
     /**
@@ -149,7 +180,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      */
     public void add(final String scope, final String name, final float value) {
         if (StringUtils.isEmpty(name)) {
-            return;
+            throw new IllegalArgumentException(Constants.NAME_MUST_NOT_BE_NULL_OR_EMPTY);
         }
 
         String s = scope;
@@ -158,10 +189,10 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             s = null;
         }
 
-        Property property = get(s, name);
+        EntityProperty property = get(s, name);
 
         if (property == null) {
-            property = new Property(s, name, PropertyType.DOUBLE, String.valueOf(value));
+            property = new EntityProperty(s, name, PropertyType.DOUBLE, String.valueOf(value));
             // ensure the value is not present to add it
             delegate.remove(property);
             delegate.add(property);
@@ -178,7 +209,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      */
     public void add(final String scope, final String name, final int value) {
         if (StringUtils.isEmpty(name)) {
-            return;
+            throw new IllegalArgumentException(Constants.NAME_MUST_NOT_BE_NULL_OR_EMPTY);
         }
 
         String s = scope;
@@ -187,10 +218,10 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             s = null;
         }
 
-        Property property = get(s, name);
+        EntityProperty property = get(s, name);
 
         if (property == null) {
-            property = new Property(s, name, PropertyType.INTEGER, String.valueOf(value));
+            property = new EntityProperty(s, name, PropertyType.INTEGER, String.valueOf(value));
             // ensure the value is not present to add it
             delegate.remove(property);
             delegate.add(property);
@@ -207,7 +238,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      */
     public void add(final String scope, final String name, final long value) {
         if (StringUtils.isEmpty(name)) {
-            return;
+            throw new IllegalArgumentException(Constants.NAME_MUST_NOT_BE_NULL_OR_EMPTY);
         }
 
         String s = scope;
@@ -216,10 +247,10 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             s = null;
         }
 
-        Property property = get(s, name);
+        EntityProperty property = get(s, name);
 
         if (property == null) {
-            property = new Property(s, name, PropertyType.INTEGER, String.valueOf(value));
+            property = new EntityProperty(s, name, PropertyType.INTEGER, String.valueOf(value));
             // ensure the value is not present to add it
             delegate.remove(property);
             delegate.add(property);
@@ -229,15 +260,31 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
     }
 
     /**
-     * Sets the property.
+     * Sets the property with STRING type.
      * @param scope the scope
      * @param name  the new property name
      * @param value the new property value
      * @return the replaced object or null
      */
-    public Object add(final String scope, final String name, final Object value) {
+    public Object add(final String scope, final String name, final Object value){
+        return add(scope, name, PropertyType.STRING, value);
+    }
+
+    /**
+     * Sets the property.
+     * @param scope the scope
+     * @param name  the new property name
+     * @param type  the type
+     * @param value the new property value
+     * @return the replaced object or null
+     */
+    public Object add(final String scope, final String name, final PropertyType type, final Object value) {
         if (StringUtils.isEmpty(name)) {
-            return null;
+            throw new IllegalArgumentException(Constants.NAME_MUST_NOT_BE_NULL_OR_EMPTY);
+        }
+
+        if (type == null) {
+            throw new IllegalArgumentException("Type must not be null");
         }
 
         String s = scope;
@@ -246,18 +293,18 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             s = null;
         }
 
-        Property property = get(s, name);
+        EntityProperty property = get(s, name);
         Object previousObject = null;
 
         if (property == null) {
-            property = new Property(s, name, PropertyType.STRING, String.valueOf(value));
+            property = new EntityProperty(s, name, type, String.valueOf(value));
             // ensure the value is not present to add it
             delegate.remove(property);
             delegate.add(property);
         } else {
             previousObject = property.getObject();
 
-            if (value instanceof final Property p) {
+            if (value instanceof final EntityProperty p) {
                 property.setValue(p.getValue());
             } else {
                 property.setValue(value);
@@ -267,34 +314,40 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
         return previousObject;
     }
 
-    /**
-     * Put.
-     * @param scope the scope
-     * @param name  the name
-     * @param value the value
-     * @return the property
-     */
-    public Property add(final String scope, final String name, final Property value) {
+    public Object add(final String scope, final String name, final PropertyType type, final String value) {
         if (StringUtils.isEmpty(name)) {
-            return null;
+            throw new IllegalArgumentException(Constants.NAME_MUST_NOT_BE_NULL_OR_EMPTY);
         }
 
-        final Property previous = remove(scope, name);
-
-        if (value != null) {
-            String s = scope;
-
-            if (StringUtils.isEmpty(s)) {
-                s = null;
-            }
-
-            final Property property = new Property(value);
-            property.setScope(s);
-            property.setName(name);
-            add(property);
+        if (type == null) {
+            throw new IllegalArgumentException("Type must not be null");
         }
 
-        return previous;
+        String s = scope;
+
+        if (StringUtils.isEmpty(s)) {
+            s = null;
+        }
+
+        EntityProperty property = get(s, name);
+        Object previousObject = null;
+
+        if (property == null) {
+            property = new EntityProperty(s, name, type, String.valueOf(value));
+            // ensure the value is not present to add it
+            delegate.remove(property);
+            delegate.add(property);
+        } else {
+            previousObject = property.getValue();
+            property.setValue(value);
+
+        }
+
+        return previousObject;
+    }
+
+    public Object add(final String scope, final String name, final String value) {
+        return add(scope, name, PropertyType.STRING, value);
     }
 
     /*
@@ -302,10 +355,10 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      * @see java.util.Set#addAll(java.util.Collection)
      */
     @Override
-    public boolean addAll(final Collection<? extends Property> c) {
+    public boolean addAll(final Collection<? extends EntityProperty> c) {
         boolean result = true;
 
-        for (final Property property : c) {
+        for (final EntityProperty property : c) {
             result = result && add(property);
         }
 
@@ -361,7 +414,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             s = null;
         }
 
-        for (final Property property : delegate) {
+        for (final EntityProperty property : delegate) {
             if (Objects.equals(property.getScope(), s)) {
                 result.put(property.getName(), property.getObject());
             }
@@ -376,7 +429,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      * @param name  the name
      * @return the property
      */
-    public Property get(final String scope, final String name) {
+    public EntityProperty get(final String scope, final String name) {
         final String s;
 
         if (StringUtils.isEmpty(scope)) {
@@ -389,94 +442,94 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
     }
 
     /**
-     * Gets the or default.
+     * Gets the value or default.
      * @param scope        the scope
      * @param name         the name
      * @param defaultValue the default value
      * @return the or default
      */
     public boolean getOrDefault(final String scope, final String name, final boolean defaultValue) {
-        final Property property = get(scope, name);
+        final EntityProperty property = get(scope, name);
 
-        return property == null ? defaultValue : Boolean.parseBoolean(property.getValue());
+        return property == null ? defaultValue : property.getValueOrDefault(defaultValue);
     }
 
     /**
-     * Gets the or default.
+     * Gets the value or default.
      * @param scope        the scope
      * @param name         the name
      * @param defaultValue the default value
      * @return the or default
      */
     public double getOrDefault(final String scope, final String name, final double defaultValue) {
-        final Property property = get(scope, name);
+        final EntityProperty property = get(scope, name);
 
-        return property == null ? defaultValue : Double.parseDouble(property.getValue());
+        return property == null ? defaultValue : property.getValueOrDefault(defaultValue);
     }
 
     /**
-     * Gets the or default.
+     * Gets the property or default.
+     * @param scope        the scope
+     * @param name         the name
+     * @param defaultValue the default value
+     * @return the or default
+     */
+    public EntityProperty getOrDefault(final String scope, final String name, final EntityProperty defaultValue) {
+        final EntityProperty property = get(scope, name);
+
+        return property == null ? defaultValue : property;
+    }
+
+    /**
+     * Gets the value or default.
      * @param scope        the scope
      * @param name         the name
      * @param defaultValue the default value
      * @return the or default
      */
     public int getOrDefault(final String scope, final String name, final int defaultValue) {
-        final Property property = get(scope, name);
+        final EntityProperty property = get(scope, name);
 
-        return property == null ? defaultValue : Integer.parseInt(property.getValue());
+        return property == null ? defaultValue : property.getValueOrDefault(defaultValue);
     }
 
     /**
-     * Gets the or default.
+     * Gets the value or default.
      * @param scope        the scope
      * @param name         the name
      * @param defaultValue the default value
      * @return the or default
      */
     public long getOrDefault(final String scope, final String name, final long defaultValue) {
-        final Property property = get(scope, name);
+        final EntityProperty property = get(scope, name);
 
-        return property == null ? defaultValue : Long.parseLong(property.getValue());
+        return property == null ? defaultValue : property.getValueOrDefault(defaultValue);
     }
 
     /**
-     * Gets the or default.
+     * Gets the value or default.
      * @param scope        the scope
      * @param name         the name
      * @param defaultValue the default value
      * @return the or default
      */
     public Object getOrDefault(final String scope, final String name, final Object defaultValue) {
-        final Property property = get(scope, name);
+        final EntityProperty property = get(scope, name);
 
-        return property == null ? defaultValue : property.getObject();
+        return property == null ? defaultValue : property.getValueOrDefault(defaultValue);
     }
 
     /**
-     * Gets the or default.
-     * @param scope        the scope
-     * @param name         the name
-     * @param defaultValue the default value
-     * @return the or default
-     */
-    public Property getOrDefault(final String scope, final String name, final Property defaultValue) {
-        final Property property = get(scope, name);
-
-        return property == null ? defaultValue : property;
-    }
-
-    /**
-     * Gets the or default.
+     * Gets the value or default.
      * @param scope        the scope
      * @param name         the name
      * @param defaultValue the default value
      * @return the or default
      */
     public String getOrDefault(final String scope, final String name, final String defaultValue) {
-        final Property property = get(scope, name);
+        final EntityProperty property = get(scope, name);
 
-        return property == null ? defaultValue : property.getValue();
+        return property == null ? defaultValue : property.getValueOrDefault(defaultValue);
     }
 
     /**
@@ -484,15 +537,15 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      * @param scope the name of the scope
      * @return the properties
      */
-    public Map<String, Property> getProperties(final String scope) {
-        final Map<String, Property> result = new HashMap<>();
+    public Map<String, EntityProperty> getProperties(final String scope) {
+        final Map<String, EntityProperty> result = new HashMap<>();
         String s = scope;
 
         if (StringUtils.isEmpty(s)) {
             s = null;
         }
 
-        for (final Property property : delegate) {
+        for (final EntityProperty property : delegate) {
             if (Objects.equals(property.getScope(), s)) {
                 result.put(property.getName(), property);
             }
@@ -507,7 +560,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      */
     @Override
     public boolean remove(final Object o) {
-        if (o instanceof Property) {
+        if (o instanceof EntityProperty) {
             remove(o);
         }
 
@@ -520,7 +573,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      * @param name  the name
      * @return the property
      */
-    public Property remove(final String scope, final String name) {
+    public EntityProperty remove(final String scope, final String name) {
         if (StringUtils.isEmpty(name)) {
             return null;
         }
@@ -531,10 +584,10 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             s = null;
         }
 
-        final Iterator<Property> ite = delegate.iterator();
+        final Iterator<EntityProperty> ite = delegate.iterator();
 
         while (ite.hasNext()) {
-            final Property property = ite.next();
+            final EntityProperty property = ite.next();
 
             if (Objects.equals(property.getScope(), s) && Objects.equals(property.getName(), name)) {
                 ite.remove();
@@ -553,7 +606,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      * @param value the value
      * @return the property
      */
-    public Property remove(final String scope, final String name, final Object value) {
+    public EntityProperty remove(final String scope, final String name, final Object value) {
         if (StringUtils.isEmpty(name)) {
             return null;
         }
@@ -564,10 +617,10 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             s = null;
         }
 
-        final Iterator<Property> ite = delegate.iterator();
+        final Iterator<EntityProperty> ite = delegate.iterator();
 
         while (ite.hasNext()) {
-            final Property property = ite.next();
+            final EntityProperty property = ite.next();
 
             if (Objects.equals(property.getScope(), s) && Objects.equals(property.getName(), name) && Objects.equals(property.getObject(), value)) {
                 ite.remove();
@@ -584,14 +637,14 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
      * @see java.lang.Object#toString()
      */
     @Override
-    public String toString() { //NOSONAR No complexity
+    public String toString() { // NOSONAR No complexity
         if (delegate.isEmpty()) {
             return StringUtils.EMPTY;
         }
 
         final StringBuilder buffer = new StringBuilder();
 
-        for (final Entry<String, Property> propertyEntry : getProperties(null).entrySet()) {
+        for (final Entry<String, EntityProperty> propertyEntry : getProperties(null).entrySet()) {
             buffer.append(propertyEntry.getKey());
             buffer.append('=');
 
@@ -610,7 +663,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
 
         final Set<String> scopes = new TreeSet<>();
 
-        for (final Property property : delegate) {
+        for (final EntityProperty property : delegate) {
             if (StringUtils.isNotEmpty(property.getScope())) {
                 scopes.add(property.getScope());
             }
@@ -620,7 +673,7 @@ public class PropertiesDecorator implements Set<Property>, Serializable {
             buffer.append(scope);
             buffer.append(":\n");
 
-            for (final Entry<String, Property> propertyEntry : getProperties(scope).entrySet()) {
+            for (final Entry<String, EntityProperty> propertyEntry : getProperties(scope).entrySet()) {
                 buffer.append('\t');
                 buffer.append(propertyEntry.getKey());
                 buffer.append('=');
