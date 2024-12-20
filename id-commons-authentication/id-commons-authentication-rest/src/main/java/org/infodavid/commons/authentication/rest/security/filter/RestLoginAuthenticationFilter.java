@@ -87,6 +87,7 @@ public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcess
             password = dto.password();
         }
 
+        LOGGER.info("Login request from: {} for principal: {}", request.getRemoteAddr(), dto.name());
         RequestContextHolder.setRequestAttributes(new ServletWebRequest(request, response));
         final UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(name, password);
         final Authentication result = getAuthenticationManager().authenticate(authRequest);

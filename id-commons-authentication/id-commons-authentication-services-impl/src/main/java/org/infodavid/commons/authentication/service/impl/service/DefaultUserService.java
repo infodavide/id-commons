@@ -23,7 +23,6 @@ import org.infodavid.commons.authentication.service.UserService;
 import org.infodavid.commons.impl.service.AbstractEntityService;
 import org.infodavid.commons.impl.service.Constants;
 import org.infodavid.commons.impl.service.TransactionUtils;
-import org.infodavid.commons.impl.service.ValidationHelper;
 import org.infodavid.commons.model.DefaultEntityReference;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.security.AuthenticationService;
@@ -82,13 +81,12 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
      * Instantiates a new user service.
      * @param logger                the logger
      * @param applicationContext    the application context
-     * @param validationHelper      the validation helper
      * @param dao                   the data access object
      * @param authenticationService the authentication service
      * @param authorizationService  the authorization service
      */
-    public DefaultUserService(final Logger logger, final ApplicationContext applicationContext, final ValidationHelper validationHelper, final UserDao dao, final AuthenticationService authenticationService, final AuthorizationService authorizationService) {
-        super(logger, applicationContext, Long.class, User.class, validationHelper);
+    public DefaultUserService(final Logger logger, final ApplicationContext applicationContext, final UserDao dao, final AuthenticationService authenticationService, final AuthorizationService authorizationService) {
+        super(logger, applicationContext, Long.class, User.class);
         this.dao = dao;
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;

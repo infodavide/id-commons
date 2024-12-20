@@ -1,10 +1,9 @@
 package org.infodavid.commons.persistence.jpa;
 
-import java.sql.SQLException;
-
 import javax.sql.DataSource;
 
 import org.infodavid.commons.persistence.jpa.repository.CustomBaseRepositoryImpl;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -36,12 +35,27 @@ public class SpringTestConfiguration extends AbstractJpaSpringConfiguration {
     @Override
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DataSource dataSource() throws SQLException {
-        final ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator(false, false, "UTF-8", new ClassPathResource("create_database.sql"));
-        final DriverManagerDataSource result = new DriverManagerDataSource("jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
-        result.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
-        resourceDatabasePopulator.execute(result);
+    public FactoryBean<DataSource> dataSource() {
+        return new FactoryBean<>() {
 
-        return result;
+            /*
+             * (non-Javadoc)
+             * @see org.springframework.beans.factory.FactoryBean#getObject()
+             */
+            @Override
+            public DataSource getObject() throws Exception {
+                final ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator(false, false, "UTF-8", new ClassPathResource("create_database.sql"));
+                final DriverManagerDataSource result = new DriverManagerDataSource("jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
+                result.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
+                resourceDatabasePopulator.execute(result);
+
+                return result;
+            }
+
+            @Override
+            public Class<?> getObjectType() {
+                return DataSource.class;
+            }
+        };
     }
 }

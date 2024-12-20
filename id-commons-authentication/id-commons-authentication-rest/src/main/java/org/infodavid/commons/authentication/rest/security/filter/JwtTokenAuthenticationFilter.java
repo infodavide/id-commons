@@ -93,6 +93,7 @@ public class JwtTokenAuthenticationFilter implements Filter {
             return;
         }
 
+        LOGGER.info("Authentication attempt from: {}", request.getRemoteAddr());
         LOGGER.trace("Attempting authentication based on JWT token passed on request header");
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 

@@ -9,7 +9,6 @@ import java.util.Set;
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.infodavid.commons.model.PersistentObject;
-import org.springframework.stereotype.Component;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -24,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * The Class ValidationHelper.
  */
-@Component
 @Slf4j
 public class ValidationHelper {
 

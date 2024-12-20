@@ -20,3 +20,5 @@ buildNumber.properties
 *.factorypath
 */.factorypath
 /id-commons-authentication/id-commons-authentication-app/.factorypath
+/id-commons-persistence/.factorypath
+/id-commons-rest/.factorypath

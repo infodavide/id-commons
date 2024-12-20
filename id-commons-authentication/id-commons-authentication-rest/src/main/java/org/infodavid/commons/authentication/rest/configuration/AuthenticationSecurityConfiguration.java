@@ -1,5 +1,7 @@
 package org.infodavid.commons.authentication.rest.configuration;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 import org.infodavid.commons.authentication.rest.security.AuthenticationJwtToken;
 import org.infodavid.commons.authentication.rest.security.LoginAuthenticationProvider;
 import org.infodavid.commons.authentication.rest.security.RestAuthenticationEntryPoint;
@@ -92,8 +94,8 @@ public class AuthenticationSecurityConfiguration extends DefaultSecurityConfigur
     @Override
     protected void configure(final AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry requests) {
         super.configure(requests);
-        requests.requestMatchers(HttpMethod.POST, loginPath).permitAll() // Allow login for everyone
-        .requestMatchers(HttpMethod.POST, logoutPath).permitAll(); // Allow logout from everyone
+        requests.requestMatchers(antMatcher(HttpMethod.POST, loginPath)).permitAll() // Allow login for everyone
+        .requestMatchers(antMatcher(HttpMethod.POST, logoutPath)).permitAll(); // Allow logout from everyone
         configureResourceAccess(requests, "/rest/user");
     }
 

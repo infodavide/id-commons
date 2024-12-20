@@ -42,7 +42,7 @@ public class PostgreSqlConnector extends AbstractDatabaseConnector {
      * Instantiates a new database connector.
      */
     public PostgreSqlConnector() {
-        super(LOGGER, NAME, DRIVER_CLASS_NAME);
+        super(LOGGER, NAME, DRIVER_CLASS_NAME, null);
     }
 
     /*
@@ -51,7 +51,7 @@ public class PostgreSqlConnector extends AbstractDatabaseConnector {
      */
     @Override
     public void backup(final DatabaseConnectionDescriptor descriptor, final Path directory) throws IOException, SQLException {
-        LOGGER.debug("Backuping database: {}", descriptor.getDatabase());
+        LOGGER.debug("Backuping database defined in descriptor: {}", descriptor);
         Files.createDirectories(directory);
         final Path file = directory.resolve(DATE_FORMAT.format(System.currentTimeMillis()) + '_' + descriptor.getDatabase() + ".sql");
         final Collection<String> command = new ArrayList<>();
@@ -147,9 +147,12 @@ public class PostgreSqlConnector extends AbstractDatabaseConnector {
      */
     @Override
     public void restore(final DatabaseConnectionDescriptor descriptor, final Path directory) throws IOException, SQLException {
+        LOGGER.info("Restoring database defined in descriptor: {}", descriptor);
         final List<Path> sqlFiles = listScripts(directory);
 
         if (sqlFiles.isEmpty()) {
+            LOGGER.info("No SQL file found");
+
             return;
         }
 

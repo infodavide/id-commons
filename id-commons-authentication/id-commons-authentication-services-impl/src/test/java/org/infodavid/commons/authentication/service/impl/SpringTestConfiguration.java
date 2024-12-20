@@ -11,7 +11,6 @@ import org.infodavid.commons.authentication.service.impl.service.DefaultUserServ
 import org.infodavid.commons.authentication.service.test.persistence.dao.UserDaoMock;
 import org.infodavid.commons.impl.service.DefaultConfigurationManager;
 import org.infodavid.commons.impl.service.DefaultSchedulerService;
-import org.infodavid.commons.impl.service.ValidationHelper;
 import org.infodavid.commons.persistence.dao.ConfigurationPropertyDao;
 import org.infodavid.commons.persistence.dao.DefaultDao;
 import org.infodavid.commons.service.SchedulerService;
@@ -46,27 +45,25 @@ public class SpringTestConfiguration {
     /**
      * Application configuration manager.
      * @param applicationContext the application context
-     * @param validationHelper   the validation helper
      * @param dao                the data access object
      * @return the default configuration manager
      */
     @Bean("applicationConfigurationManager")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultConfigurationManager applicationConfigurationManager(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final ConfigurationPropertyDao dao) {
-        return new DefaultConfigurationManager(LoggerFactory.getLogger("ApplicationConfigurationManager"), applicationContext, validationHelper, dao, org.infodavid.commons.service.Constants.APPLICATION_SCOPE);
+    public DefaultConfigurationManager applicationConfigurationManager(final ApplicationContext applicationContext, final ConfigurationPropertyDao dao) {
+        return new DefaultConfigurationManager(LoggerFactory.getLogger("ApplicationConfigurationManager"), applicationContext, dao, org.infodavid.commons.service.Constants.APPLICATION_SCOPE);
     }
 
     /**
      * Authentication configuration manager.
      * @param applicationContext the application context
-     * @param validationHelper   the validation helper
      * @param dao                the data access object
      * @return the default configuration manager
      */
     @Bean("authenticationConfigurationManager")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultConfigurationManager authenticationConfigurationManager(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final ConfigurationPropertyDao dao) {
-        return new DefaultConfigurationManager(LoggerFactory.getLogger("AuthenticationConfigurationManager"), applicationContext, validationHelper, dao, org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE);
+    public DefaultConfigurationManager authenticationConfigurationManager(final ApplicationContext applicationContext, final ConfigurationPropertyDao dao) {
+        return new DefaultConfigurationManager(LoggerFactory.getLogger("AuthenticationConfigurationManager"), applicationContext, dao, org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE);
     }
 
     /**
@@ -173,7 +170,6 @@ public class SpringTestConfiguration {
     /**
      * User service.
      * @param applicationContext    the application context
-     * @param validationHelper      the validation helper
      * @param dao                   the data access object
      * @param authenticationService the authentication service
      * @param authorizationService  the authorization service
@@ -182,7 +178,7 @@ public class SpringTestConfiguration {
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public UserService userService(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final UserDao dao, final AuthenticationService authenticationService, final AuthorizationService authorizationService) throws Exception {
-        return new DefaultUserService(LoggerFactory.getLogger(UserService.class), applicationContext, validationHelper, dao, authenticationService, authorizationService);
+    public UserService userService(final ApplicationContext applicationContext, final UserDao dao, final AuthenticationService authenticationService, final AuthorizationService authorizationService) throws Exception {
+        return new DefaultUserService(LoggerFactory.getLogger(UserService.class), applicationContext, dao, authenticationService, authorizationService);
     }
 }

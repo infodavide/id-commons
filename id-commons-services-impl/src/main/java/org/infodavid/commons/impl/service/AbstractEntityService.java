@@ -52,13 +52,12 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
      * @param applicationContext the application context
      * @param identifierClass    the identifier class
      * @param entityClass        the entity class
-     * @param validationHelper   the validation helper
      */
-    protected AbstractEntityService(final Logger logger, final ApplicationContext applicationContext, final Class<K> identifierClass, final Class<T> entityClass, final ValidationHelper validationHelper) {
+    protected AbstractEntityService(final Logger logger, final ApplicationContext applicationContext, final Class<K> identifierClass, final Class<T> entityClass) {
         super(logger, applicationContext);
         this.entityClass = entityClass;
         this.identifierClass = identifierClass;
-        this.validationHelper = validationHelper;
+        validationHelper = newValidationHelperInstance();
     }
 
     /**
@@ -390,6 +389,14 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
      */
     protected Collection<EntityProperty> getDefaultProperties() {
         return Collections.emptyList();
+    }
+
+    /**
+     * New validation helper.
+     * @return the validation helper
+     */
+    protected ValidationHelper newValidationHelperInstance() {
+        return new ValidationHelper();
     }
 
     /**

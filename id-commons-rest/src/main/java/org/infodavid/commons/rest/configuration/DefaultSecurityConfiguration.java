@@ -1,5 +1,7 @@
 package org.infodavid.commons.rest.configuration;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 import org.infodavid.commons.rest.security.filter.JsonContentCachingFilter;
 import org.infodavid.commons.rest.security.filter.SecurityHeadersFilter;
 import org.springframework.beans.BeansException;
@@ -29,7 +31,11 @@ public class DefaultSecurityConfiguration implements ApplicationContextAware { /
      * @param path     the path
      */
     protected static void configureResourceAccess(final AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry requests, final String path) {
-        requests.requestMatchers(HttpMethod.GET, path).permitAll().requestMatchers(HttpMethod.GET, path + "/*").permitAll().requestMatchers(HttpMethod.GET, path + "/**/*").permitAll().requestMatchers(HttpMethod.POST, path).authenticated().requestMatchers(HttpMethod.POST, path + "/*").authenticated().requestMatchers(HttpMethod.DELETE, path + "/*").authenticated();
+        requests.requestMatchers(HttpMethod.GET, path).permitAll()
+        .requestMatchers(HttpMethod.GET, path + "/**").permitAll()
+        .requestMatchers(HttpMethod.POST, path).authenticated()
+        .requestMatchers(HttpMethod.POST, path + "/*").authenticated()
+        .requestMatchers(HttpMethod.DELETE, path + "/*").authenticated();
     }
 
     /**
@@ -38,7 +44,11 @@ public class DefaultSecurityConfiguration implements ApplicationContextAware { /
      * @param path     the path
      */
     protected static void configureStompAccess(final AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry requests, final String path) {
-        requests.requestMatchers(HttpMethod.GET, path).permitAll().requestMatchers(HttpMethod.GET, path + "/*").permitAll().requestMatchers(HttpMethod.GET, path + "/**/*").permitAll().requestMatchers(HttpMethod.GET, path + "/**").permitAll().requestMatchers(HttpMethod.POST, path).permitAll().requestMatchers(HttpMethod.POST, path + "/*").permitAll().requestMatchers(HttpMethod.POST, path + "/**").permitAll().requestMatchers(HttpMethod.DELETE, path + "/*").permitAll();
+        requests.requestMatchers(HttpMethod.GET, path).permitAll()
+        .requestMatchers(HttpMethod.GET, path + "/**").permitAll()
+        .requestMatchers(HttpMethod.POST, path).permitAll()
+        .requestMatchers(HttpMethod.POST, path + "/**").permitAll()
+        .requestMatchers(HttpMethod.DELETE, path + "/*").permitAll();
     }
 
     /** The application context. */
@@ -53,21 +63,21 @@ public class DefaultSecurityConfiguration implements ApplicationContextAware { /
         http.httpBasic(basic -> basic.disable()).cors(cors -> cors.disable()).csrf(csrf -> csrf.disable()).authorizeHttpRequests(requests -> {
             configureStompAccess(requests, "/stomp");
             configure(requests);
-            requests.requestMatchers(HttpMethod.GET, "/favicon.ico").permitAll()
-            .requestMatchers(HttpMethod.GET, "/resources/**/*").permitAll()
-            .requestMatchers(HttpMethod.GET, "/css/**/*").permitAll()
-            .requestMatchers(HttpMethod.GET, "/fonts/**/*").permitAll()
-            .requestMatchers(HttpMethod.GET, "/images/**/*").permitAll()
-            .requestMatchers(HttpMethod.GET, "/js/**/*").permitAll()
-            .requestMatchers(HttpMethod.GET, "/templates/**/*").permitAll()
-            .requestMatchers(HttpMethod.GET, "/swagger-docs/**").permitAll()
-            .requestMatchers("/swagger-ui/*", "/swagger-ui.html", "/webjars/**", "/v2/**", "/swagger-resources/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/*").permitAll()
-            .requestMatchers(HttpMethod.GET, "/rest/app/about").permitAll()
-            .requestMatchers(HttpMethod.GET, "/rest/app/health").permitAll()
-            .requestMatchers(HttpMethod.GET, "/rest/app/release_note").permitAll()
-            .requestMatchers(HttpMethod.GET, "/rest/license").permitAll()
-            .requestMatchers("/rest/**/*").authenticated().requestMatchers(HttpMethod.OPTIONS).permitAll()
+            requests.requestMatchers(antMatcher(HttpMethod.GET, "/favicon.ico")).permitAll()
+            .requestMatchers(antMatcher(HttpMethod.GET, "/resources/**")).permitAll()
+            .requestMatchers(antMatcher(HttpMethod.GET, "/css/**")).permitAll()
+            .requestMatchers(antMatcher(HttpMethod.GET, "/fonts/**")).permitAll()
+            .requestMatchers(antMatcher(HttpMethod.GET, "/images/**")).permitAll()
+            .requestMatchers(antMatcher(HttpMethod.GET, "/js/**")).permitAll()
+            .requestMatchers(antMatcher(HttpMethod.GET, "/actuator/**")).permitAll()
+            .requestMatchers(antMatcher(HttpMethod.GET, "/swagger-docs/**")).permitAll()
+            .requestMatchers(antMatcher("/swagger-ui/*")).permitAll()
+            .requestMatchers(antMatcher("/swagger-ui.html")).permitAll()
+            .requestMatchers(antMatcher("/swagger-resources/**")).permitAll()
+            .requestMatchers(antMatcher("/webjars/**")).permitAll()
+            .requestMatchers(antMatcher("/v2/**")).permitAll()
+            .requestMatchers(antMatcher(HttpMethod.GET, "/*")).permitAll()
+            .requestMatchers(antMatcher("/rest/**")).authenticated().requestMatchers(HttpMethod.OPTIONS).permitAll()
             .anyRequest().authenticated();
         })
         // Session management

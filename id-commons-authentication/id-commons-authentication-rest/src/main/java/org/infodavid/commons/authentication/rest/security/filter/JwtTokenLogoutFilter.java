@@ -73,6 +73,7 @@ public class JwtTokenLogoutFilter implements Filter {
             return;
         }
 
+        LOGGER.info("Logout request from: {}", request.getRemoteAddr());
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null) {
@@ -85,6 +86,7 @@ public class JwtTokenLogoutFilter implements Filter {
                     return;
                 }
 
+                LOGGER.info("Logout request for principal: {}", principal.getName());
                 final Map<String, String> properties = new HashMap<>();
                 properties.put("authType", request.getAuthType());
                 properties.put("characterEncoding", request.getCharacterEncoding());

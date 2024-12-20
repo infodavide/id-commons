@@ -1,7 +1,6 @@
 package org.infodavid.commons.persistence.jdbc;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -24,13 +23,12 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource("classpath:application-test.properties")
 public class SpringTestConfiguration extends AbstractSpringConfiguration {
 
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.impl.persistence.jdbc.mybatis.AbstractSpringConfiguration#dataSource()
+    /**
+     * Data source.
+     * @return the data source
      */
-    @Override
     @Bean
-    public DataSource dataSource() throws SQLException {
+    public DataSource dataSource() {
         final EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
 
         return builder.setScriptEncoding(StandardCharsets.UTF_8.name()).setType(EmbeddedDatabaseType.HSQL).addScript("create_database.sql").build();

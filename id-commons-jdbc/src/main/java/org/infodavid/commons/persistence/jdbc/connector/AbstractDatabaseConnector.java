@@ -183,16 +183,34 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
     /** The supported driver. */
     protected final String supportedDriver;
 
+    /** The version query. */
+    protected final String versionQuery;
+
     /**
      * Instantiates a new database connector.
      * @param logger          the logger
      * @param name            the name
      * @param supportedDriver the supported driver
+     * @param versionQuery    the version query
      */
-    protected AbstractDatabaseConnector(final Logger logger, final String name, final String supportedDriver) {
+    protected AbstractDatabaseConnector(final Logger logger, final String name, final String supportedDriver, final String versionQuery) {
         this.logger = logger;
         this.name = name;
         this.supportedDriver = supportedDriver;
+
+        if (StringUtils.isEmpty(versionQuery)) {
+            final StringBuilder buffer = new StringBuilder();
+            buffer.append("SELECT ");
+            buffer.append(Constants.DATA_COLUMN);
+            buffer.append("AS version FROM configuration_properties WHERE ");
+            buffer.append(Constants.NAME_COLUMN);
+            buffer.append("='");
+            buffer.append(org.infodavid.commons.persistence.jdbc.Constants.SCHEMA_VERSION_PROPERTY);
+            buffer.append("'");
+            this.versionQuery = buffer.toString();
+        } else {
+            this.versionQuery = versionQuery;
+        }
     }
 
     /**
@@ -210,9 +228,8 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
         }
 
         final String connectionString = getConnectionString(connectionStringPattern, defaultPort, descriptor);
-        getLogger().debug("Connection string: {}", connectionString);
+        getLogger().info("Initializing connection pool and datasource for descriptor: {} and connection string: {}", descriptor, connectionString);
         initialize(connectionString, defaultPort, descriptor);
-        getLogger().debug("Creating the connection pool for database: {}", descriptor.getDatabase());
         final HikariConfig config = new HikariConfig();
         config.setPoolName(descriptor.getDatabase() + "-pool");
         config.setDriverClassName(getSupportedDriver());
@@ -341,6 +358,8 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
      * @throws SQLException the SQL exception
      */
     protected void execute(final String connectionStringPattern, final int defaultPort, final DatabaseConnectionDescriptor descriptor, final Path dir) throws IOException, SQLException {
+        getLogger().info("Executing scripts in: {} to database defined in descriptor: {}", dir, descriptor);
+
         try (Connection connection = getConnection(getConnectionString(connectionStringPattern, defaultPort, descriptor), descriptor.getUser(), descriptor.getPassword())) {
             for (final Path sqlFile : listScripts(dir)) {
                 runScript(descriptor.getDatabase(), connection, sqlFile);
@@ -374,16 +393,8 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
      */
     protected String getSchemaVersion(final String database, final Connection connection) throws SQLException {
         getLogger().debug("Reading current schema version of {} database", database);
-        final StringBuilder buffer = new StringBuilder();
-        buffer.append("SELECT ");
-        buffer.append(Constants.DATA_COLUMN);
-        buffer.append(" FROM configuration_properties WHERE ");
-        buffer.append(Constants.NAME_COLUMN);
-        buffer.append("='");
-        buffer.append(org.infodavid.commons.persistence.jdbc.Constants.SCHEMA_VERSION_PROPERTY);
-        buffer.append("'");
 
-        try (Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet resultSet = statement.executeQuery(buffer.toString())) {
+        try (Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet resultSet = statement.executeQuery(versionQuery)) {
             if (resultSet.first()) {
                 return resultSet.getString(1);
             }

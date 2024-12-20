@@ -1,8 +1,6 @@
 module org.infodavid.commons.springboot {
-    exports org.infodavid.commons.springboot;
     exports org.infodavid.commons.springboot.cfg;
 
-    opens org.infodavid.commons.springboot;
     opens org.infodavid.commons.springboot.cfg;
 
     requires transitive com.fasterxml.jackson.core;

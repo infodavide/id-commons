@@ -3,6 +3,8 @@ package org.infodavid.commons.persistence.jdbc;
 import java.io.Serializable;
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -174,5 +176,14 @@ public class DatabaseConnectionDescriptor implements Serializable {
         result = prime * result + (database == null ? 0 : database.hashCode());
         result = prime * result + (driverClassName == null ? 0 : driverClassName.hashCode());
         return prime * result + (user == null ? 0 : user.hashCode());
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

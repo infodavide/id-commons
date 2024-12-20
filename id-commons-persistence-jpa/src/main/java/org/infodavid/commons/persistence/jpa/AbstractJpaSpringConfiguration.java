@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.model.PersistentObject;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -82,20 +83,21 @@ public abstract class AbstractJpaSpringConfiguration {
      * @throws SQLException the SQL exception
      * @throws IOException  Signals that an I/O exception has occurred.
      */
-    public abstract DataSource dataSource() throws SQLException, IOException;
+    public abstract FactoryBean<DataSource> dataSource() throws SQLException, IOException;
 
     /**
      * Entity manager factory.
+     * @param dataSource the data source
      * @return the local container entity manager factory bean
      * @throws SQLException the SQL exception
      * @throws IOException  Signals that an I/O exception has occurred.
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    synchronized LocalContainerEntityManagerFactoryBean entityManagerFactory() throws SQLException, IOException {
+    synchronized LocalContainerEntityManagerFactoryBean entityManagerFactory(final DataSource dataSource) throws SQLException, IOException {
         if (entityManagerFactoryBean == null) {
             entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-            entityManagerFactoryBean.setDataSource(dataSource());
+            entityManagerFactoryBean.setDataSource(dataSource);
             entityManagerFactoryBean.setPackagesToScan(getPackagesToScan());
             final AbstractJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
             jpaVendorAdapter.setShowSql(false);

@@ -48,12 +48,11 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
      * Instantiates a new application service.
      * @param logger             the logger
      * @param applicationContext the application context
-     * @param validationHelper   the validation helper
      * @param dao                the data access object
      * @param scope              the scope
      */
-    public DefaultConfigurationManager(final Logger logger, final ApplicationContext applicationContext, final ValidationHelper validationHelper, final ConfigurationPropertyDao dao, final String scope) {
-        super(logger, applicationContext, Long.class, ConfigurationProperty.class, validationHelper);
+    public DefaultConfigurationManager(final Logger logger, final ApplicationContext applicationContext, final ConfigurationPropertyDao dao, final String scope) {
+        super(logger, applicationContext, Long.class, ConfigurationProperty.class);
         this.dao = dao;
         this.scope = scope;
     }

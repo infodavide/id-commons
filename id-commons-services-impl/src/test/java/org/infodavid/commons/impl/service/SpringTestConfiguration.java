@@ -31,14 +31,13 @@ public class SpringTestConfiguration {
     /**
      * Application configuration manager.
      * @param applicationContext the application context
-     * @param validationHelper   the validation helper
      * @param dao                the data access object
      * @return the default configuration manager
      */
     @Bean("applicationConfigurationManager")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultConfigurationManager applicationConfigurationManager(final ApplicationContext applicationContext, final ValidationHelper validationHelper, final ConfigurationPropertyDao dao) {
-        return new DefaultConfigurationManager(LoggerFactory.getLogger("ApplicationConfigurationManager"), applicationContext, validationHelper, dao, org.infodavid.commons.service.Constants.APPLICATION_SCOPE);
+    public DefaultConfigurationManager applicationConfigurationManager(final ApplicationContext applicationContext, final ConfigurationPropertyDao dao) {
+        return new DefaultConfigurationManager(LoggerFactory.getLogger("ApplicationConfigurationManager"), applicationContext, dao, org.infodavid.commons.service.Constants.APPLICATION_SCOPE);
     }
 
     /**
