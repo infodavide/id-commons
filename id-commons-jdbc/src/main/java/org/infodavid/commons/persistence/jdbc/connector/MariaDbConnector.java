@@ -42,7 +42,7 @@ public class MariaDbConnector extends AbstractDatabaseConnector {
      * Instantiates a new database connector.
      */
     public MariaDbConnector() {
-        super(LOGGER, NAME, DRIVER_CLASS_NAME, null);
+        super(LOGGER, NAME, DRIVER_CLASS_NAME);
     }
 
     /*

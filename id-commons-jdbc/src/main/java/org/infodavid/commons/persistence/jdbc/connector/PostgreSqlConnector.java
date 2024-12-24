@@ -42,7 +42,7 @@ public class PostgreSqlConnector extends AbstractDatabaseConnector {
      * Instantiates a new database connector.
      */
     public PostgreSqlConnector() {
-        super(LOGGER, NAME, DRIVER_CLASS_NAME, null);
+        super(LOGGER, NAME, DRIVER_CLASS_NAME);
     }
 
     /*

@@ -101,6 +101,10 @@ public class DatabaseConnectionDescriptor implements Serializable {
     @Column(name = "schema_version", length = 48)
     private String schemaVersion;
 
+    /** The schema version query. */
+    @Column(name = "schema_version", length = 512)
+    private String schemaVersionQuery;
+
     /** The user. */
     @NotNull
     @Size(min = 1, max = Constants.USER_NAME_MAX_LENGTH)

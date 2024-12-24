@@ -53,14 +53,17 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
     /** The Constant DEFAULT_HOST. */
     protected static final String DEFAULT_HOST = "localhost";
 
+    /** The Constant TEST_QUERY. */
+    public static final String DEFAULT_TEST_QUERY = "SELECT 1";
+
+    /** The Constant DEFAULT_VERSION_QUERY. */
+    public static final String DEFAULT_VERSION_QUERY;
+
     /** The Constant INSERT_DATA_SCRIPT_PATH_PATTERN. */
     protected static final String INSERT_DATA_SCRIPT_PATH_PATTERN = "insert_data.sql";
 
     /** The Constant INSERT_DATA_SCRIPT_PATH_PATTERN_WITH_DATABASE_NAME. */
     protected static final String INSERT_DATA_SCRIPT_PATH_PATTERN_WITH_DATABASE_NAME = "%s_insert_data.sql";
-
-    /** The Constant TEST_QUERY. */
-    protected static final String TEST_QUERY = "SELECT 1";
 
     /** The Constant TRIGGERS_SCRIPT_PATH_PATTERN. */
     protected static final String TRIGGERS_SCRIPT_PATH_PATTERN = "%s_triggers.sql";
@@ -85,6 +88,18 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
 
     /** The Constant UPGRADE_TOKEN. */
     protected static final String UPGRADE_SCRIPT_TOKEN1 = "_upgrade_";
+
+    static {
+        final StringBuilder buffer = new StringBuilder();
+        buffer.append("SELECT ");
+        buffer.append(Constants.DATA_COLUMN);
+        buffer.append("AS version FROM configuration_properties WHERE ");
+        buffer.append(Constants.NAME_COLUMN);
+        buffer.append("='");
+        buffer.append(org.infodavid.commons.persistence.jdbc.Constants.SCHEMA_VERSION_PROPERTY);
+        buffer.append("'");
+        DEFAULT_VERSION_QUERY = buffer.toString();
+    }
 
     /**
      * Gets the connection.
@@ -183,34 +198,19 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
     /** The supported driver. */
     protected final String supportedDriver;
 
-    /** The version query. */
-    protected final String versionQuery;
+    /** The test query. */
+    protected String testQuery;
 
     /**
      * Instantiates a new database connector.
      * @param logger          the logger
      * @param name            the name
      * @param supportedDriver the supported driver
-     * @param versionQuery    the version query
      */
-    protected AbstractDatabaseConnector(final Logger logger, final String name, final String supportedDriver, final String versionQuery) {
+    protected AbstractDatabaseConnector(final Logger logger, final String name, final String supportedDriver) {
         this.logger = logger;
         this.name = name;
         this.supportedDriver = supportedDriver;
-
-        if (StringUtils.isEmpty(versionQuery)) {
-            final StringBuilder buffer = new StringBuilder();
-            buffer.append("SELECT ");
-            buffer.append(Constants.DATA_COLUMN);
-            buffer.append("AS version FROM configuration_properties WHERE ");
-            buffer.append(Constants.NAME_COLUMN);
-            buffer.append("='");
-            buffer.append(org.infodavid.commons.persistence.jdbc.Constants.SCHEMA_VERSION_PROPERTY);
-            buffer.append("'");
-            this.versionQuery = buffer.toString();
-        } else {
-            this.versionQuery = versionQuery;
-        }
     }
 
     /**
@@ -391,10 +391,14 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
      * @return the schema version
      * @throws SQLException the SQL exception
      */
-    protected String getSchemaVersion(final String database, final Connection connection) throws SQLException {
-        getLogger().debug("Reading current schema version of {} database", database);
+    protected String getSchemaVersion(final DatabaseConnectionDescriptor descriptor, final Connection connection) throws SQLException {
+        if (StringUtils.isEmpty(descriptor.getSchemaVersionQuery())) {
+            return null;
+        }
 
-        try (Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet resultSet = statement.executeQuery(versionQuery)) {
+        getLogger().debug("Reading current schema version of {} database", descriptor.getDatabase());
+
+        try (Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet resultSet = statement.executeQuery(descriptor.getSchemaVersionQuery())) {
             if (resultSet.first()) {
                 return resultSet.getString(1);
             }
@@ -418,8 +422,8 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
      * Gets the test query.
      * @return the test query
      */
-    protected String getTestQuery() {
-        return TEST_QUERY;
+    public String getTestQuery() {
+        return testQuery;
     }
 
     /**
@@ -440,7 +444,7 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
 
             if (exists) {
                 getLogger().info("Database {} exists", descriptor.getDatabase());
-                currentVersion = getSchemaVersion(descriptor.getDatabase(), connection);
+                currentVersion = getSchemaVersion(descriptor, connection);
             }
 
             if (!exists || StringUtils.isEmpty(currentVersion)) {
@@ -452,9 +456,9 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
         }
 
         try (Connection connection = getConnection(connectionString, descriptor.getUser(), descriptor.getPassword())) {
-            currentVersion = getSchemaVersion(descriptor.getDatabase(), connection);
+            currentVersion = getSchemaVersion(descriptor, connection);
 
-            if (exists && StringUtils.isNotEmpty(currentVersion)) {
+            if (currentVersion != null && exists && StringUtils.isNotEmpty(currentVersion)) {
                 upgradeDatabase(descriptor.getDatabase(), connection, currentVersion);
                 upgradeTriggers(descriptor.getDatabase(), connection, "//", currentVersion);
             }
@@ -554,6 +558,14 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
         }
 
         return true;
+    }
+
+    /**
+     * Sets the test query.
+     * @param query the new test query
+     */
+    public void setTestQuery(final String query) {
+        testQuery = query;
     }
 
     /**

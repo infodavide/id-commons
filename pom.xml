@@ -52,7 +52,6 @@
         <module>id-commons-rest-client</module>
         <module>id-commons-tests</module>
         <module>id-commons-jdk</module>
-        <module>id-commons-messaging</module>
         <module>id-commons-authentication</module>
     </modules>
     <dependencies>
