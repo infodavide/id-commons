@@ -39,6 +39,30 @@ public interface DatabaseConnector {
     void execute(DatabaseConnectionDescriptor descriptor, Path path) throws IOException, SQLException;
 
     /**
+     * Gets the default hostname.
+     * @return the default hostname
+     */
+    String getDefaultHostname();
+
+    /**
+     * Gets the default password.
+     * @return the default password
+     */
+    String getDefaultPassword();
+
+    /**
+     * Gets the default port.
+     * @return the default port
+     */
+    int getDefaultPort();
+
+    /**
+     * Gets the default user.
+     * @return the default user
+     */
+    String getDefaultUser();
+
+    /**
      * Gets the name.
      * @return the name
      */

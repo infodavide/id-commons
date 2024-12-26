@@ -367,6 +367,15 @@ public abstract class AbstractDatabaseConnector implements DatabaseConnector {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.jdbc.DatabaseConnector#getDefaultHostname()
+     */
+    @Override
+    public String getDefaultHostname() {
+        return DEFAULT_HOST;
+    }
+
     /**
      * Gets the logger.
      * @return the logger

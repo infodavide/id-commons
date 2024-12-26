@@ -33,7 +33,7 @@ public class MariaDbConnector extends AbstractDatabaseConnector {
     public static final short DEFAULT_PORT = 3306;
 
     /** The Constant DRIVER_CLASS_NAME. */
-    private static final String DRIVER_CLASS_NAME = "org.mariadb.jdbc.Driver";
+    public static final String DRIVER_CLASS_NAME = "org.mariadb.jdbc.Driver";
 
     /** The Constant NAME. */
     protected static final String NAME = "mariadb"; // NOSONAR Name and name field
@@ -139,6 +139,33 @@ public class MariaDbConnector extends AbstractDatabaseConnector {
     @Override
     public void execute(final DatabaseConnectionDescriptor descriptor, final Path directory) throws IOException, SQLException {
         execute(CONNECTION_STRING_PATTERN, DEFAULT_PORT, descriptor, directory);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.jdbc.DatabaseConnector#getDefaultPassword()
+     */
+    @Override
+    public String getDefaultPassword() {
+        return "";
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.jdbc.DatabaseConnector#getDefaultPort()
+     */
+    @Override
+    public int getDefaultPort() {
+        return DEFAULT_PORT;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.jdbc.DatabaseConnector#getDefaultUser()
+     */
+    @Override
+    public String getDefaultUser() {
+        return "root";
     }
 
     /*

@@ -52,6 +52,8 @@
         <module>id-commons-rest-client</module>
         <module>id-commons-tests</module>
         <module>id-commons-jdk</module>
+        <module>id-commons-messaging-client</module>
+        <module>id-commons-messaging-broker</module>
         <module>id-commons-authentication</module>
     </modules>
     <dependencies>
@@ -247,6 +249,21 @@
                 <groupId>javax.mail</groupId>
                 <artifactId>mail</artifactId>
                 <version>1.4.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-all</artifactId>
+                <version>6.1.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-broker</artifactId>
+                <version>6.1.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-client</artifactId>
+                <version>6.1.4</version>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>

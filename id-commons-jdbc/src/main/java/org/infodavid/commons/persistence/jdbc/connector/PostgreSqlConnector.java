@@ -23,6 +23,9 @@ import org.infodavid.commons.util.system.CommandExecutorFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * The Class PostgreSqlConnector.
+ */
 @Slf4j
 public class PostgreSqlConnector extends AbstractDatabaseConnector {
 
@@ -33,7 +36,7 @@ public class PostgreSqlConnector extends AbstractDatabaseConnector {
     public static final short DEFAULT_PORT = 5432;
 
     /** The Constant DRIVER_CLASS_NAME. */
-    private static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
+    public static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
     /** The Constant NAME. */
     protected static final String NAME = "postgresql"; // NOSONAR Name and name field
@@ -93,6 +96,10 @@ public class PostgreSqlConnector extends AbstractDatabaseConnector {
         LOGGER.debug("Backup stored in: {}", directory);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.jdbc.DatabaseConnector#buildDataSource(org.infodavid.commons.persistence.jdbc.DatabaseConnectionDescriptor)
+     */
     @Override
     public DataSource buildDataSource(final DatabaseConnectionDescriptor descriptor) throws SQLException, IOException {
         return buildDataSource(CONNECTION_STRING_PATTERN, DEFAULT_PORT, descriptor);
@@ -139,6 +146,33 @@ public class PostgreSqlConnector extends AbstractDatabaseConnector {
     @Override
     public void execute(final DatabaseConnectionDescriptor descriptor, final Path directory) throws IOException, SQLException {
         execute(CONNECTION_STRING_PATTERN, DEFAULT_PORT, descriptor, directory);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.jdbc.DatabaseConnector#getDefaultPassword()
+     */
+    @Override
+    public String getDefaultPassword() {
+        return "";
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.jdbc.DatabaseConnector#getDefaultPort()
+     */
+    @Override
+    public int getDefaultPort() {
+        return DEFAULT_PORT;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.persistence.jdbc.DatabaseConnector#getDefaultUser()
+     */
+    @Override
+    public String getDefaultUser() {
+        return "root";
     }
 
     /*
