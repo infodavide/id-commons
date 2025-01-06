@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public abstract class AbstractEntityReference<K extends Serializable> extends AbstractObject<K> {
 
     /** The Constant serialVersionUID. */
@@ -40,36 +42,6 @@ public abstract class AbstractEntityReference<K extends Serializable> extends Ab
     protected AbstractEntityReference(final K id, final String displayName) {
         super(id);
         this.displayName = displayName;
-    }
-
-    /*
-     * (non-javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (obj == null) {
-            return false;
-        }
-
-        if (!(obj instanceof AbstractEntityReference)) {
-            return false;
-        }
-
-        return super.equals(obj);
-    }
-
-    /*
-     * (non-javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 
     /*

@@ -9,6 +9,7 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Transient;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public class EntityProperty extends AbstractProperty<EntityProperty> {
 
     /** The Constant serialVersionUID. */
@@ -94,15 +96,6 @@ public class EntityProperty extends AbstractProperty<EntityProperty> {
     public EntityProperty(final String scope, final String name, final PropertyType type, final String value) {
         this(scope, name, type);
         setValue(value);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractProperty#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        return super.equals(obj);
     }
 
     /*
@@ -204,15 +197,6 @@ public class EntityProperty extends AbstractProperty<EntityProperty> {
     @Column(name = "data", length = 1024)
     public String getValue() {
         return super.getValue();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractProperty#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 
     /*

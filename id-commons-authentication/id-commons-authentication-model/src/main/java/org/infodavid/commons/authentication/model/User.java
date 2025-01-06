@@ -31,6 +31,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,6 +44,7 @@ import lombok.Setter;
 @Access(AccessType.PROPERTY)
 @Setter
 @Getter
+@EqualsAndHashCode(callSuper = false, of = {"name"})
 public class User extends AbstractObject<Long> implements PropertiesContainer, Principal {
 
     /** The Constant serialVersionUID. */
@@ -127,35 +129,6 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
         password = source.password;
         properties = new PropertiesDecorator(Collections.synchronizedSet(new HashSet<>()), source.properties);
         roles = source.roles;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractObject#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (!super.equals(obj)) {
-            return false;
-        }
-
-        if (!(obj instanceof final User other)) {
-            return false;
-        }
-
-        if (getName() == null) { // NOSONAR
-            if (other.getName() != null) {
-                return false;
-            }
-        } else if (!getName().equals(other.getName())) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -284,17 +257,6 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
     @Column(name = "roles", length = 16)
     public Set<String> getRoles() {
         return roles;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractObject#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        final int result = super.hashCode();
-        return prime * result + (getName() == null ? 0 : getName().hashCode()); // NOSONAR Keep null check
     }
 
     /**

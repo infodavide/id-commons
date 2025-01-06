@@ -1,4 +1,4 @@
-package org.infodavid.commons.impl.service;
+package org.infodavid.commons.service.impl;
 
 import java.io.Serializable;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -169,7 +169,7 @@ public abstract class AbstractEntityService<K extends Serializable, T extends Pe
         }
 
         if (getLogger().isDebugEnabled()) {
-            getLogger().debug(org.infodavid.commons.impl.service.Constants.ADDED_DATA_PATTERN, valueToAdd);
+            getLogger().debug(org.infodavid.commons.service.impl.Constants.ADDED_DATA_PATTERN, valueToAdd);
         }
 
         getLogger().debug("Identifier of added entity: {}", String.valueOf(valueToAdd.getId())); // NOSONAR Always written

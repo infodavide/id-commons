@@ -1,4 +1,4 @@
-package org.infodavid.commons.impl.service;
+package org.infodavid.commons.service.impl;
 
 import org.infodavid.commons.service.test.DataInitializer;
 import org.infodavid.commons.test.TestCase;

@@ -19,6 +19,7 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,6 +33,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public class ConfigurationProperty extends AbstractProperty<ConfigurationProperty> implements PersistentObject<Long>, Comparable<ConfigurationProperty> {
 
     /** The Constant serialVersionUID. */
@@ -134,15 +136,6 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
     @Override
     public int compareTo(final ConfigurationProperty o) { // NOSONAR
         return getId().compareTo(o.getId());
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractProperty#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        return super.equals(obj);
     }
 
     @Size(min = 0, max = 128)
@@ -288,15 +281,6 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
     @Column(name = "data", length = 1024)
     public String getValue() {
         return super.getValue();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractProperty#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 
     /*

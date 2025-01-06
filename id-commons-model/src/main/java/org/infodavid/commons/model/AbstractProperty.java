@@ -17,6 +17,7 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,6 +29,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@EqualsAndHashCode(callSuper = false, of = { "name", "scope" })
 public abstract class AbstractProperty<E extends AbstractProperty<?>> implements Serializable {
 
     /** The Constant ISO_DATE_TIME_FORMATTER. */
@@ -198,29 +200,6 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
     protected AbstractProperty(final String scope, final String name, final PropertyType type, final String value) {
         this(scope, name, type);
         setValue(value);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (obj == null) {
-            return false;
-        }
-
-        if (!(obj instanceof AbstractProperty)) {
-            return false;
-        }
-
-        final AbstractProperty<?> other = (AbstractProperty<?>) obj;
-
-        return Objects.equals(scope, other.getScope()) && Objects.equals(name, other.getName());
     }
 
     /**
@@ -412,19 +391,6 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
     @Transient
     public String getValueOrDefault(final String defaultValue) {
         return value == null ? defaultValue : value;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    /*
-     * (non-javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(scope, name);
     }
 
     /**

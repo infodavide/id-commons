@@ -9,11 +9,11 @@ import org.infodavid.commons.authentication.service.impl.security.DefaultAuthent
 import org.infodavid.commons.authentication.service.impl.security.DefaultAuthorizationService;
 import org.infodavid.commons.authentication.service.impl.service.DefaultUserService;
 import org.infodavid.commons.authentication.service.test.persistence.dao.UserDaoMock;
-import org.infodavid.commons.impl.service.DefaultConfigurationManager;
-import org.infodavid.commons.impl.service.DefaultSchedulerService;
 import org.infodavid.commons.persistence.dao.ConfigurationPropertyDao;
 import org.infodavid.commons.persistence.dao.DefaultDao;
 import org.infodavid.commons.service.SchedulerService;
+import org.infodavid.commons.service.impl.DefaultConfigurationManager;
+import org.infodavid.commons.service.impl.DefaultSchedulerService;
 import org.infodavid.commons.service.security.AuthenticationService;
 import org.infodavid.commons.service.security.AuthorizationService;
 import org.infodavid.commons.service.test.persistence.PlatformTransactionManagerMock;

@@ -1,4 +1,4 @@
-package org.infodavid.commons.impl.service;
+package org.infodavid.commons.service.impl;
 
 import java.util.List;
 import java.util.concurrent.Callable;

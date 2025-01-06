@@ -2,7 +2,6 @@ package org.infodavid.commons.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Objects;
 
 import javax.annotation.processing.Generated;
 
@@ -17,6 +16,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Version;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +30,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@EqualsAndHashCode(callSuper = false, of = { "id" })
 public abstract class AbstractObject<K extends Serializable> implements PersistentObject<K> {
 
     /** The Constant serialVersionUID. */
@@ -79,36 +80,6 @@ public abstract class AbstractObject<K extends Serializable> implements Persiste
      */
     protected AbstractObject(final K id) {
         this.id = id;
-    }
-
-    /*
-     * (non-javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (obj == null) {
-            return false;
-        }
-
-        if (!(obj instanceof final PersistentObject<?> other)) {
-            return false;
-        }
-
-        return Objects.equals(id, other.getId());
-    }
-
-    /*
-     * (non-javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
     /*

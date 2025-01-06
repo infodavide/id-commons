@@ -1,4 +1,4 @@
-package org.infodavid.commons.impl.service;
+package org.infodavid.commons.service.impl;
 
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;

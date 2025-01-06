@@ -1,9 +1,11 @@
-package org.infodavid.commons.impl.service;
+package org.infodavid.commons.service.impl;
 
 import java.util.Collections;
 
 import org.infodavid.commons.persistence.dao.ConfigurationPropertyDao;
 import org.infodavid.commons.service.SchedulerService;
+import org.infodavid.commons.service.impl.DefaultConfigurationManager;
+import org.infodavid.commons.service.impl.DefaultSchedulerService;
 import org.infodavid.commons.service.test.persistence.PlatformTransactionManagerMock;
 import org.infodavid.commons.service.test.persistence.dao.ConfigurationPropertyDaoMock;
 import org.slf4j.LoggerFactory;

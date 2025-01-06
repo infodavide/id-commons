@@ -1,4 +1,4 @@
-package org.infodavid.commons.impl.service;
+package org.infodavid.commons.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

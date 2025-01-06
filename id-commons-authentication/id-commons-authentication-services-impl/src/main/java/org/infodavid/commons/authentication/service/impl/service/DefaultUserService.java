@@ -20,11 +20,11 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.infodavid.commons.authentication.model.User;
 import org.infodavid.commons.authentication.persistence.dao.UserDao;
 import org.infodavid.commons.authentication.service.UserService;
-import org.infodavid.commons.impl.service.AbstractEntityService;
-import org.infodavid.commons.impl.service.Constants;
-import org.infodavid.commons.impl.service.TransactionUtils;
 import org.infodavid.commons.model.DefaultEntityReference;
 import org.infodavid.commons.service.exception.ServiceException;
+import org.infodavid.commons.service.impl.AbstractEntityService;
+import org.infodavid.commons.service.impl.Constants;
+import org.infodavid.commons.service.impl.TransactionUtils;
 import org.infodavid.commons.service.security.AuthenticationService;
 import org.infodavid.commons.service.security.AuthorizationService;
 import org.infodavid.commons.util.collection.CollectionUtils;
@@ -362,7 +362,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.impl.service.AbstractEntityService#findByUniqueConstraints(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#findByUniqueConstraints(org.infodavid.commons.model.PersistentObject)
      */
     @Override
     protected Optional<User> findByUniqueConstraints(final User value) throws ServiceException {
@@ -384,7 +384,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.impl.service.AbstractEntityService#getDataAccessObject()
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#getDataAccessObject()
      */
     @Override
     protected UserDao getDataAccessObject() {
@@ -437,7 +437,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.impl.service.AbstractEntityService#preDelete(java.io.Serializable)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#preDelete(java.io.Serializable)
      */
     @Override
     protected void preDelete(final Long id) throws IllegalAccessException, ServiceException {
@@ -466,7 +466,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.impl.service.AbstractEntityService#preDelete(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#preDelete(org.infodavid.commons.model.PersistentObject)
      */
     @Override
     protected void preDelete(final User entity) throws IllegalAccessException, ServiceException {
@@ -483,7 +483,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.impl.service.AbstractEntityService#preInsert(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#preInsert(org.infodavid.commons.model.PersistentObject)
      */
     @Override
     protected User preInsert(final User value) throws IllegalAccessException, ServiceException {
@@ -496,7 +496,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.impl.service.AbstractEntityService#preUpdate(java.util.Optional, org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#preUpdate(java.util.Optional, org.infodavid.commons.model.PersistentObject)
      */
     @Override
     protected User preUpdate(final Optional<User> existing, final User value) throws IllegalAccessException, ServiceException {
@@ -516,7 +516,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.impl.service.AbstractEntityService#update(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#update(org.infodavid.commons.model.PersistentObject)
      */
     @Override
     public void update(final User value) throws ServiceException, IllegalAccessException {
@@ -580,7 +580,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.impl.service.AbstractEntityService#validate(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#validate(org.infodavid.commons.model.PersistentObject)
      */
     @Override
     public void validate(final User value) throws ServiceException {

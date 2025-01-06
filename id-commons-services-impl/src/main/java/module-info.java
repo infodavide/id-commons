@@ -1,7 +1,7 @@
 module org.infodavid.commons.service.impl {
-    exports org.infodavid.commons.impl.service;
+    exports org.infodavid.commons.service.impl;
 
-    opens org.infodavid.commons.impl.service;
+    opens org.infodavid.commons.service.impl;
 
     requires transitive jakarta.annotation;
     requires transitive jakarta.persistence;
