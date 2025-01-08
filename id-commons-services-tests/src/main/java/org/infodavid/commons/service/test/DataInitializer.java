@@ -38,7 +38,7 @@ public class DataInitializer {
         // populate mocks of data access objects
         // properties
         ((AbstractDefaultDaoMock) configurationPropertyDao).clear();
-        ConfigurationProperty property = new ConfigurationProperty(org.infodavid.commons.persistence.Constants.SCHEMA_VERSION_PROPERTY, PropertyType.STRING, "1.0");
+        ConfigurationProperty property = new ConfigurationProperty(org.infodavid.commons.model.Constants.SCHEMA_VERSION_PROPERTY, PropertyType.STRING, "1.0");
         property.setScope(org.infodavid.commons.service.Constants.APPLICATION_SCOPE);
         property.setDeletable(false);
         configurationPropertyDao.insert(property);

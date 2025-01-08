@@ -14,7 +14,8 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(uses = {
         CommonMapper.class,
-        EntityPropertyMapper.class
+        EntityPropertyMapper.class,
+        GroupMapper.class
 })
 public interface UserMapper { // NOSONAR See Mapstruct documentation
 
@@ -27,9 +28,9 @@ public interface UserMapper { // NOSONAR See Mapstruct documentation
      * @return the DTO
      */
     @Mappings(value = {
+            @Mapping(target = "deletable", ignore = true),
             @Mapping(target = "editable", ignore = true),
             @Mapping(target = "properties", ignore = true),
-            @Mapping(target = "deletable", ignore = true),
             @Mapping(target = "password", ignore = true),
             @Mapping(target = "connected", ignore = true)
     })
@@ -42,8 +43,6 @@ public interface UserMapper { // NOSONAR See Mapstruct documentation
      */
 
     @Mappings(value = {
-            @Mapping(target = "archivingDate", ignore = true),
-            @Mapping(target = "connectionsCount", ignore = true),
             @Mapping(target = "lastConnectionDate", ignore = true),
             @Mapping(target = "properties", ignore = true)
     })

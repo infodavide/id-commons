@@ -1,10 +1,8 @@
 module org.infodavid.commons.authentication.service.impl {
     exports org.infodavid.commons.authentication.service.impl;
-    exports org.infodavid.commons.authentication.service.impl.service;
     exports org.infodavid.commons.authentication.service.impl.security;
 
     opens org.infodavid.commons.authentication.service.impl;
-    opens org.infodavid.commons.authentication.service.impl.service;
     opens org.infodavid.commons.authentication.service.impl.security;
 
     requires transitive org.infodavid.commons.authentication.model;

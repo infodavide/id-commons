@@ -24,11 +24,11 @@ public class DefaultEntityReference extends AbstractEntityReference<Long> {
     }
 
     /**
-     * Instantiates a new default entity reference.
+     * Instantiates a new entity reference.
      * @param id the identifier as long
-     * @param label the label
+     * @param displayName the display name
      */
-    public DefaultEntityReference(final Long id, final String label) {
-        super(id, label);
+    public DefaultEntityReference(final Long id, final String displayName) {
+        super(id, displayName);
     }
 }

@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.security.Principal;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
@@ -26,7 +25,7 @@ public interface AuthenticationBuilder {
      * @param expirationDate the expiration date
      * @return the authentication
      */
-    Authentication build(Principal principal, Collection<GrantedAuthority> authorities, Date expirationDate);
+    Authentication build(UserPrincipal principal, Collection<GrantedAuthority> authorities, Date expirationDate);
 
     /**
      * Deserialize.

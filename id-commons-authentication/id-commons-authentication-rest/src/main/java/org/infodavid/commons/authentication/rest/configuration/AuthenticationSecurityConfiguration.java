@@ -130,7 +130,7 @@ public class AuthenticationSecurityConfiguration extends DefaultSecurityConfigur
     /**
      * Security filter chain.
      * @param http                  the configuration
-     * @param authenticationService the authentication service
+     * @param authenticationService the authentication manager
      * @return the security filter chain
      * @throws Exception the exception
      */

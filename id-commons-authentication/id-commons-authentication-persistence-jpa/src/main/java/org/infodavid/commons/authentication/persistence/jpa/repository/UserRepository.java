@@ -19,22 +19,26 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDao {
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.authentication.persistence.dao.UserDao#deleteDeletable()
+     * @see org.infodavid.commons.authentication.persistence.dao.UserDao#findByProperty(java.lang.String, java.lang.String, java.lang.String)
      */
-    @Override
-    @Query("delete from User where deletable=true")
-    void deleteDeletable() throws PersistenceException;
-
     @Override
     @Query(value = "select u.* from users u inner join users_properties p on p.user_id = u.id where ((?1 IS NULL and p.scope IS NULL) OR p.scope = ?1) and p.name = ?2 and p.data = ?3", countQuery = "select cound(u.id) from users u inner join users_properties p on p.user_id = u.id where ((?1 IS NULL and p.scope IS NULL) OR p.scope = ?1) and p.name = ?2 and p.data = ?3", nativeQuery = true)
     Optional<User> findByProperty(final String scope, final String name, final String value) throws PersistenceException;
 
     /*
      * (non-Javadoc)
+     * @see org.infodavid.commons.authentication.persistence.dao.UserDao#findByGroup(java.lang.String, org.springframework.data.domain.Pageable)
+     */
+    @Override
+    @Query(value = "select u from User u join u.groups g where g.name = ?1", countQuery = "select cound(u) from User u join u.groups g where g.name = ?1")
+    Page<User> findByGroup(String value, Pageable pageable) throws PersistenceException;
+
+    /*
+     * (non-Javadoc)
      * @see org.infodavid.commons.authentication.persistence.dao.UserDao#findByRole(java.lang.String, org.springframework.data.domain.Pageable)
      */
     @Override
-    @Query(value = "select u.* from users u where u.roles = ?1 or u.roles like '?1;%' or u.roles like '%;?1' or u.roles like '%;?1;%'", countQuery = "select cound(id) from users u where u.roles = ?1 or u.roles like '?1;%' or u.roles like '%;?1' or u.roles like '%;?1;%'", nativeQuery = true)
+    @Query(value = "select u.* from users u left outer join users_groups ug on ug.user_id = u.id left outer join groups g on g.id = ug.group_id where g.roles = ?1 or g.roles like '?1;%' or g.roles like '%;?1' or g.roles like '%;?1;%'", countQuery = "select cound(u.id) from users u left outer join users_groups ug on ug.user_id = u.id left outer join groups g on g.id = ug.group_id where g.roles = ?1 or g.roles like '?1;%' or g.roles like '%;?1' or g.roles like '%;?1;%'", nativeQuery = true)
     Page<User> findByRole(String value, Pageable pageable) throws PersistenceException;
 
     /*

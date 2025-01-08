@@ -1,8 +1,11 @@
 package org.infodavid.commons.authentication.rest.security;
 
+import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.security.AuthenticationService;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * The Class TokenBasedAuthenticationProvider.<br>
@@ -10,12 +13,12 @@ import org.springframework.security.core.Authentication;
  */
 public class JwtTokenAuthenticationProvider implements AuthenticationProvider {
 
-    /** The authentication service. */
+    /** The authentication manager. */
     private final AuthenticationService authenticationService;
 
     /**
      * Instantiates a new token based authentication provider.
-     * @param authenticationService the authentication service
+     * @param authenticationService the authentication manager
      */
     public JwtTokenAuthenticationProvider(final AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
@@ -26,9 +29,13 @@ public class JwtTokenAuthenticationProvider implements AuthenticationProvider {
      * @see org.springframework.security.authentication.AuthenticationProvider#authenticate(org.springframework.security.core.Authentication)
      */
     @Override
-    public Authentication authenticate(final Authentication authentication) {
-        if (authenticationService.getPrincipal(authentication) == null) {
-            return null;
+    public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
+        try {
+            if (authenticationService.getPrincipal(authentication) == null) {
+                return null;
+            }
+        } catch (final ServiceException e) {
+            throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
 
         return authentication;

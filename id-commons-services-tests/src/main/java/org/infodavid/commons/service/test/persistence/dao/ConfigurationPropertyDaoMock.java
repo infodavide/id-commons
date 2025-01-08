@@ -25,13 +25,16 @@ public class ConfigurationPropertyDaoMock extends AbstractDefaultDaoMock<Long, C
     /** The Constant SEQUENCE. */
     private static final AtomicLong SEQUENCE = new AtomicLong(1);
 
+    /**
+     * Instantiates a new configuration property data access object mock.
+     */
+    public ConfigurationPropertyDaoMock() {
+        super(Long.class, ConfigurationProperty.class);
+    }
+
     /*
      * (non-Javadoc)
      * @see org.infodavid.commons.service.test.persistence.dao.AbstractDefaultDaoMock#clear()
-     */
-    /*
-     * (non-javadoc)
-     * @see org.infodavid.test.persistence.dao.AbstractDefaultDaoMock#clear()
      */
     @Override
     public void clear() {
@@ -135,15 +138,6 @@ public class ConfigurationPropertyDaoMock extends AbstractDefaultDaoMock<Long, C
         }
 
         return new PageImpl<>(results);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.service.test.persistence.dao.AbstractDefaultDaoMock#clone(org.infodavid.commons.model.PersistentObject)
-     */
-    @Override
-    protected ConfigurationProperty clone(final ConfigurationProperty source) {
-        return source == null ? null : new ConfigurationProperty(source);
     }
 
     /*

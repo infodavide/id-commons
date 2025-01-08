@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.infodavid.commons.service.security.AuthenticationBuilder;
+import org.infodavid.commons.service.security.UserPrincipal;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -48,7 +49,7 @@ public class AuthenticationJwtToken extends AbstractAuthenticationToken {
         }
 
         @Override
-        public AuthenticationJwtToken build(final Principal principal, final Collection<GrantedAuthority> authorities, final Date expirationDate) {
+        public AuthenticationJwtToken build(final UserPrincipal principal, final Collection<GrantedAuthority> authorities, final Date expirationDate) {
             if (principal == null) {
                 return null;
             }

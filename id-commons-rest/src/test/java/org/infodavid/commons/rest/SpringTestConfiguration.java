@@ -28,7 +28,7 @@ public class SpringTestConfiguration {
 
     /**
      * Application controller.
-     * @param service the service
+     * @param manager the manager
      * @return the application controller
      */
     @Bean
@@ -38,8 +38,8 @@ public class SpringTestConfiguration {
     }
 
     /**
-     * Application service.
-     * @return the application service
+     * Application manager.
+     * @return the application manager
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -48,8 +48,8 @@ public class SpringTestConfiguration {
     }
 
     /**
-     * Authentication service.
-     * @return the authentication service
+     * Authentication manager.
+     * @return the authentication manager
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)

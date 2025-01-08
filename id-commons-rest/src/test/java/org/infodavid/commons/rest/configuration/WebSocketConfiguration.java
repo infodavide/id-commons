@@ -13,7 +13,7 @@ public class WebSocketConfiguration extends DefaultWebSocketConfiguration {
     /**
      * Instantiates a new web socket configuration.
      * @param handler               the handler
-     * @param authenticationService the authentication service
+     * @param authenticationService the authentication manager
      */
     protected WebSocketConfiguration(final SocketHandler handler, final AuthenticationService authenticationService) {
         super(handler, authenticationService);

@@ -3,6 +3,7 @@ package org.infodavid.commons.test.net;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
@@ -22,6 +23,20 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class TcpClient extends AbstractTcpComponent {
+
+    /**
+     * Checks if is listening.
+     * @param host the host
+     * @param port the port
+     * @return true, if is listening
+     */
+    public static boolean isListening(final String host, final int port) {
+        try (Socket socket = new Socket(host, port)) {
+            return true;
+        } catch (@SuppressWarnings("unused") final Exception e) {
+            return false;
+        }
+    }
 
     /**
      * The main method.

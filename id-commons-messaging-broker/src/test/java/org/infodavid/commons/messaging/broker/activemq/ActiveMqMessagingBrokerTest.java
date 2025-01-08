@@ -129,6 +129,10 @@ class ActiveMqMessagingBrokerTest extends TestCase {
     protected void start(final ActiveMqBroker.Builder builder) throws Exception {
         LOCK.lock();
 
+        if (url == null) {
+            return;
+        }
+
         try {
             if (service != null) {
                 service.stop();

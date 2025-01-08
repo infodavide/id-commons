@@ -1,9 +1,12 @@
 package org.infodavid.commons.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+
+import org.infodavid.commons.test.net.TcpClient;
 
 /**
  * The Class Assertions.
@@ -71,6 +74,16 @@ public class Assertions {
         if (expected > actual) {
             fail(format(message, expected, actual));
         }
+    }
+
+    /**
+     * Assert is listening on TCP port.
+     * @param message the message
+     * @param host    the host
+     * @param port    the port
+     */
+    public static void assertIsListeningTcp(final String message, final String host, final int port) {
+        assertTrue(TcpClient.isListening(host, port), message);
     }
 
     /**

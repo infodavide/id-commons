@@ -23,6 +23,11 @@ public class ConfigurationPropertyDto extends AbstractDto<Long> {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 4596882638533418420L;
 
+    /** The application. */
+    @NotBlank
+    @Size(min = 0, max = 128)
+    private String application;
+
     /** The default value. */
     private String defaultValue;
 

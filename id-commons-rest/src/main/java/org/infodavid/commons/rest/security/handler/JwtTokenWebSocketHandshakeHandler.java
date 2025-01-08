@@ -62,12 +62,12 @@ public class JwtTokenWebSocketHandshakeHandler extends DefaultHandshakeHandler {
         return result;
     }
 
-    /** The authentication service. */
+    /** The authentication manager. */
     private final AuthenticationService authenticationService;
 
     /**
      * Instantiates a new handshake handler.
-     * @param authenticationService the authentication service
+     * @param authenticationService the authentication manager
      */
     public JwtTokenWebSocketHandshakeHandler(final AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;

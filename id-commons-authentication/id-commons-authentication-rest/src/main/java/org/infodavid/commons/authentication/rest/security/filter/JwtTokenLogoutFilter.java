@@ -1,11 +1,13 @@
 package org.infodavid.commons.authentication.rest.security.filter;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.security.AuthenticationService;
+import org.infodavid.commons.service.security.UserPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -28,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtTokenLogoutFilter implements Filter {
 
-    /** The authentication service. */
+    /** The authentication manager. */
     private final AuthenticationService authenticationService;
 
     /** The handler. */
@@ -39,7 +41,7 @@ public class JwtTokenLogoutFilter implements Filter {
 
     /**
      * Instantiates a new filter.
-     * @param authenticationService the authentication service
+     * @param authenticationService the authentication manager
      * @param requestMatcher        the request matcher
      * @param handler               the handler
      */
@@ -78,15 +80,15 @@ public class JwtTokenLogoutFilter implements Filter {
 
         if (authentication != null) {
             try {
-                final Principal principal = authenticationService.getPrincipal(authentication);
+                final Optional<UserPrincipal> principal = authenticationService.getPrincipal(authentication);
 
-                if (principal == null) {
+                if (principal.isEmpty()) {
                     response.setStatus(404);
 
                     return;
                 }
 
-                LOGGER.info("Logout request for principal: {}", principal.getName());
+                LOGGER.info("Logout request for principal: {}", principal.get().getName());
                 final Map<String, String> properties = new HashMap<>();
                 properties.put("authType", request.getAuthType());
                 properties.put("characterEncoding", request.getCharacterEncoding());
@@ -95,13 +97,13 @@ public class JwtTokenLogoutFilter implements Filter {
                 properties.put("remoteHost", request.getRemoteHost());
                 properties.put("remoteUser", request.getRemoteUser());
 
-                if (!authenticationService.invalidate(principal, properties)) {
+                if (!authenticationService.invalidate(principal.get(), properties)) {
                     LOGGER.warn("No user found for the given authentication: {}", authentication);
                     response.setStatus(404);
 
                     return;
                 }
-            } catch (final PersistenceException e) {
+            } catch (final PersistenceException | ServiceException e) {
                 LOGGER.warn("An error occured while updating user data", e);
             }
         }

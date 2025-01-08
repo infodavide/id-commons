@@ -3,7 +3,6 @@ package org.infodavid.commons.rest.v1.controller;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +12,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.infodavid.commons.model.DefaultEntityReference;
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 import org.infodavid.commons.model.PropertiesContainer;
 import org.infodavid.commons.rest.Constants;
 import org.infodavid.commons.rest.exception.NotFoundStatusException;
@@ -24,6 +23,7 @@ import org.infodavid.commons.rest.v1.api.dto.PageDto;
 import org.infodavid.commons.service.EntityService;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.security.AuthorizationService;
+import org.infodavid.commons.service.security.UserPrincipal;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +41,7 @@ import lombok.Getter;
  * @param <K> the key type
  * @param <E> the entity type
  */
-public abstract class AbstractEntityController<D extends AbstractDto<K>, K extends Serializable, E extends PersistentObject<K>> extends AbstractController {
+public abstract class AbstractEntityController<D extends AbstractDto<K>, K extends Serializable, E extends PersistentEntity<K>> extends AbstractController {
 
     /**
      * The Class UnpagedRequest.
@@ -108,7 +108,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
             final int size = Integer.parseInt(pageSize);
 
             if (size > 0 && StringUtils.isNumeric(pageNumber)) {
-                return PageRequest.of(Integer.parseInt(pageNumber) - 1, size, sort); // Zero based page number on service side but not on rest api side
+                return PageRequest.of(Integer.parseInt(pageNumber) - 1, size, sort); // Zero based page number on manager side but not on rest api side
             }
         }
 
@@ -140,7 +140,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
         return null;
     }
 
-    /** The authorization service. */
+    /** The authorization manager. */
     @Getter
     private AuthorizationService authorizationService;
 
@@ -150,7 +150,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
     /**
      * Instantiates a new controller.
      * @param logger               the logger
-     * @param authorizationService the authorization service
+     * @param authorizationService the authorization manager
      * @param dtoClass             the data transfer object class
      */
     protected AbstractEntityController(final Logger logger, final AuthorizationService authorizationService, final Class<D> dtoClass) {
@@ -163,7 +163,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
      * Apply security flags by a subclass.
      * @param entity the entity
      * @param result the result
-     * @throws ServiceException the service exception
+     * @throws ServiceException the manager exception
      */
     @SuppressWarnings("unchecked")
     protected void applySecurityFlags(final E entity, final D result) throws ServiceException {
@@ -175,13 +175,9 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
         result.setDeletable(false);
 
         if (authorizationService != null) {
-            final Principal principal = authorizationService.getPrincipal();
+            final UserPrincipal principal = authorizationService.getPrincipal();
             result.setEditable(authorizationService.canEdit(principal, getEntityClass(), entity.getId()));
             result.setDeletable(authorizationService.canDelete(principal, getEntityClass(), entity.getId()));
-        }
-
-        if (!entity.isDeletable()) {
-            result.setDeletable(false);
         }
 
         if (entity instanceof PropertiesContainer) {
@@ -207,7 +203,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
      * Creates the entity using the given JSON data.
      * @param dto the data transfer object
      * @return the response entity
-     * @throws ServiceException       the service exception
+     * @throws ServiceException       the manager exception
      * @throws IllegalAccessException the illegal access exception
      */
     protected D doAdd(final D dto) throws ServiceException, IllegalAccessException {
@@ -228,7 +224,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
     /**
      * Do batch update.
      * @param values the data transfer objects
-     * @throws ServiceException       the service exception
+     * @throws ServiceException       the manager exception
      * @throws IllegalAccessException the illegal access exception
      */
     protected void doBatchUpdate(final Collection<D> values) throws ServiceException, IllegalAccessException {
@@ -254,7 +250,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
     /**
      * Do delete.
      * @param id the identifier
-     * @throws ServiceException       the service exception
+     * @throws ServiceException       the manager exception
      * @throws IllegalAccessException the illegal access exception
      */
     protected void doDelete(final K id) throws ServiceException, IllegalAccessException {
@@ -272,7 +268,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
      * Do get.
      * @param id the identifier
      * @return the data transfer object
-     * @throws ServiceException the service exception
+     * @throws ServiceException the manager exception
      */
     protected D doGet(final K id) throws ServiceException {
         getLogger().debug("get request with id: {}", id);
@@ -298,7 +294,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
      * Do update.
      * @param id  the identifier
      * @param dto the data transfer object
-     * @throws ServiceException       the service exception
+     * @throws ServiceException       the manager exception
      * @throws IllegalAccessException the illegal access exception
      */
     protected void doUpdate(final K id, final D dto) throws ServiceException, IllegalAccessException {
@@ -343,8 +339,8 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
     }
 
     /**
-     * Gets the service.
-     * @return the service
+     * Gets the manager.
+     * @return the manager
      */
     public abstract EntityService<K, E> getService();
 
@@ -352,7 +348,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
      * Map entities of the model to data transfer objects.
      * @param values the entities
      * @return the list
-     * @throws ServiceException the service exception
+     * @throws ServiceException the manager exception
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected List<D> map(final Collection values) throws ServiceException {
@@ -376,7 +372,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
      * Map a data transfer object to an entity.
      * @param dto the DTO
      * @return the entity
-     * @throws ServiceException the service exception
+     * @throws ServiceException the manager exception
      */
     public abstract E map(final D dto) throws ServiceException;
 
@@ -385,7 +381,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
      * @param value   the value
      * @param listing the listing
      * @return the data transfer object
-     * @throws ServiceException the service exception
+     * @throws ServiceException the manager exception
      */
     protected abstract D map(E value, boolean listing) throws ServiceException;
 
@@ -393,14 +389,14 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
      * Map page data transfer object.
      * @param page the page
      * @return the page data transfer object
-     * @throws ServiceException the service exception
+     * @throws ServiceException the manager exception
      */
     protected PageDto map(final Page<E> page) throws ServiceException {
         if (getLogger().isDebugEnabled()) {
             getLogger().debug("Element(s) in the page: {}", String.valueOf(page.getNumberOfElements()));
         }
 
-        // Zero based page number on service side but not on REST API side
+        // Zero based page number on manager side but not on REST API side
         final PageDto result;
 
         if (page.isEmpty()) {
@@ -418,7 +414,7 @@ public abstract class AbstractEntityController<D extends AbstractDto<K>, K exten
      * Map the data transfer objects to entities.
      * @param values the values
      * @return the entities
-     * @throws ServiceException the service exception
+     * @throws ServiceException the manager exception
      */
     protected List<E> mapDataTransferObjects(final Collection<D> values) throws ServiceException {
         if (values == null || values.isEmpty()) {

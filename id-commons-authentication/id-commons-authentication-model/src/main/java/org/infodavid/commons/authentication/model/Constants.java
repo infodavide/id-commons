@@ -1,7 +1,5 @@
 package org.infodavid.commons.authentication.model;
 
-import java.util.Date;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -11,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
 
-    /** The Constant ANONYMOUS_USER. */
-    public static final User ANONYMOUS_USER;
-
     /** The Constant DEFAULT_ADMINISTRATOR. */
     public static final String DEFAULT_ADMINISTRATOR = "admin";
+
+    /** The Constant DEFAULT_ADMINISTRATORS. */
+    public static final String DEFAULT_ADMINISTRATORS = "admins";
 
     /** The Constant DEFAULT_PASSWORD. */
     public static final String DEFAULT_PASSWORD = "admin"; // NOSONAR Default one
@@ -23,8 +21,17 @@ public final class Constants {
     /** The Constant DEFAULT_SESSION_INACTIVITY_TIMEOUT. */
     public static final short DEFAULT_SESSION_INACTIVITY_TIMEOUT = 10;
 
+    /** The Constant DEFAULT_USERS. */
+    public static final String DEFAULT_USERS = "users";
+
     /** The constant EMAIL_MAX_LENGTH. */
     public static final short EMAIL_MAX_LENGTH = 255;
+
+    /** The constant GROUP_DESCRIPTION_MAX_LENGTH. */
+    public static final short GROUP_DESCRIPTION_MAX_LENGTH = 512;
+
+    /** The constant GROUP_DESCRIPTION_MIN_LENGTH. */
+    public static final byte GROUP_DESCRIPTION_MIN_LENGTH = 0;
 
     /** The constant GROUP_DISPLAY_NAME_MAX_LENGTH. */
     public static final byte GROUP_DISPLAY_NAME_MAX_LENGTH = 96;
@@ -50,6 +57,9 @@ public final class Constants {
     /** The constant PASSWORD_MIN_LENGTH. */
     public static final byte PASSWORD_MIN_LENGTH = 4;
 
+    /** The Constant ROLE_MAX_LENGTH. */
+    public static final byte ROLE_MAX_LENGTH = 64;
+
     /** The Constant SESSION_INACTIVITY_TIMEOUT_PROPERTY. */
     public static final String SESSION_INACTIVITY_TIMEOUT_PROPERTY = "session.inactivityTimeout";
 
@@ -67,19 +77,4 @@ public final class Constants {
 
     /** The constant USER_NAME_MIN_LENGTH. */
     public static final byte USER_NAME_MIN_LENGTH = 3;
-
-    /** The Constant USER_ROLE_MAX_LENGTH. */
-    public static final byte USER_ROLE_MAX_LENGTH = 16;
-
-    static {
-        System.setProperty("org.jboss.logging.provider", "slf4j");
-        ANONYMOUS_USER = new User(Long.valueOf(-1));
-        ANONYMOUS_USER.setDeletable(false);
-        ANONYMOUS_USER.setCreationDate(new Date());
-        ANONYMOUS_USER.setDisplayName("Guest");
-        ANONYMOUS_USER.setEmail("");
-        ANONYMOUS_USER.setModificationDate(ANONYMOUS_USER.getCreationDate());
-        ANONYMOUS_USER.setName(org.infodavid.commons.model.Constants.ANONYMOUS);
-        ANONYMOUS_USER.getRoles().add(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE);
-    }
 }

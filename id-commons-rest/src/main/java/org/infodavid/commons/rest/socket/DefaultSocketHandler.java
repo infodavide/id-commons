@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -20,7 +21,9 @@ import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.net.NetUtils;
 import org.infodavid.commons.rest.Constants;
+import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.security.AuthenticationService;
+import org.infodavid.commons.service.security.UserPrincipal;
 import org.infodavid.commons.util.collection.NullSafeConcurrentHashMap;
 import org.infodavid.commons.util.concurrency.ThreadUtils;
 import org.infodavid.commons.util.jackson.JsonUtils;
@@ -149,12 +152,12 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
     private final AtomicBoolean active = new AtomicBoolean(true);
 
     /** The application context. */
-    @Autowired // NOSONAR Do not inject the service on the constructor
+    @Autowired // NOSONAR Do not inject the manager on the constructor
     @Lazy
     private ApplicationContext applicationContext;
 
-    /** The authentication service. */
-    @Autowired // NOSONAR Do not inject the service on the constructor
+    /** The authentication manager. */
+    @Autowired // NOSONAR Do not inject the manager on the constructor
     @Lazy
     private AuthenticationService authenticationService;
 
@@ -387,18 +390,20 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
             if (token != null) {
                 try {
                     final Authentication authentication = authenticationService.getAuthenticationBuilder().deserialize(token);
-                    final Principal principal = authentication == null ? null : authenticationService.getPrincipal(authentication);
+                    final Optional<UserPrincipal> optional = authentication == null ? Optional.empty() : authenticationService.getPrincipal(authentication);
 
-                    if (principal == null) {
+                    if (optional.isEmpty()) {
                         getLogger().warn("Token has expired or user is not authenticated");
                     } else {
-                        userSessionsId.put(principal.getName(), wss.getId());
+                        userSessionsId.put(optional.get().getName(), wss.getId());
                         wss.getAttributes().put(AUTHENTICATION_ATTRIBUTE, authentication);
-                        wss.getAttributes().put(USER_NAME_ATTRIBUTE, principal.getName());
-                        getLogger().info("Websocket session is now associated to user: {}", principal.getName());
+                        wss.getAttributes().put(USER_NAME_ATTRIBUTE, optional.get().getName());
+                        getLogger().info("Websocket session is now associated to user: {}", optional.get().getName());
                     }
                 } catch (@SuppressWarnings("unused") final NoSuchBeanDefinitionException e) {
-                    getLogger().info("Authentication service not found");
+                    getLogger().info("Authentication manager not found");
+                } catch (final ServiceException e) {
+                    getLogger().info("Cannot retrieve principal", e);
                 }
             }
         }

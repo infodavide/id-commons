@@ -26,12 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginAuthenticationProvider implements AuthenticationProvider {
 
-    /** The service. */
+    /** The manager. */
     private final AuthenticationService service;
 
     /**
      * Instantiates a new login authentication provider.
-     * @param service the service
+     * @param manager the manager
      */
     public LoginAuthenticationProvider(final AuthenticationService service) {
         this.service = service;

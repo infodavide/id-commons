@@ -57,6 +57,9 @@ public final class Constants {
     /** The constant PROPERTY_VALUE_MAX_LENGTH. */
     public static final short PROPERTY_VALUE_MAX_LENGTH = 1024;
 
+    /** The Constant SCHEMA_VERSION_PROPERTY. */
+    public static final String SCHEMA_VERSION_PROPERTY = "schema.version";
+
     /** The user role. */
     public static final String USER_ROLE = "ROLE_USER";
 
@@ -79,7 +82,7 @@ public final class Constants {
                 if (targetType == Boolean.class) {
                     final String lower = StringUtils.lowerCase(value);
 
-                    return lower != null && ("true".equals(lower) ||  "yes".equals(lower) ||  "on".equals(lower) || "1".equals(lower));
+                    return lower != null && ("true".equals(lower) || "yes".equals(lower) || "on".equals(lower) || "1".equals(lower));
                 }
 
                 if ("null".equalsIgnoreCase(value)) {

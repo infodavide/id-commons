@@ -1,13 +1,11 @@
 package org.infodavid.commons.authentication.service.impl.security;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.security.Principal;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -15,6 +13,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.infodavid.commons.authentication.model.User;
 import org.infodavid.commons.authentication.persistence.dao.UserDao;
 import org.infodavid.commons.authentication.service.impl.AbstractSpringTest;
+import org.infodavid.commons.service.security.UserPrincipal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -37,8 +36,8 @@ class AuthenticationServiceTest extends AbstractSpringTest {
     private UserDao userDao;
 
     /*
-     * (non-javadoc)
-     * @see org.infodavid.impl.AbstractSpringTest#setUp()
+     * (non-Javadoc)
+     * @see org.infodavid.commons.authentication.service.impl.AbstractSpringTest#setUp()
      */
     @BeforeEach
     @Override
@@ -66,10 +65,10 @@ class AuthenticationServiceTest extends AbstractSpringTest {
         assertNotNull(result, "Wrong result");
         assertEquals("user2", result.getName(), "Wrong name");
 
-        final Principal principal = authenticationService.getPrincipal(result);
+        final Optional<UserPrincipal> optional = authenticationService.getPrincipal(result);
 
-        assertNotNull(principal, "User not authenticated");
-        assertTrue(listener.getLogins().contains(principal.getName()), "Listener not called");
+        assertTrue(optional.isPresent(), "User not authenticated");
+        assertTrue(listener.getLogins().contains(optional.get().getName()), "Listener not called");
     }
 
     /**
@@ -104,25 +103,7 @@ class AuthenticationServiceTest extends AbstractSpringTest {
      */
     @Test
     void testGetAuthenticationUsingNullr() {
-        assertThrows(IllegalArgumentException.class, () -> authenticationService.getAuthentication(null), "Exception not raised or has a wrong type");
-    }
-
-    /**
-     * Test get authenticated.
-     * @throws Exception the exception
-     */
-    @Test
-    void testGetAuthenticated() throws Exception {
-        final Optional<User> optional = userDao.findByName("user1");
-        final User user = optional.get();
-        authenticationService.authenticate(user.getName(), user.getPassword(), Collections.emptyMap());
-        // wait for cache notification
-        sleep(500);
-
-        final Collection<Principal> results = authenticationService.getAuthenticated();
-
-        assertNotNull(results, "Wrong result");
-        assertTrue(results.size() > 0, "Wrong results size");
+        assertDoesNotThrow(() -> authenticationService.getAuthentication(null), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -147,7 +128,6 @@ class AuthenticationServiceTest extends AbstractSpringTest {
 
         // wait for cache notification
         sleep(500);
-        assertNotNull(authenticationService.getAuthenticated(), "Wrong cache content");
         assertTrue(listener.getLogouts().contains(user.getName()), "Listener not called");
     }
 
@@ -165,7 +145,6 @@ class AuthenticationServiceTest extends AbstractSpringTest {
 
         // wait for cache notification
         sleep(500);
-        assertFalse(authenticationService.getAuthenticated().contains(user), "Wrong cache content");
         assertTrue(listener.getLogouts().contains(user.getName()), "Listener not called");
     }
 

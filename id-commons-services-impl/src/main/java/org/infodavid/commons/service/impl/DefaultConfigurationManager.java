@@ -12,6 +12,7 @@ import org.infodavid.commons.persistence.dao.ConfigurationPropertyDao;
 import org.infodavid.commons.service.ConfigurationManager;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.listener.PropertyChangedListener;
+import org.infodavid.commons.service.security.AuthorizationService;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -45,14 +46,15 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
     private String scope;
 
     /**
-     * Instantiates a new application service.
-     * @param logger             the logger
-     * @param applicationContext the application context
-     * @param dao                the data access object
-     * @param scope              the scope
+     * Instantiates a new default configuration manager.
+     * @param logger               the logger
+     * @param applicationContext   the application context
+     * @param authorizationService the authorization service
+     * @param dao                  the data access object
+     * @param scope                the scope
      */
-    public DefaultConfigurationManager(final Logger logger, final ApplicationContext applicationContext, final ConfigurationPropertyDao dao, final String scope) {
-        super(logger, applicationContext, Long.class, ConfigurationProperty.class);
+    public DefaultConfigurationManager(final Logger logger, final ApplicationContext applicationContext, final AuthorizationService authorizationService, final ConfigurationPropertyDao dao, final String scope) {
+        super(logger, applicationContext, authorizationService, Long.class, ConfigurationProperty.class);
         this.dao = dao;
         this.scope = scope;
     }
@@ -93,7 +95,7 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#doAdd(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#doAdd(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected ConfigurationProperty doAdd(final ConfigurationProperty value) throws ServiceException, IllegalAccessException {
@@ -106,7 +108,7 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#doUpdate(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#doUpdate(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected void doUpdate(final ConfigurationProperty value) throws ServiceException, IllegalAccessException {
@@ -119,7 +121,7 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#filter(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#filter(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected ConfigurationProperty filter(final ConfigurationProperty value) {
@@ -206,7 +208,7 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#findByUniqueConstraints(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#findByUniqueConstraints(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected Optional<ConfigurationProperty> findByUniqueConstraints(final ConfigurationProperty value) throws ServiceException {
@@ -358,30 +360,30 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
         }
 
         super.preDelete(id);
-        ConfigurationProperty value = null;
+        ConfigurationProperty entity = null;
 
         try {
             final Optional<ConfigurationProperty> optional = getDataAccessObject().findById(id);
 
             if (optional.isPresent()) {
-                value = optional.get();
+                entity = optional.get();
             }
         } catch (final PersistenceException e) {
             throw new ServiceException(ExceptionUtils.getRootCause(e));
         }
 
-        if (value == null) {
+        if (entity == null) {
             return;
         }
 
-        if (!value.isDeletable()) {
-            throw new IllegalAccessException("Setting is protected, deletion is not allowed: " + value);
+        if (!entity.isDeletable()) {
+            throw new IllegalAccessException("Setting is protected, deletion is not allowed: " + entity);
         }
     }
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#preInsert(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#preInsert(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected ConfigurationProperty preInsert(final ConfigurationProperty value) throws IllegalAccessException, ServiceException {
@@ -395,7 +397,6 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
         if (value != null && PropertyType.PASSWORD.equals(value.getType()) && StringUtils.isNotEmpty(value.getValue())) {
             // password is encoded in database
             result = new ConfigurationProperty(value);
-
             result.setValue(org.infodavid.commons.util.StringUtils.encode(value.getValue()));
         }
 
@@ -404,7 +405,7 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#preUpdate(java.util.Optional, org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#preUpdate(java.util.Optional, org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected ConfigurationProperty preUpdate(final Optional<ConfigurationProperty> existing, final ConfigurationProperty value) throws IllegalAccessException, ServiceException {
@@ -452,13 +453,12 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
         }
 
         getLogger().debug("Unregistering listener: {}", listener);
-
         listeners.remove(listener);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#update(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#update(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     public void update(final ConfigurationProperty value) throws ServiceException, IllegalAccessException {
@@ -474,7 +474,7 @@ public class DefaultConfigurationManager extends AbstractEntityService<Long, Con
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#validate(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#validate(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     public void validate(final ConfigurationProperty value) throws ServiceException {

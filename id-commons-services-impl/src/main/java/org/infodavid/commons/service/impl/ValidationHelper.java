@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -123,7 +123,7 @@ public class ValidationHelper {
      * @param value    the value
      */
     @SuppressWarnings("rawtypes")
-    public <T extends PersistentObject> void validate(final Class<T> beanType, final T value) {
+    public <T extends PersistentEntity> void validate(final Class<T> beanType, final T value) {
         validateObject(value, beanType);
     }
 

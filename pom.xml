@@ -44,6 +44,8 @@
         <module>id-commons-net</module>
         <module>id-commons-jdbc</module>
         <module>id-commons-persistence-jpa</module>
+        <module>id-commons-persistence-mongodb</module>
+        <module>id-commons-services-mocks</module>
         <module>id-commons-services-tests</module>
         <module>id-commons-services-impl</module>
         <module>id-commons-rest-api</module>

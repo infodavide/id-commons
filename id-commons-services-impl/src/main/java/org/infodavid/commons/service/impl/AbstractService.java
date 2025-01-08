@@ -3,16 +3,20 @@ package org.infodavid.commons.service.impl;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 
+import lombok.Getter;
+
 /**
  * The Class AbstractService.
  */
 public abstract class AbstractService {
 
     /** The application context. */
+    @Getter
     private final ApplicationContext applicationContext;
 
     /** The logger. */
-    private Logger logger;
+    @Getter
+    private final Logger logger;
 
     /**
      * Instantiates a new abstract service.
@@ -22,21 +26,5 @@ public abstract class AbstractService {
     protected AbstractService(final Logger logger, final ApplicationContext applicationContext) {
         this.logger = logger;
         this.applicationContext = applicationContext;
-    }
-
-    /**
-     * Gets the application context.
-     * @return the application context
-     */
-    public final ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
-
-    /**
-     * Gets the logger.
-     * @return the logger
-     */
-    public final Logger getLogger() {
-        return logger;
     }
 }

@@ -1,7 +1,9 @@
 package org.infodavid.commons.authentication.rest;
 
 import org.infodavid.commons.authentication.rest.security.LoginAuthenticationProvider;
+import org.infodavid.commons.authentication.rest.v1.controller.DefaultGroupController;
 import org.infodavid.commons.authentication.rest.v1.controller.DefaultUserController;
+import org.infodavid.commons.authentication.service.GroupService;
 import org.infodavid.commons.authentication.service.UserService;
 import org.infodavid.commons.rest.configuration.UniqueNameGenerator;
 import org.infodavid.commons.rest.v1.controller.DefaultApplicationController;
@@ -32,7 +34,7 @@ public class SpringTestConfiguration {
 
     /**
      * Application controller.
-     * @param service the service
+     * @param manager the manager
      * @return the application controller
      */
     @Bean
@@ -42,8 +44,8 @@ public class SpringTestConfiguration {
     }
 
     /**
-     * Application service.
-     * @return the application service
+     * Application manager.
+     * @return the application manager
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -52,8 +54,8 @@ public class SpringTestConfiguration {
     }
 
     /**
-     * Authentication service.
-     * @return the authentication service
+     * Authentication manager.
+     * @return the authentication manager
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -72,6 +74,59 @@ public class SpringTestConfiguration {
     }
 
     /**
+     * Authorization manager.
+     * @return the authorization manager
+     */
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    FactoryBean<AuthorizationService> authorizationService() {
+        return new FactoryBean<>() {
+            @Override
+            public AuthorizationService getObject() throws Exception {
+                return Mockito.mock(AuthorizationService.class);
+            }
+
+            @Override
+            public Class<?> getObjectType() {
+                return AuthorizationService.class;
+            }
+        };
+    }
+
+    /**
+     * Group controller.
+     * @param authorizationService the authorization manager
+     * @param manager              the manager
+     * @return the default group controller
+     */
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    DefaultGroupController groupController(final AuthorizationService authorizationService, final GroupService service) {
+        return new DefaultGroupController(authorizationService, service);
+    }
+
+    /**
+     * Group manager.
+     * @return the group manager
+     */
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    GroupService groupService() {
+        return Mockito.mock(GroupService.class);
+    }
+
+    /**
+     * Login authentication provider.
+     * @param manager the manager
+     * @return the login authentication provider
+     */
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    LoginAuthenticationProvider loginAuthenticationProvider(final AuthenticationService service) {
+        return new LoginAuthenticationProvider(service);
+    }
+
+    /**
      * Gets the rest template.
      * @return the rest template
      */
@@ -82,31 +137,21 @@ public class SpringTestConfiguration {
     }
 
     /**
-     * Login authentication provider.
-     * @param service the service
-     * @return the login authentication provider
-     */
-    @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    LoginAuthenticationProvider loginAuthenticationProvider(final AuthenticationService service) {
-        return new LoginAuthenticationProvider(service);
-    }
-
-    /**
      * User controller.
-     * @param authorizationService the authorization service
-     * @param service              the service
+     * @param authorizationService  the authorization manager
+     * @param authenticationService the authentication service
+     * @param service               the service
      * @return the user controller
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    DefaultUserController userController(final AuthorizationService authorizationService, final UserService service) {
-        return new DefaultUserController(authorizationService, service);
+    DefaultUserController userController(final AuthorizationService authorizationService, final AuthenticationService authenticationService, final UserService service) {
+        return new DefaultUserController(authorizationService, authenticationService, service);
     }
 
     /**
-     * User service.
-     * @return the user service
+     * User manager.
+     * @return the user manager
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)

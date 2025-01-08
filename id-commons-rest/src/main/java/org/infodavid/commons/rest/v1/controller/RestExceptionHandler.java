@@ -163,7 +163,7 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Handle service error.
+     * Handle manager error.
      * @param e       the exception
      * @param request the request
      * @return the response entity
@@ -172,7 +172,7 @@ public class RestExceptionHandler {
             InterruptedException.class
     })
     protected ResponseEntity<Object> handleInterrupted(final Exception e, final WebRequest request) {
-        LOGGER.error(String.format("An service error occurred on: %s, %s", getRequestUri(request), ExceptionUtils.getRootCause(e).getMessage())); // NOSONAR Always written
+        LOGGER.error(String.format("An manager error occurred on: %s, %s", getRequestUri(request), ExceptionUtils.getRootCause(e).getMessage())); // NOSONAR Always written
         Thread.currentThread().interrupt();
 
         return delegate.handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
@@ -209,7 +209,7 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Handle service error.
+     * Handle manager error.
      * @param e       the exception
      * @param request the request
      * @return the response entity
@@ -218,7 +218,7 @@ public class RestExceptionHandler {
             ServiceException.class
     })
     protected ResponseEntity<Object> handleServiceError(final Exception e, final WebRequest request) {
-        LOGGER.error(String.format("An service error occurred on: %s", getRequestUri(request)), ExceptionUtils.getRootCause(e)); // NOSONAR Always written
+        LOGGER.error(String.format("An manager error occurred on: %s", getRequestUri(request)), ExceptionUtils.getRootCause(e)); // NOSONAR Always written
 
         return delegate.handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }

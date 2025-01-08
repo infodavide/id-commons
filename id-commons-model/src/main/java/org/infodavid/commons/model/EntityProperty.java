@@ -1,7 +1,5 @@
 package org.infodavid.commons.model;
 
-import java.util.Date;
-
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
@@ -100,32 +98,12 @@ public class EntityProperty extends AbstractProperty<EntityProperty> {
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractProperty#getArchivingDate()
-     */
-    @Override
-    @Transient
-    public Date getArchivingDate() {
-        return super.getArchivingDate();
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.infodavid.commons.model.AbstractProperty#getDefaultValue()
      */
     @Override
     @Column(name = "default_data", length = 1024)
     public String getDefaultValue() {
         return super.getDefaultValue();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractProperty#getLabel()
-     */
-    @Override
-    @Column(name = "label", length = 128)
-    public String getLabel() {
-        return super.getLabel();
     }
 
     /*

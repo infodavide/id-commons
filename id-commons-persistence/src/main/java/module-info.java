@@ -1,8 +1,6 @@
 module org.infodavid.commons.persistence {
-    exports org.infodavid.commons.persistence;
     exports org.infodavid.commons.persistence.dao;
 
-    opens org.infodavid.commons.persistence;
     opens org.infodavid.commons.persistence.dao;
 
     requires transitive jakarta.persistence;

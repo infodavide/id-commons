@@ -215,11 +215,11 @@ class ConfigurationManagerTest extends AbstractSpringTest {
      */
     @Test
     void testFindByName() throws Exception {
-        final Optional<ConfigurationProperty> result = manager.findByName(org.infodavid.commons.persistence.Constants.SCHEMA_VERSION_PROPERTY);
+        final Optional<ConfigurationProperty> result = manager.findByName(org.infodavid.commons.model.Constants.SCHEMA_VERSION_PROPERTY);
 
         assertNotNull(result, "Null");
         assertFalse(result.isEmpty(), "Not found");
-        assertEquals(org.infodavid.commons.persistence.Constants.SCHEMA_VERSION_PROPERTY, result.get().getName(), "Wrong name");
+        assertEquals(org.infodavid.commons.model.Constants.SCHEMA_VERSION_PROPERTY, result.get().getName(), "Wrong name");
     }
 
     /**

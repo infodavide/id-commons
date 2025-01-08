@@ -1,8 +1,11 @@
 package org.infodavid.commons.service.test.persistence.dao;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,23 +13,42 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.infodavid.commons.model.PersistentObject;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.infodavid.commons.model.PersistentEntity;
 import org.infodavid.commons.persistence.dao.DefaultDao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import jakarta.persistence.PersistenceException;
+import lombok.Getter;
 
 /**
  * The Class AbstractDefaultDaoMock.
  * @param <K> the key type
  * @param <T> the generic type
  */
-public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends PersistentObject<K>> implements DefaultDao<K, T> {
+public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends PersistentEntity<K>> implements DefaultDao<K, T> {
+
+    /** The entity class. */
+    @Getter
+    protected final Class<T> entityClass;
+
+    /** The identifier class. */
+    @Getter
+    private final Class<K> identifierClass;
 
     /** The map. */
     protected Map<K, T> map = new ConcurrentHashMap<>();
+
+    /**
+     * Instantiates a new abstract default data access object mock.
+     * @param identifierClass the identifier class
+     * @param entityClass     the entity class
+     */
+    protected AbstractDefaultDaoMock(final Class<K> identifierClass, final Class<T> entityClass) {
+        this.entityClass = entityClass;
+        this.identifierClass = identifierClass;
+    }
 
     /**
      * Backup.
@@ -48,8 +70,8 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
      * @param values the values
      * @return the list
      */
-    protected List<T> clone(final Collection<T> values) {
-        final List<T> results = new ArrayList<>();
+    protected <S extends T> List<S> clone(final Collection<S> values) {
+        final List<S> results = new ArrayList<>();
         values.forEach(t -> results.add(clone(t)));
 
         return results;
@@ -58,16 +80,29 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
     /**
      * Clone.
      * @param value the value
-     * @return the t
+     * @return the clone
      */
-    protected abstract T clone(T value);
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected <S extends T> S clone(final S source) {
+        final Constructor<? extends PersistentEntity> constructor = ConstructorUtils.getAccessibleConstructor(entityClass, entityClass);
+
+        if (constructor == null) {
+            throw new IllegalStateException("No accessible constructor by copy found for class: " + entityClass.getName());
+        }
+
+        try {
+            return (S) constructor.newInstance(source);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     /*
      * (non-Javadoc)
      * @see org.infodavid.commons.persistence.dao.DefaultDao#count()
      */
     @Override
-    public long count() throws PersistenceException {
+    public long count() {
         return map.size();
     }
 
@@ -76,7 +111,7 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
      * @see org.infodavid.commons.persistence.dao.DefaultDao#deleteById(java.io.Serializable)
      */
     @Override
-    public void deleteById(final K id) throws PersistenceException {
+    public void deleteById(final K id) {
         map.remove(id);
     }
 
@@ -85,7 +120,7 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
      * @see org.infodavid.commons.persistence.dao.DefaultDao#findAll(org.springframework.data.domain.Pageable)
      */
     @Override
-    public Page<T> findAll(final Pageable pageable) throws PersistenceException {
+    public Page<T> findAll(final Pageable pageable) {
         final List<T> results = new ArrayList<>();
         map.values().forEach(t -> results.add(clone(t)));
 
@@ -107,31 +142,36 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
      * @see org.infodavid.commons.persistence.dao.DefaultDao#findById(java.io.Serializable)
      */
     @Override
-    public Optional<T> findById(final K id) throws PersistenceException {
+    public Optional<T> findById(final K id) {
         return Optional.ofNullable(clone(map.get(id)));
     }
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.persistence.dao.DefaultDao#insert(java.util.Collection)
+     * @see org.infodavid.commons.persistence.dao.DefaultDao#insert(java.lang.Iterable)
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public void insert(final Collection<T> values) throws PersistenceException {
-        if (values == null || values.isEmpty()) {
-            return;
+    public <S extends T> List<S> insert(final Iterable<S> values) {
+        if (values == null) {
+            return Collections.emptyList();
         }
 
+        final List<S> inserted = new ArrayList<>();
+
         for (final T value : values) {
-            insert(value);
+            inserted.add((S) insert(value));
         }
+
+        return inserted;
     }
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.persistence.dao.DefaultDao#insert(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.persistence.dao.DefaultDao#insert(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
-    public void insert(final T value) throws PersistenceException {
+    public <S extends T> S insert(final S value) {
         if (value.getId() == null) {
             value.setId(nextId());
         }
@@ -139,10 +179,12 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
         value.setCreationDate(new Date());
         value.setModificationDate(value.getCreationDate());
         map.put(value.getId(), clone(value));
+
+        return clone(value);
     }
 
     /**
-     * Next id.
+     * Next identifier.
      * @return the new identifier
      */
     protected abstract K nextId();
@@ -158,11 +200,11 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.persistence.dao.DefaultDao#update(java.util.Collection)
+     * @see org.infodavid.commons.persistence.dao.DefaultDao#update(java.lang.Iterable)
      */
     @Override
-    public void update(final Collection<T> values) throws PersistenceException {
-        if (values == null || values.isEmpty()) {
+    public <S extends T> void update(final Iterable<S> values) {
+        if (values == null) {
             return;
         }
 
@@ -173,10 +215,10 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.persistence.dao.DefaultDao#update(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.persistence.dao.DefaultDao#update(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
-    public void update(final T value) throws PersistenceException {
+    public <S extends T> void update(final S value) {
         value.setModificationDate(new Date());
         map.put(value.getId(), clone(value));
     }

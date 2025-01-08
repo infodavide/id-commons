@@ -94,8 +94,8 @@
         </dependency>
         <!-- Tests -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>id-commons-authentication-services-tests</artifactId>
+            <groupId>org.infodavid.commons</groupId>
+            <artifactId>id-commons-services-tests</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

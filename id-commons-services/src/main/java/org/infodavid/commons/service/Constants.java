@@ -1,5 +1,11 @@
 package org.infodavid.commons.service;
 
+import java.util.Collections;
+import java.util.Set;
+
+import org.infodavid.commons.service.security.UserPrincipal;
+import org.springframework.security.core.GrantedAuthority;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +14,9 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
+
+    /** The Constant ANONYMOUS_PRINCIPAL. */
+    public static final UserPrincipal ANONYMOUS_PRINCIPAL;
 
     /** The Constant APPLICATION_NAME_PROPERTY. */
     public static final String APPLICATION_NAME_PROPERTY = "application.name";
@@ -29,4 +38,24 @@ public final class Constants {
 
     /** The Constant SCHEDULER_THREADS_PROPERTY. */
     public static final String SCHEDULER_THREADS_PROPERTY = "scheduler.threads";
+
+    static {
+        ANONYMOUS_PRINCIPAL = new UserPrincipal() {
+
+            @Override
+            public Set<GrantedAuthority> getGrantedAuthorities() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public String getName() {
+                return org.infodavid.commons.model.Constants.ANONYMOUS;
+            }
+
+            @Override
+            public Set<String> getRoles() {
+                return Collections.emptySet();
+            }
+        };
+    }
 }

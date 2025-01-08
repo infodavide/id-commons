@@ -2,7 +2,6 @@ package org.infodavid.commons.authentication.persistence.jpa;
 
 import javax.sql.DataSource;
 
-import org.infodavid.commons.persistence.jpa.repository.CustomBaseRepositoryImpl;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,7 +20,9 @@ import org.springframework.test.context.TestPropertySource;
  */
 @Configuration
 @ComponentScan(basePackages = { "org.infodavid" })
-@EnableJpaRepositories(basePackages = "org.infodavid", repositoryBaseClass = CustomBaseRepositoryImpl.class)
+// Already defined in parent class: @EnableTransactionManagement
+// Already defined in parent class: @EnableJpaRepositories(basePackages = "org.infodavid", repositoryBaseClass = CustomBaseRepositoryImpl.class)
+// Already defined in parent class: @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
 @ContextConfiguration(value = "classpath:applicationContext-test.xml")
 @PropertySource("classpath:application-test.properties")
 @TestPropertySource("classpath:application-test.properties")

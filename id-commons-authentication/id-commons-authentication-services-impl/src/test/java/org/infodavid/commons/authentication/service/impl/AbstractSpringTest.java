@@ -3,11 +3,8 @@ package org.infodavid.commons.authentication.service.impl;
 import java.util.Collections;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.infodavid.commons.authentication.model.User;
-import org.infodavid.commons.authentication.service.test.AuthenticationDataInitializer;
 import org.infodavid.commons.service.security.AuthenticationService;
 import org.infodavid.commons.test.TestCase;
-import org.infodavid.commons.util.collection.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -60,22 +57,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
 
     /** The data initializer. */
     @Autowired
-    private AuthenticationDataInitializer dataInitializer;
-
-    /**
-     * New user.
-     * @return the user
-     */
-    protected User newUser() {
-        final User result = new User();
-        result.setName("test-" + System.nanoTime());
-        result.setDisplayName("User " + result.getName());
-        result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
-        result.setEmail(result.getName() + "@infodavid.org");
-        result.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.USER_ROLE));
-
-        return result;
-    }
+    protected AuthenticationDataInitializer dataInitializer;
 
     /*
      * (non-Javadoc)

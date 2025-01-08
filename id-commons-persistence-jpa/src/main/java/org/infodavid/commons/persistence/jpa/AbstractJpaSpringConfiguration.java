@@ -7,7 +7,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.infodavid.commons.model.PersistentObject;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -37,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractJpaSpringConfiguration {
 
     /** The Constant DEFAULT_DIALECT_CLASS. */
-    private static final String DEFAULT_DIALECT_CLASS = "org.hibernate.dialect.MySQL5Dialect";
+    private static final String DEFAULT_DIALECT_CLASS = "org.hibernate.dialect.MySQLDialect";
 
     /** The property sources placeholder configurer. */
     private static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer;
@@ -66,6 +65,7 @@ public abstract class AbstractJpaSpringConfiguration {
 
         final Properties result = new Properties();
         result.setProperty("hibernate.hbm2ddl.auto", "validate");
+        result.setProperty("hibernate.ddl-auto", "none");
 
         try {
             Class.forName(databaseDialectClassName);
@@ -128,7 +128,7 @@ public abstract class AbstractJpaSpringConfiguration {
      * @return the packages to scan
      */
     protected String[] getPackagesToScan() {
-        return new String[] { PersistentObject.class.getPackageName() };
+        return new String[] { "org.infodavid" };
     }
 
     /**

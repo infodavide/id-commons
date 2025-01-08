@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.infodavid.commons</groupId>
     <artifactId>id-commons-messaging-broker</artifactId>
-    <name>Model</name>
+    <name>Messaging broker</name>
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

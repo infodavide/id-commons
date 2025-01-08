@@ -76,7 +76,7 @@ public class PlatformTransactionManagerMock extends AbstractPlatformTransactionM
                 buffer.append('\n');
             }
 
-            buffer.append('}');
+            buffer.append(']');
 
             return buffer.toString();
         }

@@ -34,7 +34,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class ConfigurationProperty extends AbstractProperty<ConfigurationProperty> implements PersistentObject<Long>, Comparable<ConfigurationProperty> {
+public class ConfigurationProperty extends AbstractProperty<ConfigurationProperty> implements PersistentEntity<Long>, Comparable<ConfigurationProperty> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 3408729073001407889L;
@@ -58,10 +58,23 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
         super(source);
 
         if (source instanceof final ConfigurationProperty ap) {
+            application = ap.application;
             creationDate = ap.creationDate;
             id = ap.id;
             modificationDate = ap.modificationDate;
         }
+    }
+
+    /**
+     * Instantiates a new configuration property.
+     * @param source the source
+     */
+    public ConfigurationProperty(final ConfigurationProperty source) {
+        super(source);
+        application = source.application;
+        creationDate = source.creationDate;
+        id = source.id;
+        modificationDate = source.modificationDate;
     }
 
     /**
@@ -129,15 +142,15 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
      * (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    /*
-     * (non-javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
     public int compareTo(final ConfigurationProperty o) { // NOSONAR
         return getId().compareTo(o.getId());
     }
 
+    /**
+     * Gets the application.
+     * @return the application
+     */
     @Size(min = 0, max = 128)
     @Column(name = "application")
     public String getApplication() {
@@ -146,18 +159,7 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractProperty#getArchivingDate()
-     */
-    @Column(name = "archiving_date")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Override
-    public Date getArchivingDate() {
-        return super.getArchivingDate();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.model.PersistentObject#getCreationDate()
+     * @see org.infodavid.commons.model.PersistentEntity#getCreationDate()
      */
     @Column(name = "creation_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -178,7 +180,7 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.model.PersistentObject#getId()
+     * @see org.infodavid.commons.model.PersistentEntity#getId()
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -187,16 +189,6 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
     @Min(1)
     public Long getId() {
         return id;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractProperty#getLabel()
-     */
-    @Override
-    @Column(name = "label", length = 128)
-    public String getLabel() {
-        return super.getLabel();
     }
 
     /*
@@ -221,7 +213,7 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.model.PersistentObject#getModificationDate()
+     * @see org.infodavid.commons.model.PersistentEntity#getModificationDate()
      */
     @Column(name = "modification_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -305,7 +297,7 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.model.PersistentObject#setCreationDate(java.util.Date)
+     * @see org.infodavid.commons.model.PersistentEntity#setCreationDate(java.util.Date)
      */
     @Override
     public void setCreationDate(final Date creationDate) {
@@ -318,7 +310,7 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.model.PersistentObject#setId(java.io.Serializable)
+     * @see org.infodavid.commons.model.PersistentEntity#setId(java.io.Serializable)
      */
     @Override
     public void setId(final Long id) {
@@ -327,7 +319,7 @@ public class ConfigurationProperty extends AbstractProperty<ConfigurationPropert
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.model.PersistentObject#setModificationDate(java.util.Date)
+     * @see org.infodavid.commons.model.PersistentEntity#setModificationDate(java.util.Date)
      */
     @Override
     public void setModificationDate(final Date modificationDate) {

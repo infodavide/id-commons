@@ -24,7 +24,7 @@
         <module>id-commons-authentication-persistence</module>
         <module>id-commons-authentication-persistence-jpa</module>
         <module>id-commons-authentication-services</module>
-        <module>id-commons-authentication-services-tests</module>
+        <module>id-commons-authentication-services-mocks</module>
         <module>id-commons-authentication-services-impl</module>
         <module>id-commons-authentication-rest-api</module>
         <module>id-commons-authentication-rest</module>

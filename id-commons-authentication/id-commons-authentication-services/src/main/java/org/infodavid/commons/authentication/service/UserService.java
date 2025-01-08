@@ -1,7 +1,6 @@
 package org.infodavid.commons.authentication.service;
 
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Optional;
 
 import org.infodavid.commons.authentication.model.User;
@@ -53,14 +52,6 @@ public interface UserService extends EntityService<Long, User> {
     Page<User> findByRole(String role, Pageable pageable) throws ServiceException;
 
     /**
-     * Find by status.
-     * @param connected the connected
-     * @return the page
-     * @throws ServiceException the service exception
-     */
-    List<User> findByStatus(boolean connected) throws ServiceException;
-
-    /**
      * Gets the references.
      * @param pageable the page definition
      * @return the references
@@ -69,15 +60,11 @@ public interface UserService extends EntityService<Long, User> {
     Page<DefaultEntityReference> findReferences(Pageable pageable) throws ServiceException;
 
     /**
-     * Gets the supported roles.
-     * @return the supported roles
+     * Checks for role.
+     * @param user  the user
+     * @param value the value
+     * @return true, if successful
+     * @throws ServiceException the service exception
      */
-    String[] getSupportedRoles();
-
-    /**
-     * Checks if is connected.
-     * @param name the name
-     * @return true, if user is connected or false if not connected or not found
-     */
-    boolean isConnected(String name);
+    boolean hasRole(User user, String value) throws ServiceException;
 }

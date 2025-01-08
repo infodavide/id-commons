@@ -1,8 +1,8 @@
 package org.infodavid.commons.service.security;
 
 import java.security.Principal;
-import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.security.auth.login.LoginException;
@@ -35,18 +35,12 @@ public interface AuthenticationService {
     Authentication authenticate(String login, String password, Map<String, String> properties) throws IllegalAccessException, ServiceException, LoginException;
 
     /**
-     * Gets the currently authenticated users.
-     * @return the identifiers
-     */
-    Collection<Principal> getAuthenticated();
-
-    /**
      * Gets the user associated to the current security context.
      * @param userId the user identifier
-     * @return the login
+     * @return the authentication
      * @throws ServiceException
      */
-    Authentication getAuthentication(String login) throws ServiceException;
+    Optional<Authentication> getAuthentication(String login) throws ServiceException;
 
     /**
      * Gets the authentication builder.
@@ -67,19 +61,28 @@ public interface AuthenticationService {
     Set<AuthenticationListener> getListeners();
 
     /**
+     * Gets the principal associated to the current security context.
+     * @return the principal
+     * @throws ServiceException the service exception
+     */
+    UserPrincipal getPrincipal() throws ServiceException;
+
+    /**
      * Gets the principal associated to the authentication.
      * @param authentication the authentication
      * @return the principal
+     * @throws ServiceException the service exception
      */
-    Principal getPrincipal(Authentication authentication);
+    Optional<UserPrincipal> getPrincipal(Authentication authentication) throws ServiceException;
 
     /**
      * Invalidate and logout the authenticated user.
      * @param authentication the authentication
      * @param properties     the properties (like remote IP address, etc.)
+     * @return true, if successful
      * @throws ServiceException the service exception
      */
-    void invalidate(Authentication authentication, Map<String, String> properties) throws ServiceException;
+    boolean invalidate(Authentication authentication, Map<String, String> properties) throws ServiceException;
 
     /**
      * Invalidate and logout the authenticated user.
@@ -98,8 +101,9 @@ public interface AuthenticationService {
      * Checks if is authenticated.
      * @param principal the principal
      * @return true, if is authenticated
+     * @throws ServiceException the service exception
      */
-    boolean isAuthenticated(Principal principal);
+    boolean isAuthenticated(Principal principal) throws ServiceException;
 
     /**
      * Removes the listener.

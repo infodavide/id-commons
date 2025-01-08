@@ -1,10 +1,12 @@
 package org.infodavid.commons.persistence.jpa.repository;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
@@ -16,7 +18,7 @@ import jakarta.persistence.PersistenceException;
  * @param <K> the key type
  * @param <T> the generic type
  */
-public class CustomBaseRepositoryImpl<K extends Serializable, T extends PersistentObject<K>> extends SimpleJpaRepository<T, K> {
+public class CustomBaseRepositoryImpl<K extends Serializable, T extends PersistentEntity<K>> extends SimpleJpaRepository<T, K> {
 
     /** The entity information. */
     private final JpaEntityInformation<T, K> entityInformation;
@@ -48,12 +50,14 @@ public class CustomBaseRepositoryImpl<K extends Serializable, T extends Persiste
      * @param values the values
      * @throws PersistenceException the persistence exception
      */
-    public void insert(final Collection<T> values) throws PersistenceException {
-        if (values == null || values.isEmpty()) {
-            return;
+    public <S extends T> List<S> insert(final Iterable<S> values) throws PersistenceException {
+        if (values == null) {
+            return Collections.emptyList();
         }
 
-        for (final T value : values) {
+        final List<S> results = new ArrayList<>();
+
+        for (final S value : values) {
             if (value.getCreationDate() == null) {
                 value.setCreationDate(new Date());
             }
@@ -63,9 +67,12 @@ public class CustomBaseRepositoryImpl<K extends Serializable, T extends Persiste
             }
 
             entityManager.persist(value);
+            results.add(value);
         }
 
         entityManager.flush();
+
+        return results;
     }
 
     /**
@@ -73,7 +80,7 @@ public class CustomBaseRepositoryImpl<K extends Serializable, T extends Persiste
      * @param value the value
      * @throws PersistenceException the persistence exception
      */
-    public void insert(final T value) throws PersistenceException {
+    public <S extends T> S insert(final S value) throws PersistenceException {
         if (value.getCreationDate() == null) {
             value.setCreationDate(new Date());
         }
@@ -84,6 +91,8 @@ public class CustomBaseRepositoryImpl<K extends Serializable, T extends Persiste
 
         entityManager.persist(value);
         entityManager.flush();
+
+        return value;
     }
 
     /**
@@ -91,12 +100,12 @@ public class CustomBaseRepositoryImpl<K extends Serializable, T extends Persiste
      * @param values the values
      * @throws PersistenceException the persistence exception
      */
-    public void update(final Collection<T> values) throws PersistenceException {
-        if (values == null || values.isEmpty()) {
+    public <S extends T> void update(final Iterable<S> values) throws PersistenceException {
+        if (values == null) {
             return;
         }
 
-        for (final T value : values) {
+        for (final S value : values) {
             if (value.getCreationDate() == null) {
                 value.setCreationDate(new Date());
             }
@@ -118,7 +127,7 @@ public class CustomBaseRepositoryImpl<K extends Serializable, T extends Persiste
      * @param value the value
      * @throws PersistenceException the persistence exception
      */
-    public void update(final T value) throws PersistenceException {
+    public <S extends T> void update(final S value) throws PersistenceException {
         if (value.getCreationDate() == null) {
             value.setCreationDate(new Date());
         }

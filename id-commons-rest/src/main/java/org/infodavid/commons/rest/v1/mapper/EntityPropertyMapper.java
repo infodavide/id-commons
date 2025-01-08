@@ -2,11 +2,13 @@ package org.infodavid.commons.rest.v1.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.infodavid.commons.model.EntityProperty;
 import org.infodavid.commons.model.decorator.PropertiesDecorator;
 import org.infodavid.commons.rest.v1.api.dto.EntityPropertyDto;
+import org.infodavid.commons.util.ResourceBundleDecorator;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -22,6 +24,9 @@ public interface EntityPropertyMapper { // NOSONAR See Mapstruct documentation
     /** The instance. */
     EntityPropertyMapper INSTANCE = Mappers.getMapper(EntityPropertyMapper.class);
 
+    /** The resource bundle. */
+    ResourceBundleDecorator RESOURCE_BUNDLE = new ResourceBundleDecorator(ResourceBundle.getBundle("labels"));
+
     /**
      * To DTO.
      * @param entity the entity
@@ -33,28 +38,28 @@ public interface EntityPropertyMapper { // NOSONAR See Mapstruct documentation
             return null;
         }
 
-        final EntityPropertyDto propertyDto = new EntityPropertyDto();
-        propertyDto.setDeletable(entity.isDeletable());
-        propertyDto.setName(entity.getName());
-        propertyDto.setLabel(entity.getLabel());
-        propertyDto.setReadOnly(entity.isReadOnly());
-        propertyDto.setScope(entity.getScope());
+        final EntityPropertyDto result = new EntityPropertyDto();
+        result.setDeletable(entity.isDeletable());
+        result.setName(entity.getName());
+        result.setLabel(RESOURCE_BUNDLE.getString(entity.getName()));
+        result.setReadOnly(entity.isReadOnly());
+        result.setScope(entity.getScope());
 
         if (entity.getType() != null) { // NOSONAR Keep null check
-            propertyDto.setType(entity.getType().name());
+            result.setType(entity.getType().name());
         }
 
-        if (propertyDto.getLabel() == null) {
-            propertyDto.setLabel(propertyDto.getName());
+        if (result.getLabel() == null) {
+            result.setLabel(result.getName());
         }
 
-        propertyDto.setTypeDefinition(entity.getTypeDefinition());
-        propertyDto.setValue(entity.getValue());
-        propertyDto.setDefaultValue(entity.getDefaultValue());
-        propertyDto.setMinimum(entity.getMinimum());
-        propertyDto.setMaximum(entity.getMaximum());
+        result.setTypeDefinition(entity.getTypeDefinition());
+        result.setValue(entity.getValue());
+        result.setDefaultValue(entity.getDefaultValue());
+        result.setMinimum(entity.getMinimum());
+        result.setMaximum(entity.getMaximum());
 
-        return propertyDto;
+        return result;
     }
 
     /**
@@ -93,7 +98,6 @@ public interface EntityPropertyMapper { // NOSONAR See Mapstruct documentation
      * @param dto the DTO
      * @return the entity
      */
-    @Mappings(value = { @Mapping(target = "archivingDate", ignore = true) })
     EntityProperty map(EntityPropertyDto dto);
 
     /**
