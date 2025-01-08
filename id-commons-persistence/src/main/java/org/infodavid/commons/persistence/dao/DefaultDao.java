@@ -1,10 +1,10 @@
 package org.infodavid.commons.persistence.dao;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,7 +15,7 @@ import jakarta.persistence.PersistenceException;
  * @param <K> the key type
  * @param <T> the generic type
  */
-public interface DefaultDao<K extends Serializable, T extends PersistentObject<K>> {
+public interface DefaultDao<K extends Serializable, T extends PersistentEntity<K>> {
 
     /**
      * Count.
@@ -52,26 +52,26 @@ public interface DefaultDao<K extends Serializable, T extends PersistentObject<K
      * @param value the value
      * @throws PersistenceException the persistence exception
      */
-    void insert(T value) throws PersistenceException;
+    <S extends T> S insert(S value) throws PersistenceException;
 
     /**
      * Insert.
      * @param values the values
      * @throws PersistenceException the persistence exception
      */
-    void insert(Collection<T> values) throws PersistenceException;
+    <S extends T> List<S> insert(Iterable<S> values) throws PersistenceException;
 
     /**
      * Update.
      * @param value the value
      * @throws PersistenceException the persistence exception
      */
-    void update(T value) throws PersistenceException;
+    <S extends T> void update(S value) throws PersistenceException;
 
     /**
      * Update.
      * @param values the values
      * @throws PersistenceException the persistence exception
      */
-    void update(Collection<T> values) throws PersistenceException;
+    <S extends T> void update(Iterable<S> values) throws PersistenceException;
 }

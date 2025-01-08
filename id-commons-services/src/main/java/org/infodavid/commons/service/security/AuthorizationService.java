@@ -3,7 +3,7 @@ package org.infodavid.commons.service.security;
 import java.io.Serializable;
 import java.security.Principal;
 
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 import org.infodavid.commons.service.exception.ServiceException;
 
 /**
@@ -20,7 +20,7 @@ public interface AuthorizationService {
      * @param entity      the entity to add
      * @throws IllegalAccessException the illegal access exception
      */
-    <K extends Serializable, T extends PersistentObject<K>> void assertAddAuthorization(Principal principal, Class<T> entityClass, T entity) throws IllegalAccessException;
+    <K extends Serializable, T extends PersistentEntity<K>> void assertAddAuthorization(Principal principal, Class<T> entityClass, T entity) throws IllegalAccessException;
 
     /**
      * Assert delete authorization.
@@ -31,7 +31,7 @@ public interface AuthorizationService {
      * @param id          the identifier of the entity to be deleted
      * @throws IllegalAccessException the illegal access exception
      */
-    <K extends Serializable, T extends PersistentObject<K>> void assertDeleteAuthorization(Principal principal, Class<T> entityClass, K id) throws IllegalAccessException;
+    <K extends Serializable, T extends PersistentEntity<K>> void assertDeleteAuthorization(Principal principal, Class<T> entityClass, K id) throws IllegalAccessException;
 
     /**
      * Assert role.
@@ -50,7 +50,7 @@ public interface AuthorizationService {
      * @param id          the identifier of the entity to be updated
      * @throws IllegalAccessException the illegal access exception
      */
-    <K extends Serializable, T extends PersistentObject<K>> void assertUpdateAuthorization(Principal principal, Class<T> entityClass, K id) throws IllegalAccessException;
+    <K extends Serializable, T extends PersistentEntity<K>> void assertUpdateAuthorization(Principal principal, Class<T> entityClass, K id) throws IllegalAccessException;
 
     /**
      * Can add.
@@ -61,7 +61,7 @@ public interface AuthorizationService {
      * @param entity      the entity
      * @return true, if successful
      */
-    <K extends Serializable, T extends PersistentObject<K>> boolean canAdd(Principal principal, Class<T> entityClass, T entity);
+    <K extends Serializable, T extends PersistentEntity<K>> boolean canAdd(Principal principal, Class<T> entityClass, T entity);
 
     /**
      * Can delete.
@@ -72,7 +72,7 @@ public interface AuthorizationService {
      * @param id          the identifier
      * @return true, if successful
      */
-    <K extends Serializable, T extends PersistentObject<K>> boolean canDelete(Principal principal, Class<T> entityClass, K id);
+    <K extends Serializable, T extends PersistentEntity<K>> boolean canDelete(Principal principal, Class<T> entityClass, K id);
 
     /**
      * Can edit.
@@ -83,7 +83,7 @@ public interface AuthorizationService {
      * @param id          the identifier
      * @return true, if successful
      */
-    <K extends Serializable, T extends PersistentObject<K>> boolean canEdit(Principal principal, Class<T> entityClass, K id);
+    <K extends Serializable, T extends PersistentEntity<K>> boolean canEdit(Principal principal, Class<T> entityClass, K id);
 
     /**
      * Gets the user associated to the current security context.

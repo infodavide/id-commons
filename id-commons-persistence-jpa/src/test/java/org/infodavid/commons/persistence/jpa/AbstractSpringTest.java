@@ -68,11 +68,13 @@ public abstract class AbstractSpringTest extends TestCase implements Application
         final DataSource ds = (DataSource) applicationContext.getBean("dataSource");
 
         try (Connection connection = ds.getConnection(); InputStream in = new FileInputStream("target/test-classes/delete_data.sql")) {
+            connection.setAutoCommit(false);
             ScriptUtils.executeSqlScript(connection, new InputStreamResource(in));
             connection.commit();
         }
 
         try (Connection connection = ds.getConnection(); InputStream in = new FileInputStream("target/test-classes/insert_data.sql")) {
+            connection.setAutoCommit(false);
             ScriptUtils.executeSqlScript(connection, new InputStreamResource(in));
             connection.commit();
         }

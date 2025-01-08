@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Collections;
 import java.util.Optional;
 
+import org.infodavid.commons.authentication.model.Group;
 import org.infodavid.commons.authentication.model.User;
 import org.infodavid.commons.authentication.persistence.dao.UserDao;
 import org.infodavid.commons.authentication.persistence.jpa.AbstractSpringTest;
@@ -74,8 +74,8 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertNotNull(results, "Null result");
         assertEquals(COUNT, results.getNumberOfElements(), "Wrong number of elements");
 
-        for (final User user : results) {
-            for (final EntityProperty property : user.getProperties()) {
+        for (final User result : results) {
+            for (final EntityProperty property : result.getProperties()) {
                 System.out.println(property);
             }
         }
@@ -118,8 +118,6 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertTrue(optional.isPresent(), "No result");
         final User result = optional.get();
         assertEquals(1, result.getId().longValue(), "Wrong id");
-        assertFalse(result.isDeletable(), "Wrong deletable flag");
-        assertEquals(5, result.getConnectionsCount(), "Wrong connections count");
         assertNotNull(result.getCreationDate(), "Wrong creation date");
         assertNull(result.getExpirationDate(), "Wrong expiration date");
         assertNotNull(result.getLastConnectionDate(), "Wrong last connection date");
@@ -129,15 +127,14 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertEquals("192.168.0.100", result.getLastIp(), "Wrong last IP");
         assertEquals("admin", result.getName(), "Wrong name");
         assertEquals("21232F297A57A5A743894A0E4A801FC3", result.getPassword(), "Wrong password");
-        assertEquals(Collections.singleton(Constants.ADMINISTRATOR_ROLE), result.getRoles(), "Wrong roles");
         assertNotNull(result.getProperties(), "Wrong properties");
         assertEquals(2, result.getProperties().size(), "Wrong count of properties");
         assertNotNull(result.getProperties().get("prop10"), "Wrong property");
         assertEquals("val10", result.getProperties().get(null, "prop10").getValue(), "Wrong property");
-        assertNotNull(result.getProperties().get(null, "prop10").getLabel(), "Wrong property");
+        assertNotNull(result.getProperties().get(null, "prop10").getName(), "Wrong property");
         assertNotNull(result.getProperties().get("prop11"), "Wrong property");
         assertEquals("val11", result.getProperties().get(null, "prop11").getValue(), "Wrong property");
-        assertNotNull(result.getProperties().get(null, "prop11").getLabel(), "Wrong property");
+        assertNotNull(result.getProperties().get(null, "prop11").getName(), "Wrong property");
     }
 
     /**
@@ -150,11 +147,11 @@ class UserRepositoryTest extends AbstractSpringTest {
 
         assertNotNull(optional, "Null result");
         assertTrue(optional.isPresent(), "No result");
-        final User entity = optional.get();
-        assertNotNull(entity, "No result");
-        assertEquals(3, entity.getId().longValue(), "Wrong id");
-        assertEquals("user1", entity.getName(), "Wrong name");
-        assertEquals(1, entity.getProperties().size(), "Wrong properties");
+        final User result = optional.get();
+        assertNotNull(result, "No result");
+        assertEquals(3, result.getId().longValue(), "Wrong id");
+        assertEquals("user1", result.getName(), "Wrong name");
+        assertEquals(1, result.getProperties().size(), "Wrong properties");
     }
 
     /**
@@ -167,9 +164,9 @@ class UserRepositoryTest extends AbstractSpringTest {
 
         assertNotNull(optional, "Null result");
         assertTrue(optional.isPresent(), "No result");
-        final User entity = optional.get();
-        assertNotNull(entity, "No result");
-        assertEquals(1, entity.getId().longValue(), "Wrong id");
+        final User result = optional.get();
+        assertNotNull(result, "No result");
+        assertEquals(1, result.getId().longValue(), "Wrong id");
     }
 
     /**
@@ -182,7 +179,42 @@ class UserRepositoryTest extends AbstractSpringTest {
 
         assertNotNull(results, "Null result");
         assertEquals(3, results.getNumberOfElements(), "Wrong number of elements");
-        results.forEach(u -> assertTrue(u.getRoles().contains(Constants.USER_ROLE), "Wrong result"));
+        results.forEach(u -> {
+            boolean match = false;
+
+            for (final Group g: u.getGroups()) {
+                if (g.getRoles().contains(Constants.USER_ROLE)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            assertTrue(match, "Wrong result");
+        });
+    }
+
+    /**
+     * Test find by group.
+     * @throws Exception the exception
+     */
+    @Test
+    void testFindByGroup() throws Exception {
+        final Page<User> results = dao.findByGroup("users", Pageable.unpaged());
+
+        assertNotNull(results, "Null result");
+        assertEquals(3, results.getNumberOfElements(), "Wrong number of elements");
+        results.forEach(u -> {
+            boolean match = false;
+
+            for (final Group g: u.getGroups()) {
+                if ("users".equals(g.getName())) {
+                    match = true;
+                    break;
+                }
+            }
+
+            assertTrue(match, "Wrong result");
+        });
     }
 
     /**
@@ -239,7 +271,6 @@ class UserRepositoryTest extends AbstractSpringTest {
         final User entity = new User(optional.get());
         entity.setId(null);
         entity.setName("user4");
-        entity.setConnectionsCount(0);
         entity.setLastConnectionDate(null);
         entity.setLastIp(null);
         entity.setDisplayName("User 4");
@@ -258,8 +289,6 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertTrue(optional.isPresent(), "Null result");
         final User inserted = optional.get();
         assertNotNull(inserted.getId(), "Wrong id");
-        assertTrue(entity.isDeletable(), "Wrong deletable flag");
-        assertEquals(0, inserted.getConnectionsCount(), "Wrong connections count");
         assertNotNull(inserted.getCreationDate(), "Wrong creation date");
         assertNull(inserted.getExpirationDate(), "Wrong expiration date");
         assertNull(inserted.getLastConnectionDate(), "Wrong last connection date");
@@ -269,7 +298,6 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertNull(inserted.getLastIp(), "Wrong last IP");
         assertEquals(entity.getName(), inserted.getName(), "Wrong name");
         assertEquals(entity.getPassword(), inserted.getPassword(), "Wrong password");
-        assertEquals(entity.getRoles(), inserted.getRoles(), "Wrong roles");
         assertEquals(count + 1, dao.count(), "Wrong count");
         assertNotNull(inserted.getProperties(), "Wrong properties");
         assertEquals(7, inserted.getProperties().size(), "Wrong count of properties");
@@ -301,7 +329,6 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertTrue(optional.isPresent(), "Null result");
         final User updated = optional.get();
         assertNotNull(updated.getId(), "Wrong id");
-        assertEquals(entity.getConnectionsCount(), updated.getConnectionsCount(), "Wrong connections count");
         assertEquals(entity.getCreationDate(), updated.getCreationDate(), "Wrong creation date");
         assertEquals(entity.getExpirationDate(), updated.getExpirationDate(), "Wrong expiration date");
         assertEquals(entity.getLastConnectionDate(), updated.getLastConnectionDate(), "Wrong last connection date");
@@ -312,7 +339,6 @@ class UserRepositoryTest extends AbstractSpringTest {
         assertEquals(entity.getLastIp(), updated.getLastIp(), "Wrong last IP");
         assertEquals(entity.getName(), updated.getName(), "Wrong name");
         assertEquals(entity.getPassword(), updated.getPassword(), "Wrong password");
-        assertEquals(entity.getRoles(), updated.getRoles(), "Wrong roles");
         assertEquals(count, dao.count(), "Wrong count");
         assertNotNull(updated.getProperties(), "Wrong properties");
         assertEquals(3, updated.getProperties().size(), "Wrong count of properties");

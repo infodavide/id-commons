@@ -16,12 +16,6 @@ import jakarta.persistence.PersistenceException;
 public interface UserDao extends DefaultDao<Long, User> {
 
     /**
-     * Delete deletable.
-     * @throws PersistenceException the persistence exception
-     */
-    void deleteDeletable() throws PersistenceException;
-
-    /**
      * Selects by email.
      * @param value the email
      * @return the user
@@ -58,7 +52,16 @@ public interface UserDao extends DefaultDao<Long, User> {
 
     /**
      * Selects by role.
-     * @param value   the role
+     * @param value    the role
+     * @param pageable the page definition
+     * @return the users
+     * @throws PersistenceException the persistence exception
+     */
+    Page<User> findByGroup(String group, Pageable pageable) throws PersistenceException;
+
+    /**
+     * Selects by role.
+     * @param value    the role
      * @param pageable the page definition
      * @return the users
      * @throws PersistenceException the persistence exception

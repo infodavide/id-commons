@@ -1,7 +1,10 @@
 package org.infodavid.commons.rest.v1.mapper;
 
+import java.util.ResourceBundle;
+
 import org.infodavid.commons.model.ConfigurationProperty;
 import org.infodavid.commons.rest.v1.api.dto.ConfigurationPropertyDto;
+import org.infodavid.commons.util.ResourceBundleDecorator;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -15,6 +18,9 @@ public interface ConfigurationPropertyMapper { // NOSONAR See Mapstruct document
 
     /** The instance. */
     ConfigurationPropertyMapper INSTANCE = Mappers.getMapper(ConfigurationPropertyMapper.class);
+
+    /** The resource bundle. */
+    ResourceBundleDecorator RESOURCE_BUNDLE = new ResourceBundleDecorator(ResourceBundle.getBundle("labels"));
 
     /**
      * To DTO.
@@ -30,7 +36,7 @@ public interface ConfigurationPropertyMapper { // NOSONAR See Mapstruct document
         final ConfigurationPropertyDto result = new ConfigurationPropertyDto();
         result.setDeletable(entity.isDeletable());
         result.setName(entity.getName());
-        result.setLabel(entity.getLabel());
+        result.setLabel(RESOURCE_BUNDLE.getString(entity.getName()));
         result.setReadOnly(entity.isReadOnly());
         result.setScope(entity.getScope());
 
@@ -56,6 +62,5 @@ public interface ConfigurationPropertyMapper { // NOSONAR See Mapstruct document
      * @param dto the DTO
      * @return the entity
      */
-    @Mappings(value = { @Mapping(target = "archivingDate", ignore = true) })
     ConfigurationProperty map(ConfigurationPropertyDto dto);
 }

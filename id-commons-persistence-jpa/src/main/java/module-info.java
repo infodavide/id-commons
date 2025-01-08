@@ -8,7 +8,7 @@ module org.infodavid.commons.persistence.jpa {
     uses java.sql.Driver;
 
     requires transitive org.infodavid.commons.model;
-    requires org.infodavid.commons.persistence;
+    requires transitive org.infodavid.commons.persistence;
     requires transitive jakarta.persistence;
     requires transitive java.sql;
     requires transitive org.slf4j;

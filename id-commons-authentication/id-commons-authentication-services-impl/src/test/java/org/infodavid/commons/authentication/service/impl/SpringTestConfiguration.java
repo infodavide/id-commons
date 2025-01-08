@@ -3,11 +3,15 @@ package org.infodavid.commons.authentication.service.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.infodavid.commons.authentication.persistence.dao.GroupDao;
 import org.infodavid.commons.authentication.persistence.dao.UserDao;
+import org.infodavid.commons.authentication.service.GroupService;
 import org.infodavid.commons.authentication.service.UserService;
 import org.infodavid.commons.authentication.service.impl.security.DefaultAuthenticationService;
 import org.infodavid.commons.authentication.service.impl.security.DefaultAuthorizationService;
+import org.infodavid.commons.authentication.service.impl.service.DefaultGroupService;
 import org.infodavid.commons.authentication.service.impl.service.DefaultUserService;
+import org.infodavid.commons.authentication.service.test.persistence.dao.GroupDaoMock;
 import org.infodavid.commons.authentication.service.test.persistence.dao.UserDaoMock;
 import org.infodavid.commons.persistence.dao.ConfigurationPropertyDao;
 import org.infodavid.commons.persistence.dao.DefaultDao;
@@ -44,26 +48,28 @@ public class SpringTestConfiguration {
 
     /**
      * Application configuration manager.
-     * @param applicationContext the application context
-     * @param dao                the data access object
+     * @param applicationContext   the application context
+     * @param authorizationService the authorization service
+     * @param dao                  the data access object
      * @return the default configuration manager
      */
     @Bean("applicationConfigurationManager")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultConfigurationManager applicationConfigurationManager(final ApplicationContext applicationContext, final ConfigurationPropertyDao dao) {
-        return new DefaultConfigurationManager(LoggerFactory.getLogger("ApplicationConfigurationManager"), applicationContext, dao, org.infodavid.commons.service.Constants.APPLICATION_SCOPE);
+    public DefaultConfigurationManager applicationConfigurationManager(final ApplicationContext applicationContext, final AuthorizationService authorizationService, final ConfigurationPropertyDao dao) {
+        return new DefaultConfigurationManager(LoggerFactory.getLogger("ApplicationConfigurationManager"), applicationContext, authorizationService, dao, org.infodavid.commons.service.Constants.APPLICATION_SCOPE);
     }
 
     /**
      * Authentication configuration manager.
-     * @param applicationContext the application context
-     * @param dao                the data access object
+     * @param applicationContext   the application context
+     * @param authorizationService the authorization service
+     * @param dao                  the data access object
      * @return the default configuration manager
      */
     @Bean("authenticationConfigurationManager")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultConfigurationManager authenticationConfigurationManager(final ApplicationContext applicationContext, final ConfigurationPropertyDao dao) {
-        return new DefaultConfigurationManager(LoggerFactory.getLogger("AuthenticationConfigurationManager"), applicationContext, dao, org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE);
+    public DefaultConfigurationManager authenticationConfigurationManager(final ApplicationContext applicationContext, final AuthorizationService authorizationService, final ConfigurationPropertyDao dao) {
+        return new DefaultConfigurationManager(LoggerFactory.getLogger("AuthenticationConfigurationManager"), applicationContext, authorizationService, dao, org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE);
     }
 
     /**
@@ -130,6 +136,31 @@ public class SpringTestConfiguration {
     }
 
     /**
+     * Group data access object.
+     * @return the data access object
+     * @throws Exception the exception
+     */
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public GroupDao groupDao() throws Exception {
+        return new GroupDaoMock();
+    }
+
+    /**
+     * Group service.
+     * @param applicationContext   the application context
+     * @param authorizationService the authorization service
+     * @param dao                  the data access object
+     * @return the group service
+     * @throws Exception the exception
+     */
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public GroupService groupService(final ApplicationContext applicationContext, final AuthorizationService authorizationService, final GroupDao dao) throws Exception {
+        return new DefaultGroupService(LoggerFactory.getLogger(GroupService.class), applicationContext, authorizationService, dao);
+    }
+
+    /**
      * Scheduler service.
      * @param applicationContext the application context
      * @return the scheduler service
@@ -163,22 +194,23 @@ public class SpringTestConfiguration {
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public UserDao userDao() throws Exception {
-        return new UserDaoMock();
+    public UserDao userDao(final GroupDao groupDao) throws Exception {
+        return new UserDaoMock(groupDao);
     }
 
     /**
      * User service.
      * @param applicationContext    the application context
+     * @param authorizationService  the authorization service
      * @param dao                   the data access object
      * @param authenticationService the authentication service
-     * @param authorizationService  the authorization service
+     * @param groupService          the group service
      * @return the user service
      * @throws Exception the exception
      */
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public UserService userService(final ApplicationContext applicationContext, final UserDao dao, final AuthenticationService authenticationService, final AuthorizationService authorizationService) throws Exception {
-        return new DefaultUserService(LoggerFactory.getLogger(UserService.class), applicationContext, dao, authenticationService, authorizationService);
+    public UserService userService(final ApplicationContext applicationContext, final AuthorizationService authorizationService, final UserDao dao, final AuthenticationService authenticationService, final GroupService groupService) throws Exception {
+        return new DefaultUserService(LoggerFactory.getLogger(UserService.class), applicationContext, authorizationService, dao, authenticationService, groupService);
     }
 }

@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.security.AuthenticationService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtTokenLogoutFilter implements Filter {
 
-    /** The authentication service. */
+    /** The authentication manager. */
     private final AuthenticationService authenticationService;
 
     /** The handler. */
@@ -39,7 +40,7 @@ public class JwtTokenLogoutFilter implements Filter {
 
     /**
      * Instantiates a new filter.
-     * @param authenticationService the authentication service
+     * @param authenticationService the authentication manager
      * @param requestMatcher        the request matcher
      * @param handler               the handler
      */
@@ -101,7 +102,7 @@ public class JwtTokenLogoutFilter implements Filter {
 
                     return;
                 }
-            } catch (final PersistenceException e) {
+            } catch (final PersistenceException | ServiceException e) {
                 LOGGER.warn("An error occured while updating user data", e);
             }
         }

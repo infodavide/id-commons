@@ -8,27 +8,25 @@ import java.util.Set;
 
 import javax.annotation.processing.Generated;
 
-import org.infodavid.commons.model.AbstractObject;
+import org.infodavid.commons.model.AbstractEntity;
 import org.infodavid.commons.model.EntityProperty;
 import org.infodavid.commons.model.PropertiesContainer;
-import org.infodavid.commons.model.converter.StringSetConverter;
 import org.infodavid.commons.model.decorator.PropertiesDecorator;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
@@ -44,59 +42,44 @@ import lombok.Setter;
 @Access(AccessType.PROPERTY)
 @Setter
 @Getter
-@EqualsAndHashCode(callSuper = false, of = {"name"})
-public class User extends AbstractObject<Long> implements PropertiesContainer, Principal {
+@EqualsAndHashCode(callSuper = false, of = { "name" })
+public class User extends AbstractEntity<Long> implements PropertiesContainer, Principal {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 6579481270902648373L;
 
-    /** The connections count. */
-    @Min(0)
-    private int connectionsCount;
-
-    /** The deletable flag. */
-    private boolean deletable = true;
-
     /** The display name. */
-    @NotBlank
-    @Size(min = 0, max = 96)
     private String displayName;
 
     /** The email. */
-    @Size(min = 0, max = 255)
     private String email;
 
     /** The expiration date. */
     private Date expirationDate;
 
+    /** The groups. */
+    private Set<Group> groups = new HashSet<>();
+
     /** The last connection date. */
     private Date lastConnectionDate;
 
     /** The last IP address. */
-    @Size(min = 0, max = 255)
     private String lastIp;
 
     /** The locked. */
     private boolean locked;
 
     /** The name. */
-    @NotBlank
-    @Size(min = 0, max = 48)
     private String name;
 
     /** The password. */
-    @Size(min = 0, max = 48)
     private String password;
 
     /** The properties. */
-    @Transient
     private PropertiesDecorator properties;
 
-    /** The roles. */
-    private Set<String> roles = new HashSet<>();
-
     /**
-     * The Constructor.
+     * Instantiates a new user.
      */
     public User() {
         properties = new PropertiesDecorator(Collections.synchronizedSet(new HashSet<>()));
@@ -117,8 +100,6 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
      */
     public User(final User source) {
         super(source);
-        deletable = source.deletable;
-        connectionsCount = source.connectionsCount;
         displayName = source.displayName;
         name = source.name;
         email = source.email;
@@ -127,27 +108,23 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
         lastIp = source.lastIp;
         locked = source.locked;
         password = source.password;
-        properties = new PropertiesDecorator(Collections.synchronizedSet(new HashSet<>()), source.properties);
-        roles = source.roles;
-    }
 
-    /**
-     * Gets the connections count.
-     * @return the connections count
-     */
-    @Column(name = "connections_count")
-    @NotNull
-    @Min(value = 0)
-    @Generated("Set by the service")
-    public int getConnectionsCount() {
-        return connectionsCount;
+        if (source.properties == null) {
+            properties = new PropertiesDecorator(Collections.synchronizedSet(new HashSet<>()));
+        } else {
+            properties = new PropertiesDecorator(Collections.synchronizedSet(new HashSet<>()), source.properties);
+        }
+
+        if (source.groups != null) {
+            groups.addAll(source.groups);
+        }
     }
 
     /**
      * Gets the display name.
      * @return the display name
      */
-    @Column(name = "display_name", length = 96)
+    @Column(name = "display_name", length = Constants.USER_DISPLAY_NAME_MAX_LENGTH)
     @NotNull
     @Size(min = 2, max = Constants.USER_DISPLAY_NAME_MAX_LENGTH)
     public String getDisplayName() {
@@ -158,7 +135,7 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
      * Gets the email.
      * @return the email
      */
-    @Column(name = "email", length = 255)
+    @Column(name = "email", length = Constants.EMAIL_MAX_LENGTH)
     @Size(min = 0, max = Constants.EMAIL_MAX_LENGTH)
     public String getEmail() {
         return email;
@@ -174,9 +151,19 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
         return expirationDate;
     }
 
+    /**
+     * Gets the groups.
+     * @return the groups
+     */
+    @ManyToMany
+    @JoinTable(name = "users_groups", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
+    public Set<Group> getGroups() {
+        return groups;
+    }
+
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.model.AbstractObject#getId()
+     * @see org.infodavid.commons.model.AbstractEntity#getId()
      */
     @Override
     @Min(1)
@@ -199,7 +186,7 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
      * Gets the last IP address.
      * @return the last IP address
      */
-    @Column(name = "last_ip", length = 48)
+    @Column(name = "last_ip", length = Constants.LAST_IP_MAX_LENGTH)
     @Size(min = 0, max = Constants.LAST_IP_MAX_LENGTH)
     @Generated("Set by the service")
     public String getLastIp() {
@@ -211,7 +198,7 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
      * @return the name
      */
     @Override
-    @Column(name = "name", length = 48)
+    @Column(name = "name", length = Constants.USER_NAME_MAX_LENGTH)
     @NotNull
     @Size(min = Constants.USER_NAME_MIN_LENGTH, max = Constants.USER_NAME_MAX_LENGTH)
     public String getName() {
@@ -222,7 +209,7 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
      * Gets the password.
      * @return the password
      */
-    @Column(name = "password", length = 48)
+    @Column(name = "password", length = Constants.PASSWORD_MAX_LENGTH)
     @NotNull
     @Size(min = Constants.PASSWORD_MIN_LENGTH, max = Constants.PASSWORD_MAX_LENGTH)
     public String getPassword() {
@@ -250,26 +237,6 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
     }
 
     /**
-     * Gets the roles.
-     * @return the roles
-     */
-    @Convert(converter = StringSetConverter.class)
-    @Column(name = "roles", length = 16)
-    public Set<String> getRoles() {
-        return roles;
-    }
-
-    /**
-     * Checks if user is deletable.
-     * @return the flag
-     */
-    @Override
-    @Column(name = "deletable")
-    public boolean isDeletable() {
-        return deletable;
-    }
-
-    /**
      * Checks if is expired.
      * @return true, if is expired
      */
@@ -288,15 +255,6 @@ public class User extends AbstractObject<Long> implements PropertiesContainer, P
     @Column(name = "locked")
     public boolean isLocked() {
         return locked;
-    }
-
-    /**
-     * Sets the deletable flag.
-     * @param deletable the flag to set
-     */
-    @Override
-    public void setDeletable(final boolean deletable) {
-        this.deletable = deletable;
     }
 
     /**

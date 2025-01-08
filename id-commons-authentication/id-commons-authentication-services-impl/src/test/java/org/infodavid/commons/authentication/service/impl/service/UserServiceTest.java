@@ -10,10 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.infodavid.commons.authentication.model.Group;
 import org.infodavid.commons.authentication.model.User;
 import org.infodavid.commons.authentication.persistence.dao.UserDao;
 import org.infodavid.commons.authentication.service.UserService;
 import org.infodavid.commons.authentication.service.impl.AbstractSpringTest;
+import org.infodavid.commons.model.Constants;
 import org.infodavid.commons.model.DefaultEntityReference;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -41,15 +43,15 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testAdd() throws Exception {
-        final User user = newUser();
-        user.setId(null);
+        final User entity = dataInitializer.newUser();
+        entity.setId(null);
         final long size = service.count();
 
-        final User added = service.add(user);
+        final User added = service.add(entity);
 
         assertNotNull(added, "Wrong result");
         assertEquals(size + 1, service.count(), "Wrong size");
-        assertEquals(user.getPassword(), service.findByName(user.getName()).get().getPassword(), "Password is wrong");
+        assertEquals(entity.getPassword(), service.findByName(entity.getName()).get().getPassword(), "Password is wrong");
     }
 
     /**
@@ -59,9 +61,9 @@ class UserServiceTest extends AbstractSpringTest {
     @Test
     void testAddAsUser() throws Exception {
         updateSecurityContextWith(org.infodavid.commons.model.Constants.USER_ROLE, "user1", DigestUtils.md5Hex("pass1"));
-        final User user = newUser();
+        final User entity = dataInitializer.newUser();
 
-        assertThrows(IllegalAccessException.class, () -> service.add(user), "Exception not raised or has a wrong type");
+        assertThrows(IllegalAccessException.class, () -> service.add(entity), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -70,13 +72,13 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testAddWithConstraintViolation() throws Exception {
-        final User user = newUser();
-        user.setName("test1");
-        service.add(user);
-        final User user2 = newUser();
+        final User entity1 = dataInitializer.newUser();
+        entity1.setName("test1");
+        service.add(entity1);
+        final User entity2 = dataInitializer.newUser();
 
-        user2.setName("test1");
-        assertThrows(EntityExistsException.class, () -> service.add(user2), "Exception not raised or has a wrong type");
+        entity2.setName("test1");
+        assertThrows(EntityExistsException.class, () -> service.add(entity2), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -85,10 +87,10 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testAddWithEmptName() throws Exception {
-        final User user = newUser();
-        user.setName("");
+        final User entity = dataInitializer.newUser();
+        entity.setName("");
 
-        assertThrows(ValidationException.class, () -> service.add(user), "Exception not raised or has a wrong type");
+        assertThrows(ValidationException.class, () -> service.add(entity), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -97,10 +99,10 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testAddWithEmptyDisplayName() throws Exception {
-        final User user = newUser();
-        user.setDisplayName("");
+        final User entity = dataInitializer.newUser();
+        entity.setDisplayName("");
 
-        assertThrows(ValidationException.class, () -> service.add(user), "Exception not raised or has a wrong type");
+        assertThrows(ValidationException.class, () -> service.add(entity), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -109,10 +111,10 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testAddWithEmptyPassword() throws Exception {
-        final User user = newUser();
-        user.setPassword("");
+        final User entity = dataInitializer.newUser();
+        entity.setPassword("");
 
-        assertThrows(ValidationException.class, () -> service.add(user), "Exception not raised or has a wrong type");
+        assertThrows(ValidationException.class, () -> service.add(entity), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -121,10 +123,10 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testAddWithNullDisplayName() throws Exception {
-        final User user = newUser();
-        user.setDisplayName(null);
+        final User entity = dataInitializer.newUser();
+        entity.setDisplayName(null);
 
-        assertThrows(ValidationException.class, () -> service.add(user), "Exception not raised or has a wrong type");
+        assertThrows(ValidationException.class, () -> service.add(entity), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -133,10 +135,10 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testAddWithNullName() throws Exception {
-        final User user = newUser();
-        user.setName(null);
+        final User entity = dataInitializer.newUser();
+        entity.setName(null);
 
-        assertThrows(ValidationException.class, () -> service.add(user), "Exception not raised or has a wrong type");
+        assertThrows(ValidationException.class, () -> service.add(entity), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -145,10 +147,10 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testAddWithNullPassword() throws Exception {
-        final User user = newUser();
-        user.setPassword(null);
+        final User entity = dataInitializer.newUser();
+        entity.setPassword(null);
 
-        assertThrows(ValidationException.class, () -> service.add(user), "Exception not raised or has a wrong type");
+        assertThrows(ValidationException.class, () -> service.add(entity), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -156,11 +158,11 @@ class UserServiceTest extends AbstractSpringTest {
      * @throws Exception the exception
      */
     @Test
-    void testAddWithNullRoles() throws Exception { // NOSONAR Normal case
-        final User user = newUser();
-        user.setRoles(null);
+    void testAddWithNullGroups() throws Exception { // NOSONAR Normal case
+        final User entity = dataInitializer.newUser();
+        entity.setGroups(null);
 
-        service.add(user);
+        service.add(entity);
     }
 
     /**
@@ -169,11 +171,11 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testDelete() throws Exception {
-        final User user = newUser();
-        service.add(user);
+        final User entity = dataInitializer.newUser();
+        service.add(entity);
         final long size = service.count();
 
-        service.deleteById(user.getId());
+        service.deleteById(entity.getId());
 
         assertEquals(size - 1, service.count(), "Wrong size");
     }
@@ -195,9 +197,9 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testDeleteBuiltin() throws Exception {
-        final User user = service.findByName("admin").get();
+        final User entity = service.findByName("admin").get();
 
-        assertThrows(IllegalAccessException.class, () -> service.deleteById(user.getId()), "Exception not raised or has a wrong type");
+        assertThrows(IllegalAccessException.class, () -> service.deleteById(entity.getId()), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -281,9 +283,18 @@ class UserServiceTest extends AbstractSpringTest {
         assertNotNull(results, "Result is null");
         assertEquals(2, results.getNumberOfElements(), "Wrong count");
 
-        for (final User result : results) {
-            assertTrue(result.getRoles().contains(org.infodavid.commons.model.Constants.USER_ROLE), "Wrong result");
-        }
+        results.forEach(u -> {
+            boolean match = false;
+
+            for (final Group g: u.getGroups()) {
+                if (g.getRoles().contains(Constants.USER_ROLE)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            assertTrue(match, "Wrong result");
+        });
     }
 
     /**
@@ -331,9 +342,9 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testReplaceBuiltin() throws Exception {
-        final User user = service.findByName("admin").get();
+        final User entity = service.findByName("admin").get();
 
-        assertThrows(EntityExistsException.class, () -> service.add(user), "Exception not raised or has a wrong type");
+        assertThrows(EntityExistsException.class, () -> service.add(entity), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -342,20 +353,20 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testUpdate() throws Exception {
-        final User user = newUser();
-        user.setName("test-" + System.currentTimeMillis());
-        service.add(user);
-        user.setDisplayName("updated test1");
+        final User entity = dataInitializer.newUser();
+        entity.setName("test-" + System.currentTimeMillis());
+        service.add(entity);
+        entity.setDisplayName("updated test1");
 
-        service.update(user);
+        service.update(entity);
 
-        assertEquals(user.getDisplayName(), service.findById(user.getId()).get().getDisplayName(), "Not updated");
-        assertEquals(user.getEmail(), service.findById(user.getId()).get().getEmail(), "Not updated");
-        assertEquals(user.getExpirationDate(), service.findById(user.getId()).get().getExpirationDate(), "Not updated");
-        assertEquals(user.getName(), service.findById(user.getId()).get().getName(), "Not updated");
-        assertEquals(user.getRoles(), service.findById(user.getId()).get().getRoles(), "Not updated");
+        assertEquals(entity.getDisplayName(), service.findById(entity.getId()).get().getDisplayName(), "Not updated");
+        assertEquals(entity.getEmail(), service.findById(entity.getId()).get().getEmail(), "Not updated");
+        assertEquals(entity.getExpirationDate(), service.findById(entity.getId()).get().getExpirationDate(), "Not updated");
+        assertEquals(entity.getName(), service.findById(entity.getId()).get().getName(), "Not updated");
+        assertEquals(entity.getGroups(), service.findById(entity.getId()).get().getGroups(), "Not updated");
         final UserDao dao = applicationContext.getBean(UserDao.class);
-        assertEquals(user.getPassword(), dao.findById(user.getId()).get().getPassword(), "Not updated");
+        assertEquals(entity.getPassword(), dao.findById(entity.getId()).get().getPassword(), "Not updated");
     }
 
     /**
@@ -364,13 +375,13 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testUpdateAsUser() throws Exception {
-        final User user = newUser();
-        user.setName("test1");
-        service.add(user);
+        final User entity = dataInitializer.newUser();
+        entity.setName("test1");
+        service.add(entity);
         updateSecurityContextWith(org.infodavid.commons.model.Constants.USER_ROLE, "user1", DigestUtils.md5Hex("pass1"));
-        user.setDisplayName("updated test1");
+        entity.setDisplayName("updated test1");
 
-        assertThrows(IllegalAccessException.class, () -> service.update(user), "Exception not raised or has a wrong type");
+        assertThrows(IllegalAccessException.class, () -> service.update(entity), "Exception not raised or has a wrong type");
     }
 
     /**
@@ -379,23 +390,23 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testUpdateUsingEmptyPassword() throws Exception {
-        final User user = newUser();
-        final String oldPassword = user.getPassword();
-        user.setName("test-" + System.currentTimeMillis());
-        service.add(user);
-        user.setDisplayName("updated test1");
-        user.setPassword("");
+        final User entity = dataInitializer.newUser();
+        final String oldPassword = entity.getPassword();
+        entity.setName("test-" + System.currentTimeMillis());
+        service.add(entity);
+        entity.setDisplayName("updated test1");
+        entity.setPassword("");
 
-        service.update(user);
+        service.update(entity);
 
-        assertEquals(user.getDisplayName(), service.findById(user.getId()).get().getDisplayName(), "Not updated");
-        assertEquals(user.getEmail(), service.findById(user.getId()).get().getEmail(), "Not updated");
-        assertEquals(user.getExpirationDate(), service.findById(user.getId()).get().getExpirationDate(), "Not updated");
-        assertEquals(user.getName(), service.findById(user.getId()).get().getName(), "Not updated");
-        assertEquals(user.getRoles(), service.findById(user.getId()).get().getRoles(), "Not updated");
-        assertEquals(oldPassword, service.findById(user.getId()).get().getPassword(), "Password has been updated");
+        assertEquals(entity.getDisplayName(), service.findById(entity.getId()).get().getDisplayName(), "Not updated");
+        assertEquals(entity.getEmail(), service.findById(entity.getId()).get().getEmail(), "Not updated");
+        assertEquals(entity.getExpirationDate(), service.findById(entity.getId()).get().getExpirationDate(), "Not updated");
+        assertEquals(entity.getName(), service.findById(entity.getId()).get().getName(), "Not updated");
+        assertEquals(entity.getGroups(), service.findById(entity.getId()).get().getGroups(), "Not updated");
+        assertEquals(oldPassword, service.findById(entity.getId()).get().getPassword(), "Password has been updated");
         final UserDao dao = applicationContext.getBean(UserDao.class);
-        assertNotEquals(user.getPassword(), dao.findById(user.getId()).get().getPassword(), "Not updated");
+        assertNotEquals(entity.getPassword(), dao.findById(entity.getId()).get().getPassword(), "Not updated");
     }
 
     /**
@@ -404,21 +415,21 @@ class UserServiceTest extends AbstractSpringTest {
      */
     @Test
     void testUpdateUsingNewPassword() throws Exception {
-        final User user = newUser();
-        user.setName("test-" + System.currentTimeMillis());
-        service.add(user);
-        user.setDisplayName("updated test1");
-        user.setPassword("newsecret");
+        final User entity = dataInitializer.newUser();
+        entity.setName("test-" + System.currentTimeMillis());
+        service.add(entity);
+        entity.setDisplayName("updated test1");
+        entity.setPassword("newsecret");
 
-        service.update(user);
+        service.update(entity);
 
-        assertEquals(user.getDisplayName(), service.findById(user.getId()).get().getDisplayName(), "Not updated");
-        assertEquals(user.getEmail(), service.findById(user.getId()).get().getEmail(), "Not updated");
-        assertEquals(user.getExpirationDate(), service.findById(user.getId()).get().getExpirationDate(), "Not updated");
-        assertEquals(user.getName(), service.findById(user.getId()).get().getName(), "Not updated");
-        assertEquals(user.getRoles(), service.findById(user.getId()).get().getRoles(), "Not updated");
-        assertEquals(user.getPassword(), service.findById(user.getId()).get().getPassword(), "Password not updated");
+        assertEquals(entity.getDisplayName(), service.findById(entity.getId()).get().getDisplayName(), "Not updated");
+        assertEquals(entity.getEmail(), service.findById(entity.getId()).get().getEmail(), "Not updated");
+        assertEquals(entity.getExpirationDate(), service.findById(entity.getId()).get().getExpirationDate(), "Not updated");
+        assertEquals(entity.getName(), service.findById(entity.getId()).get().getName(), "Not updated");
+        assertEquals(entity.getGroups(), service.findById(entity.getId()).get().getGroups(), "Not updated");
+        assertEquals(entity.getPassword(), service.findById(entity.getId()).get().getPassword(), "Password not updated");
         final UserDao dao = applicationContext.getBean(UserDao.class);
-        assertEquals(user.getPassword(), dao.findById(user.getId()).get().getPassword(), "Not updated");
+        assertEquals(entity.getPassword(), dao.findById(entity.getId()).get().getPassword(), "Not updated");
     }
 }

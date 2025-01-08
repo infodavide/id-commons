@@ -139,15 +139,6 @@ public class ConfigurationPropertyDaoMock extends AbstractDefaultDaoMock<Long, C
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.test.persistence.dao.AbstractDefaultDaoMock#clone(org.infodavid.commons.model.PersistentObject)
-     */
-    @Override
-    protected ConfigurationProperty clone(final ConfigurationProperty source) {
-        return source == null ? null : new ConfigurationProperty(source);
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.infodavid.commons.service.test.persistence.dao.AbstractDefaultDaoMock#nextId()
      */
     @SuppressWarnings("boxing")

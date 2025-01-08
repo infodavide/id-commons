@@ -68,19 +68,11 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
         return properties.stream().filter(p -> Objects.equals(p.getScope(), scope)).toList();
     }
 
-    /** The archiving data. */
-    private Date archivingDate;
-
     /** The default value. */
     private String defaultValue;
 
     /** The deletable flag. */
     private boolean deletable = true;
-
-    /** The label. */
-    @NotBlank
-    @Size(min = 0, max = 128)
-    private String label;
 
     /** The maximum. */
     private Double maximum;
@@ -120,7 +112,6 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
         typeDefinition = source.typeDefinition;
         scope = source.scope;
         value = source.value;
-        label = source.label;
         maximum = source.maximum;
         minimum = source.minimum;
         name = source.name;
@@ -203,28 +194,11 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
     }
 
     /**
-     * Gets the archiving date.
-     * @return the archiving date
-     */
-    public Date getArchivingDate() {
-        return archivingDate;
-    }
-
-    /**
      * Gets the default value.
      * @return the default value
      */
     public String getDefaultValue() {
         return defaultValue;
-    }
-
-    /**
-     * Gets the label.
-     * @return the label
-     */
-    @Size(min = 0, max = Constants.PROPERTY_LABEL_MAX_LENGTH)
-    public String getLabel() {
-        return label;
     }
 
     /**
@@ -410,14 +384,6 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
     }
 
     /**
-     * Sets the archiving date.
-     * @param value the new date
-     */
-    public void setArchivingDate(final Date value) {
-        archivingDate = value;
-    }
-
-    /**
      * Sets the default value.
      * @param value the new value
      * @return the property
@@ -506,18 +472,6 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
      */
     public void setDeletable(final boolean deletable) {
         this.deletable = deletable;
-    }
-
-    /**
-     * Sets the label.
-     * @param label the new label
-     * @return the property
-     */
-    @SuppressWarnings("unchecked")
-    public E setLabel(final String label) {
-        this.label = label;
-
-        return (E) this;
     }
 
     /**
@@ -781,8 +735,6 @@ public abstract class AbstractProperty<E extends AbstractProperty<?>> implements
         buffer.append(deletable);
         buffer.append(",defaultValue=");
         buffer.append(defaultValue);
-        buffer.append(",label=");
-        buffer.append(label);
         buffer.append(",minimum=");
         buffer.append(minimum);
         buffer.append(",maximum=");

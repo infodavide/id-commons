@@ -62,6 +62,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultAuthenticationService extends AbstractService implements AuthenticationService, PropertyChangedListener, InitializingBean {
 
+    /**
+     * The Class DefaultAuthenticationBuilder.
+     */
+    private static class DefaultAuthenticationBuilder implements AuthenticationBuilder {
+
+        /*
+         * (non-Javadoc)
+         * @see org.infodavid.commons.service.security.AuthenticationBuilder#build(java.security.Principal, java.util.Collection, java.util.Date)
+         */
+        @Override
+        public Authentication build(final Principal principal, final Collection<GrantedAuthority> authorities, final Date expirationDate) {
+            final UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(principal, ((User) principal).getPassword(), authorities);
+            result.setDetails(principal);
+
+            return result;
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.infodavid.commons.service.security.AuthenticationBuilder#isExpired(org.springframework.security.core.Authentication)
+         */
+        @Override
+        public boolean isExpired(final Authentication authentication) {
+            return false;
+        }
+    }
+
     /** The authentication builder. */
     @Getter
     private final AuthenticationBuilder authenticationBuilder;
@@ -91,7 +118,13 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
      */
     public DefaultAuthenticationService(final Logger logger, final ApplicationContext applicationContext, final UserDao userDao, final AuthenticationBuilder authenticationBuilder, final ConfigurationManager configurationManager) {
         super(logger, applicationContext);
-        this.authenticationBuilder = authenticationBuilder;
+
+        if (authenticationBuilder == null) {
+            this.authenticationBuilder = new DefaultAuthenticationBuilder();
+        } else {
+            this.authenticationBuilder = authenticationBuilder;
+        }
+
         this.configurationManager = configurationManager;
         this.userDao = userDao;
     }
@@ -129,7 +162,6 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
                 property.setScope(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE);
                 property.setName(org.infodavid.commons.authentication.model.Constants.SESSION_INACTIVITY_TIMEOUT_PROPERTY);
                 property.setType(PropertyType.INTEGER);
-                property.setLabel("Session inactivity timeout (minutes)");
                 property.setValue(org.infodavid.commons.authentication.model.Constants.DEFAULT_SESSION_INACTIVITY_TIMEOUT);
                 configurationManager.add(property);
             } else {
@@ -172,7 +204,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
         }
 
         LOGGER.debug("Trying authentication of user: {}", login);
-        User user = null;
+        User principal = null;
 
         try {
             Optional<User> optional = userDao.findByName(login);
@@ -182,85 +214,66 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
             }
 
             if (optional.isPresent()) {
-                user = optional.get();
+                principal = optional.get();
             }
         } catch (final PersistenceException e) {
             throw new ServiceException(ExceptionUtils.getRootCause(e));
         }
 
-        if (user == null) {
+        if (principal == null) {
             throw new BadCredentialsException(Constants.INVALID_USERNAME_OR_PASSWORD);
         }
-        if (StringUtils.isEmpty(user.getPassword())) { // NOSONAR
-            LOGGER.warn("Password is empty for user: {}", user.getName());
-
-            throw new BadCredentialsException(Constants.INVALID_USERNAME_OR_PASSWORD);
-        }
-        if (!user.getPassword().equalsIgnoreCase(password)) { // NOSONAR
-            LOGGER.warn("Password is wrong for user: {} ({})", user.getName(), password);
+        if (StringUtils.isEmpty(principal.getPassword())) { // NOSONAR
+            LOGGER.warn("Password is empty for user: {}", principal.getName());
 
             throw new BadCredentialsException(Constants.INVALID_USERNAME_OR_PASSWORD);
         }
+        if (!principal.getPassword().equalsIgnoreCase(password)) { // NOSONAR
+            LOGGER.warn("Password is wrong for user: {} ({})", principal.getName(), password);
 
-        if (user.isExpired()) {
-            throw new AccountExpiredException("User account expired: " + user.getName());
+            throw new BadCredentialsException(Constants.INVALID_USERNAME_OR_PASSWORD);
         }
 
-        if (user.isLocked()) {
-            throw new LockedException("User account locked: " + user.getName());
+        if (principal.isExpired()) {
+            throw new AccountExpiredException("User account expired: " + principal.getName());
         }
 
-        LOGGER.info("Authentication success for user: {}", user.getName());
+        if (principal.isLocked()) {
+            throw new LockedException("User account locked: " + principal.getName());
+        }
 
-        final User updated = new User(user);
+        LOGGER.info("Authentication success for user: {}", principal.getName());
+
+        final User updated = new User(principal);
         final String value = properties == null ? null : properties.get(org.infodavid.commons.authentication.model.Constants.SESSION_REMOTE_IP_ADDRESS_PROPERTY);
 
         if (StringUtils.isNotEmpty(value)) {
             updated.setLastIp(value);
         }
 
-        updated.setConnectionsCount(updated.getConnectionsCount() + 1);
         updated.setLastConnectionDate(new Date());
 
-        LOGGER.trace("Instantiating a new authentication");
+        LOGGER.debug("Instantiating a new authentication object");
         final Collection<GrantedAuthority> authorities = new ArrayList<>();
 
-        if (user.getRoles() != null) {
-            user.getRoles().forEach(v -> authorities.add(new SimpleGrantedAuthority(v)));
+        if (principal.getGroups() != null) {
+            final Set<String> roles = new HashSet<>();
+            principal.getGroups().forEach(g -> roles.addAll(g.getRoles()));
+            roles.forEach(r -> authorities.add(new SimpleGrantedAuthority(r)));
         }
 
-        AuthenticationBuilder builder = authenticationBuilder;
-
-        if (builder == null) {
-            builder = new AuthenticationBuilder() {
-
-                @SuppressWarnings("hiding")
-                @Override
-                public Authentication build(final Principal principal, final Collection<GrantedAuthority> authorities, final Date expirationDate) {
-                    final UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(principal, password, authorities);
-                    result.setDetails(principal);
-
-                    return result;
-                }
-
-                @Override
-                public boolean isExpired(final Authentication authentication) {
-                    return false;
-                }
-            };
-        }
-
-        final Authentication result = builder.build(user, authorities, Date.from(Instant.now().plus(sessionInactivityTimeout, ChronoUnit.MINUTES)));
+        final Authentication result = authenticationBuilder.build(principal, authorities, Date.from(Instant.now().plus(sessionInactivityTimeout, ChronoUnit.MINUTES)));
 
         try {
-            updated.getProperties().add(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE, org.infodavid.commons.authentication.model.Constants.SESSION_TOKEN_PROPERTY, PropertyType.STRING, builder.serialize(result));
+            updated.getProperties().add(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE, org.infodavid.commons.authentication.model.Constants.SESSION_TOKEN_PROPERTY, PropertyType.STRING, authenticationBuilder.serialize(result));
             userDao.update(updated);
-            user = updated;
+            principal = updated;
         } catch (final IOException | PersistenceException e) {
             throw new ServiceException(ExceptionUtils.getRootCause(e));
         }
 
-        fireOnLogin(user, properties);
+        LOGGER.info("Authentication object placed into context for user: {}", principal.getName());
+        fireOnLogin(principal, properties);
         SecurityContextHolder.getContext().setAuthentication(result);
 
         return result;
@@ -283,13 +296,13 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 
     /**
      * Fire on logout.
-     * @param user       the user
+     * @param principal  the user
      * @param properties the properties
      */
-    protected void fireOnLogout(final User user, final Map<String, String> properties) {
+    protected void fireOnLogout(final User principal, final Map<String, String> properties) {
         for (final AuthenticationListener listener : listeners) {
             try {
-                listener.onLogout(user, properties);
+                listener.onLogout(principal, properties);
             } catch (final Exception e) {
                 LOGGER.warn("Listener cannot process logout event", e);
             }
@@ -302,7 +315,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
-    public Collection<Principal> getAuthenticated() {
+    public Collection<Principal> getAuthenticated() throws ServiceException {
         final Collection<Principal> results = new HashSet<>();
 
         for (final User user : userDao.findHavingProperty(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE, org.infodavid.commons.authentication.model.Constants.SESSION_TOKEN_PROPERTY, Pageable.unpaged())) {
@@ -326,6 +339,10 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
      */
     @Override
     public Authentication getAuthentication(final String login) throws ServiceException {
+        if (StringUtils.isEmpty(login)) {
+            return null;
+        }
+
         Optional<User> optional;
 
         try {
@@ -345,8 +362,13 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
      * Gets the authentication.
      * @param user the user
      * @return the authentication
+     * @throws ServiceException the service exception
      */
-    public Authentication getAuthentication(final User user) {
+    public Authentication getAuthentication(final User user) throws ServiceException {
+        if (user == null || StringUtils.isEmpty(user.getName())) {
+            return null;
+        }
+
         AuthenticationBuilder builder = authenticationBuilder;
 
         if (builder == null) {
@@ -367,10 +389,8 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
         try {
             return builder.deserialize(user.getProperties().getOrDefault(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE, org.infodavid.commons.authentication.model.Constants.SESSION_TOKEN_PROPERTY, StringUtils.EMPTY));
         } catch (final IOException e) {
-            LOGGER.warn("Cannot deserialize authentication: {}", e.getMessage());
+            throw new ServiceException("Cannot deserialize authentication", e);
         }
-
-        return null;
     }
 
     /*
@@ -378,13 +398,19 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
      * @see org.infodavid.commons.service.security.AuthenticationService#getPrincipal(org.springframework.security.core.Authentication)
      */
     @Override
-    public Principal getPrincipal(final Authentication authentication) {
+    public Principal getPrincipal(final Authentication authentication) throws ServiceException {
         if (authentication == null || !(authentication.getCredentials() instanceof String)) {
             throw new IllegalArgumentException(Constants.GIVEN_AUTHENTICATION_IS_INVALID);
         }
 
-        LOGGER.trace("Retrieving principal for authentication: {}", authentication);
-        final Optional<User> optional = userDao.findByProperty(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE, org.infodavid.commons.authentication.model.Constants.SESSION_TOKEN_PROPERTY, (String) authentication.getCredentials());
+        LOGGER.debug("Retrieving principal for authentication: {}", authentication);
+        Optional<User> optional;
+
+        try {
+            optional = userDao.findByProperty(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE, org.infodavid.commons.authentication.model.Constants.SESSION_TOKEN_PROPERTY, authenticationBuilder.serialize(authentication));
+        } catch (PersistenceException | IOException e) {
+            throw new ServiceException("Cannot serialize authentication", e);
+        }
 
         if (optional.isEmpty()) {
             return null;
@@ -449,14 +475,18 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     public void invalidateAll() {
         for (final User user : userDao.findHavingProperty(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE, org.infodavid.commons.authentication.model.Constants.SESSION_TOKEN_PROPERTY, Pageable.unpaged())) {
-            final Authentication authentication = getAuthentication(user);
+            try {
+                final Authentication authentication = getAuthentication(user);
 
-            if (authentication == null || authenticationBuilder.isExpired(authentication)) {
-                user.getProperties().remove(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE, org.infodavid.commons.authentication.model.Constants.SESSION_TOKEN_PROPERTY);
-                userDao.update(user);
+                if (authentication == null || authenticationBuilder.isExpired(authentication)) {
+                    user.getProperties().remove(org.infodavid.commons.authentication.service.Constants.AUTHENTICATION_SCOPE, org.infodavid.commons.authentication.model.Constants.SESSION_TOKEN_PROPERTY);
+                    userDao.update(user);
+                }
+
+                invalidate(user, Collections.emptyMap());
+            } catch (final ServiceException e) {
+                LOGGER.debug("Cannot invalidate user", e);
             }
-
-            invalidate(user, Collections.emptyMap());
         }
     }
 
