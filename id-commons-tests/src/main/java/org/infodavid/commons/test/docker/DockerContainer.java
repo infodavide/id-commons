@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
+import com.github.dockerjava.api.command.AuthCmd;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.InspectContainerCmd;
 import com.github.dockerjava.api.command.InspectContainerResponse;
@@ -112,6 +113,10 @@ public class DockerContainer implements Closeable {
 
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Name is null or empty");
+        }
+
+        try (final AuthCmd command = client.authCmd()) {
+            command.exec();
         }
 
         try (final CreateContainerCmd command = client.createContainerCmd(image)) {

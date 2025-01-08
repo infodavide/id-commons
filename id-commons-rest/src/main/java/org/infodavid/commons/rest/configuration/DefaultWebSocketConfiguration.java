@@ -41,7 +41,7 @@ public class DefaultWebSocketConfiguration implements WebSocketConfigurer { // @
         return socketHandler;
     }
 
-    /** The authentication service. */
+    /** The authentication manager. */
     private final AuthenticationService authenticationService;
 
     /** The handler. */
@@ -50,7 +50,7 @@ public class DefaultWebSocketConfiguration implements WebSocketConfigurer { // @
     /**
      * Instantiates a new web socket configuration.
      * @param handler               the handler
-     * @param authenticationService the authentication service
+     * @param authenticationService the authentication manager
      */
     protected DefaultWebSocketConfiguration(final SocketHandler handler, final AuthenticationService authenticationService) {
         this.handler = (WebSocketHandler) handler;

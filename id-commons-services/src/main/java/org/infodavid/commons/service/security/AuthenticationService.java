@@ -37,8 +37,9 @@ public interface AuthenticationService {
     /**
      * Gets the currently authenticated users.
      * @return the identifiers
+     * @throws ServiceException the service exception
      */
-    Collection<Principal> getAuthenticated();
+    Collection<Principal> getAuthenticated()throws ServiceException;
 
     /**
      * Gets the user associated to the current security context.
@@ -70,8 +71,9 @@ public interface AuthenticationService {
      * Gets the principal associated to the authentication.
      * @param authentication the authentication
      * @return the principal
+     * @throws ServiceException the service exception
      */
-    Principal getPrincipal(Authentication authentication);
+    Principal getPrincipal(Authentication authentication) throws ServiceException;
 
     /**
      * Invalidate and logout the authenticated user.
@@ -98,8 +100,9 @@ public interface AuthenticationService {
      * Checks if is authenticated.
      * @param principal the principal
      * @return true, if is authenticated
+     * @throws ServiceException the service exception
      */
-    boolean isAuthenticated(Principal principal);
+    boolean isAuthenticated(Principal principal) throws ServiceException;
 
     /**
      * Removes the listener.

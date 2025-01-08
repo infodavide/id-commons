@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 import org.infodavid.commons.persistence.dao.DefaultDao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,7 +23,7 @@ import jakarta.persistence.PersistenceException;
  * @param <K> the key type
  * @param <T> the generic type
  */
-public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends PersistentObject<K>> implements DefaultDao<K, T> {
+public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends PersistentEntity<K>> implements DefaultDao<K, T> {
 
     /** The map. */
     protected Map<K, T> map = new ConcurrentHashMap<>();
@@ -128,7 +128,7 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.persistence.dao.DefaultDao#insert(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.persistence.dao.DefaultDao#insert(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     public void insert(final T value) throws PersistenceException {
@@ -173,7 +173,7 @@ public abstract class AbstractDefaultDaoMock<K extends Serializable, T extends P
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.persistence.dao.DefaultDao#update(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.persistence.dao.DefaultDao#update(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     public void update(final T value) throws PersistenceException {

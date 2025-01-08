@@ -1,5 +1,6 @@
 package org.infodavid.commons.authentication.service.impl.security;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -104,7 +105,7 @@ class AuthenticationServiceTest extends AbstractSpringTest {
      */
     @Test
     void testGetAuthenticationUsingNullr() {
-        assertThrows(IllegalArgumentException.class, () -> authenticationService.getAuthentication(null), "Exception not raised or has a wrong type");
+        assertDoesNotThrow(() -> authenticationService.getAuthentication(null), "Exception not raised or has a wrong type");
     }
 
     /**

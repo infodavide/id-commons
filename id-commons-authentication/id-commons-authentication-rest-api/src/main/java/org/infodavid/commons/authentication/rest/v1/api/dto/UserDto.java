@@ -1,6 +1,8 @@
 package org.infodavid.commons.authentication.rest.v1.api.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,7 +12,6 @@ import org.infodavid.commons.rest.v1.api.dto.EntityPropertyDto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -29,13 +30,6 @@ public class UserDto extends AbstractDto<Long> {
 
     /** The connected. */
     private boolean connected = false;
-
-    /** The connections count. */
-    @Min(0)
-    private int connectionsCount;
-
-    /** The deletable flag. */
-    private boolean deletable = true;
 
     /** The display name. */
     @NotBlank
@@ -71,8 +65,8 @@ public class UserDto extends AbstractDto<Long> {
     private String password;
 
     /** The properties. */
-    private List<EntityPropertyDto> properties;
+    private List<EntityPropertyDto> properties = new ArrayList<>();
 
-    /** The role. */
-    private Set<String> roles;
+    /** The groups. */
+    private Set<GroupDto> groups  = new HashSet<>();
 }

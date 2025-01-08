@@ -20,6 +20,7 @@ import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.infodavid.commons.net.NetUtils;
 import org.infodavid.commons.rest.Constants;
+import org.infodavid.commons.service.exception.ServiceException;
 import org.infodavid.commons.service.security.AuthenticationService;
 import org.infodavid.commons.util.collection.NullSafeConcurrentHashMap;
 import org.infodavid.commons.util.concurrency.ThreadUtils;
@@ -149,12 +150,12 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
     private final AtomicBoolean active = new AtomicBoolean(true);
 
     /** The application context. */
-    @Autowired // NOSONAR Do not inject the service on the constructor
+    @Autowired // NOSONAR Do not inject the manager on the constructor
     @Lazy
     private ApplicationContext applicationContext;
 
-    /** The authentication service. */
-    @Autowired // NOSONAR Do not inject the service on the constructor
+    /** The authentication manager. */
+    @Autowired // NOSONAR Do not inject the manager on the constructor
     @Lazy
     private AuthenticationService authenticationService;
 
@@ -398,7 +399,9 @@ public class DefaultSocketHandler extends TextWebSocketHandler implements Runnab
                         getLogger().info("Websocket session is now associated to user: {}", principal.getName());
                     }
                 } catch (@SuppressWarnings("unused") final NoSuchBeanDefinitionException e) {
-                    getLogger().info("Authentication service not found");
+                    getLogger().info("Authentication manager not found");
+                } catch (final ServiceException e) {
+                    getLogger().info("Cannot retrieve principal", e);
                 }
             }
         }

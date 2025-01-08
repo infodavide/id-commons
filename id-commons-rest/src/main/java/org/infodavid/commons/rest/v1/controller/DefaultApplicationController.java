@@ -46,13 +46,13 @@ public class DefaultApplicationController extends AbstractController {
     /** The release note. */
     private WeakReference<Collection<Collection<String>>> releaseNote = new WeakReference<>(null);
 
-    /** The service. */
+    /** The manager. */
     @Getter
     private final ApplicationService service;
 
     /**
      * Instantiates a new controller.
-     * @param service the service
+     * @param manager the manager
      */
     public DefaultApplicationController(final ApplicationService service) {
         super(LOGGER);
@@ -62,7 +62,7 @@ public class DefaultApplicationController extends AbstractController {
     /**
      * Append application health.
      * @param health the health data
-     * @throws ServiceException the service exception
+     * @throws ServiceException the manager exception
      */
     protected void appendApplicationHealth(final HealthInfoDto health) throws ServiceException {
         // noop
@@ -71,7 +71,7 @@ public class DefaultApplicationController extends AbstractController {
     /**
      * Gets the health.
      * @return the health
-     * @throws ServiceException the service exception
+     * @throws ServiceException the manager exception
      * @since 1.0.0
      */
     @Operation(summary = "Get the health status of the application")

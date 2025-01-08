@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 import org.infodavid.commons.service.exception.ServiceException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
  * @param <K> the key type
  * @param <T> the generic type
  */
-public interface EntityService<K extends Serializable, T extends PersistentObject<K>> {
+public interface EntityService<K extends Serializable, T extends PersistentEntity<K>> {
 
     /**
      * Adds the value.

@@ -1,6 +1,7 @@
 package org.infodavid.commons.model;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -60,6 +61,8 @@ public final class Constants {
     /** The user role. */
     public static final String USER_ROLE = "ROLE_USER";
 
+    public static final Principal ANONYMOUS_PRINCIPAL;
+
     static {
         System.setProperty("org.jboss.logging.provider", "slf4j");
         MAPPER = new ObjectMapper();
@@ -79,7 +82,7 @@ public final class Constants {
                 if (targetType == Boolean.class) {
                     final String lower = StringUtils.lowerCase(value);
 
-                    return lower != null && ("true".equals(lower) ||  "yes".equals(lower) ||  "on".equals(lower) || "1".equals(lower));
+                    return lower != null && ("true".equals(lower) || "yes".equals(lower) || "on".equals(lower) || "1".equals(lower));
                 }
 
                 if ("null".equalsIgnoreCase(value)) {
@@ -95,5 +98,7 @@ public final class Constants {
         if (printer instanceof final DefaultPrettyPrinter prettyPrinter) {
             prettyPrinter.indentObjectsWith(new DefaultIndenter("  ", System.lineSeparator()));
         }
+
+        ANONYMOUS_PRINCIPAL = () -> org.infodavid.commons.model.Constants.ANONYMOUS;
     }
 }

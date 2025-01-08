@@ -4,8 +4,7 @@ import java.util.Collections;
 
 import org.infodavid.commons.persistence.dao.ConfigurationPropertyDao;
 import org.infodavid.commons.service.SchedulerService;
-import org.infodavid.commons.service.impl.DefaultConfigurationManager;
-import org.infodavid.commons.service.impl.DefaultSchedulerService;
+import org.infodavid.commons.service.security.AuthorizationService;
 import org.infodavid.commons.service.test.persistence.PlatformTransactionManagerMock;
 import org.infodavid.commons.service.test.persistence.dao.ConfigurationPropertyDaoMock;
 import org.slf4j.LoggerFactory;
@@ -32,14 +31,25 @@ public class SpringTestConfiguration {
 
     /**
      * Application configuration manager.
-     * @param applicationContext the application context
-     * @param dao                the data access object
+     * @param applicationContext   the application context
+     * @param authorizationService the authorization service
+     * @param dao                  the data access object
      * @return the default configuration manager
      */
     @Bean("applicationConfigurationManager")
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultConfigurationManager applicationConfigurationManager(final ApplicationContext applicationContext, final ConfigurationPropertyDao dao) {
-        return new DefaultConfigurationManager(LoggerFactory.getLogger("ApplicationConfigurationManager"), applicationContext, dao, org.infodavid.commons.service.Constants.APPLICATION_SCOPE);
+    public DefaultConfigurationManager applicationConfigurationManager(final ApplicationContext applicationContext, final AuthorizationService authorizationService, final ConfigurationPropertyDao dao) {
+        return new DefaultConfigurationManager(LoggerFactory.getLogger("ApplicationConfigurationManager"), applicationContext, authorizationService, dao, org.infodavid.commons.service.Constants.APPLICATION_SCOPE);
+    }
+
+    /**
+     * Authorization service.
+     * @return the authorization service
+     */
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public AuthorizationService authorizationService() {
+        return new NoopAuthorizationService();
     }
 
     /**

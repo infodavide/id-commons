@@ -4,12 +4,10 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.infodavid.commons.authentication.model.User;
-import org.infodavid.commons.authentication.rest.configuration.AuthenticationSecurityConfiguration;
+import org.infodavid.commons.authentication.rest.configuration.SecurityConfiguration;
 import org.infodavid.commons.authentication.rest.configuration.WebSocketConfiguration;
-import org.infodavid.commons.authentication.rest.v1.api.dto.UserDto;
 import org.infodavid.commons.service.security.AuthenticationService;
 import org.infodavid.commons.test.TestCase;
-import org.infodavid.commons.util.collection.CollectionUtils;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mockito;
@@ -29,7 +27,7 @@ import lombok.Setter;
  * The Class AbstractSpringTest.
  */
 @SpringBootTest
-@ContextConfiguration(classes = { AuthenticationSecurityConfiguration.class, WebSocketConfiguration.class, SpringTestConfiguration.class })
+@ContextConfiguration(classes = { SecurityConfiguration.class, WebSocketConfiguration.class, SpringTestConfiguration.class })
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public abstract class AbstractSpringTest extends TestCase implements ApplicationContextAware {
 
@@ -54,49 +52,17 @@ public abstract class AbstractSpringTest extends TestCase implements Application
         return new UsernamePasswordAuthenticationToken(principal, credentials, Collections.singleton(new SimpleGrantedAuthority(role)));
     }
 
-    /**
-     * New user.
-     * @return the DTO
-     */
-    protected static UserDto newUserDto() {
-        final UserDto result = new UserDto();
-        result.setDisplayName("User " + System.nanoTime());
-        result.setName("user" + System.nanoTime());
-        result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
-        result.setEmail(result.getName() + "@infodavid.org");
-        result.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.USER_ROLE));
-
-        return result;
-    }
-
-    /**
-     * New entity.
-     * @return the user
-     */
-    @SuppressWarnings("boxing")
-    protected static User newUser() {
-        final User result = new User();
-        result.setId(System.nanoTime());
-        result.setDisplayName("User " + result.getId());
-        result.setName("user" + System.nanoTime());
-        result.setPassword("24C9E15E52AFC47C225B757E7BEE1F9D");
-        result.setEmail(result.getName() + "@infodavid.org");
-        result.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.USER_ROLE));
-
-        return result;
-    }
-
     /** The application context. */
     @Getter
     @Setter
     protected ApplicationContext applicationContext;
 
-    /** The service. */
+    /** The manager. */
     @Autowired
     protected AuthenticationService authenticationService;
 
-    /** The data builder. */
-    protected DataBuilder dataBuilder = new DataBuilder();
+    /** The data initializer. */
+    protected DataInitializer dataInitializer = new DataInitializer();
 
     /*
      * (non-javadoc)
@@ -118,7 +84,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
     @SuppressWarnings("boxing")
     protected void updateSecurityContextWith(final String role, final String name, final String password) {
         SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
-        final User user = dataBuilder.newUser();
+        final User user = dataInitializer.newUser();
 
         if (org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE.equalsIgnoreCase(role)) {
             user.setId(1L);
@@ -128,7 +94,6 @@ public abstract class AbstractSpringTest extends TestCase implements Application
 
         user.setName(name);
         user.setPassword(password);
-        user.setRoles(CollectionUtils.of(role));
         final UsernamePasswordAuthenticationToken authentication = newAuthentication(role, user, password);
         authentication.setDetails(user);
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -110,7 +110,6 @@ class ConfigurationPropertyRepositoryTest extends AbstractSpringTest {
         assertFalse(result.isDeletable(), "Wrong deletable flag");
         assertEquals(PropertyType.STRING, result.getType(), "Wrong type");
         assertNotNull(result.getCreationDate(), "Wrong creation date");
-        assertNotNull(result.getLabel(), "Wrong label");
         assertFalse(StringUtils.isEmpty(result.getValue()), "Wrong value");
         assertEquals(org.infodavid.commons.persistence.Constants.SCHEMA_VERSION_PROPERTY, result.getName(), "Wrong name");
         assertNotNull(result.getModificationDate(), "Wrong modification date");
@@ -217,7 +216,6 @@ class ConfigurationPropertyRepositoryTest extends AbstractSpringTest {
         assertNotNull(inserted.getId(), "Wrong id");
         assertEquals(entity.isDeletable(), inserted.isDeletable(), "Wrong deletable flag");
         assertNotNull(inserted.getCreationDate(), "Wrong creation date");
-        assertNotNull(entity.getLabel(), "Wrong label");
         assertEquals(entity.getName(), inserted.getName(), "Wrong name");
         assertEquals(entity.getType(), inserted.getType(), "Wrong type");
         assertEquals(entity.getValue(), inserted.getValue(), "Wrong value");
@@ -248,7 +246,6 @@ class ConfigurationPropertyRepositoryTest extends AbstractSpringTest {
         assertEquals(entity.isDeletable(), updated.isDeletable(), "Wrong deletable flag");
         assertEquals(entity.getType(), updated.getType(), "Wrong type");
         assertEquals(entity.getCreationDate(), updated.getCreationDate(), "Wrong creation date");
-        assertNotNull(entity.getLabel(), "Wrong label");
         assertEquals(entity.getValue(), updated.getValue(), "Wrong value");
         assertEquals(entity.getName(), updated.getName(), "Wrong name");
         assertNotNull(updated.getModificationDate(), "Wrong modification date");

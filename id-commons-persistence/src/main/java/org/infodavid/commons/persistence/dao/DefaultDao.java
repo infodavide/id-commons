@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,7 +15,7 @@ import jakarta.persistence.PersistenceException;
  * @param <K> the key type
  * @param <T> the generic type
  */
-public interface DefaultDao<K extends Serializable, T extends PersistentObject<K>> {
+public interface DefaultDao<K extends Serializable, T extends PersistentEntity<K>> {
 
     /**
      * Count.

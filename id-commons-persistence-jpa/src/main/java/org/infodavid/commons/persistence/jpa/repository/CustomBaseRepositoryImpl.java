@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
@@ -16,7 +16,7 @@ import jakarta.persistence.PersistenceException;
  * @param <K> the key type
  * @param <T> the generic type
  */
-public class CustomBaseRepositoryImpl<K extends Serializable, T extends PersistentObject<K>> extends SimpleJpaRepository<T, K> {
+public class CustomBaseRepositoryImpl<K extends Serializable, T extends PersistentEntity<K>> extends SimpleJpaRepository<T, K> {
 
     /** The entity information. */
     private final JpaEntityInformation<T, K> entityInformation;

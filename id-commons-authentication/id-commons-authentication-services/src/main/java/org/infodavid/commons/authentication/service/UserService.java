@@ -69,15 +69,10 @@ public interface UserService extends EntityService<Long, User> {
     Page<DefaultEntityReference> findReferences(Pageable pageable) throws ServiceException;
 
     /**
-     * Gets the supported roles.
-     * @return the supported roles
-     */
-    String[] getSupportedRoles();
-
-    /**
      * Checks if is connected.
      * @param name the name
      * @return true, if user is connected or false if not connected or not found
+     * @throws ServiceException the service exception
      */
-    boolean isConnected(String name);
+    boolean isConnected(String name) throws ServiceException;
 }

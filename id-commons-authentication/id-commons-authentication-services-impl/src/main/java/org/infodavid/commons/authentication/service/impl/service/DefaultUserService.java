@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +16,10 @@ import java.util.Optional;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.infodavid.commons.authentication.model.Group;
 import org.infodavid.commons.authentication.model.User;
 import org.infodavid.commons.authentication.persistence.dao.UserDao;
+import org.infodavid.commons.authentication.service.GroupService;
 import org.infodavid.commons.authentication.service.UserService;
 import org.infodavid.commons.model.DefaultEntityReference;
 import org.infodavid.commons.service.exception.ServiceException;
@@ -27,7 +28,6 @@ import org.infodavid.commons.service.impl.Constants;
 import org.infodavid.commons.service.impl.TransactionUtils;
 import org.infodavid.commons.service.security.AuthenticationService;
 import org.infodavid.commons.service.security.AuthorizationService;
-import org.infodavid.commons.util.collection.CollectionUtils;
 import org.infodavid.commons.util.jackson.JsonUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -38,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import groovy.text.SimpleTemplateEngine;
 import jakarta.persistence.PersistenceException;
-import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,27 +48,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultUserService extends AbstractEntityService<Long, User> implements UserService, InitializingBean {
 
-    /** The Constant SUPPORTED_ROLES. */
-    protected static final String[] SUPPORTED_ROLES;
-
-    static {
-        SUPPORTED_ROLES = new String[] {
-                org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE,
-                org.infodavid.commons.model.Constants.ANONYMOUS_ROLE,
-                org.infodavid.commons.model.Constants.USER_ROLE
-        };
-
-        Arrays.sort(SUPPORTED_ROLES);
-    }
-
     /** The authentication service. */
     private final AuthenticationService authenticationService;
 
-    /** The authorization service. */
-    private final AuthorizationService authorizationService;
-
     /** The data access object. */
     private final UserDao dao;
+
+    /** The group service. */
+    private final GroupService groupService;
 
     /** The initialized. */
     private boolean initialized;
@@ -81,15 +67,16 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
      * Instantiates a new user service.
      * @param logger                the logger
      * @param applicationContext    the application context
+     * @param authorizationService  the authorization service
      * @param dao                   the data access object
      * @param authenticationService the authentication service
-     * @param authorizationService  the authorization service
+     * @param groupService          the group service
      */
-    public DefaultUserService(final Logger logger, final ApplicationContext applicationContext, final UserDao dao, final AuthenticationService authenticationService, final AuthorizationService authorizationService) {
-        super(logger, applicationContext, Long.class, User.class);
+    public DefaultUserService(final Logger logger, final ApplicationContext applicationContext, final AuthorizationService authorizationService, final UserDao dao, final AuthenticationService authenticationService, final GroupService groupService) {
+        super(logger, applicationContext, authorizationService, Long.class, User.class);
         this.dao = dao;
         this.authenticationService = authenticationService;
-        this.authorizationService = authorizationService;
+        this.groupService = groupService;
         templateEngine = new SimpleTemplateEngine();
         templateEngine.setEscapeBackslash(true);
     }
@@ -108,16 +95,16 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
         getLogger().debug("Initializing...");
         initialized = true;
         TransactionUtils.doInTransaction("Checking users", LOGGER, getApplicationContext(), () -> {
+            DefaultGroupService.initialize(groupService);
             Optional<User> optional = dao.findByName(org.infodavid.commons.authentication.model.Constants.DEFAULT_ADMINISTRATOR);
 
             if (!optional.isPresent()) {
                 final User user = new User();
-                user.setDeletable(false);
                 user.setName(org.infodavid.commons.authentication.model.Constants.DEFAULT_ADMINISTRATOR);
                 user.setDisplayName("Administrator");
                 user.setEmail("support@infodavid.org");
                 user.setPassword(DigestUtils.md5Hex(org.infodavid.commons.authentication.model.Constants.DEFAULT_PASSWORD));
-                user.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE));
+                user.getGroups().add(groupService.findByName(org.infodavid.commons.authentication.model.Constants.DEFAULT_ADMINISTRATORS).get());
                 dao.insert(user);
             }
 
@@ -125,12 +112,10 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
             if (!optional.isPresent()) {
                 final User user = new User();
-                user.setDeletable(false);
                 user.setName(org.infodavid.commons.model.Constants.ANONYMOUS);
                 user.setDisplayName("Anonymous");
                 user.setEmail("support@infodavid.org");
                 user.setPassword(org.infodavid.commons.model.Constants.ANONYMOUS);
-                user.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
                 dao.insert(user);
             }
 
@@ -147,20 +132,18 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
     @Override
     public void export(final OutputStream out) throws ServiceException { // NOSONAR No complexity
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
-            final Page<User> users = getDataAccessObject().findAll(Pageable.unpaged());
+            final Page<User> page = getDataAccessObject().findAll(Pageable.unpaged());
             writer.write("Name");
             writer.write(Constants.CSV_SEPARATOR);
             writer.write("Creation cate");
             writer.write(Constants.CSV_SEPARATOR);
             writer.write("Modification date");
             writer.write(Constants.CSV_SEPARATOR);
-            writer.write("Deletable");
-            writer.write(Constants.CSV_SEPARATOR);
             writer.write("Display name");
             writer.write(Constants.CSV_SEPARATOR);
             writer.write("Email");
             writer.write(Constants.CSV_SEPARATOR);
-            writer.write("Role");
+            writer.write("Groups");
             writer.write(Constants.CSV_SEPARATOR);
             writer.write("Expiration date");
             writer.write(Constants.CSV_SEPARATOR);
@@ -170,79 +153,67 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
             writer.write(Constants.CSV_SEPARATOR);
             writer.write("Locked");
             writer.write(Constants.CSV_SEPARATOR);
-            writer.write("Connections");
-            writer.write(Constants.CSV_SEPARATOR);
             writer.write("Password");
             writer.write(Constants.CSV_SEPARATOR);
             writer.write("Properties");
             writer.write(Constants.EOL);
 
-            for (final User user : users) {
-                writer.write(user.getName());
+            for (final User entity : page) {
+                writer.write(entity.getName());
                 writer.write(Constants.CSV_SEPARATOR);
 
-                if (user.getCreationDate() != null) {
-                    writer.write(Constants.DATETIME_FORMAT.format(user.getCreationDate()));
+                if (entity.getCreationDate() != null) {
+                    writer.write(Constants.DATETIME_FORMAT.format(entity.getCreationDate()));
                 }
 
                 writer.write(Constants.CSV_SEPARATOR);
 
-                if (user.getModificationDate() != null) {
-                    writer.write(Constants.DATETIME_FORMAT.format(user.getModificationDate()));
+                if (entity.getModificationDate() != null) {
+                    writer.write(Constants.DATETIME_FORMAT.format(entity.getModificationDate()));
+                }
+
+                writer.write(Constants.CSV_SEPARATOR);
+                writer.write(entity.getDisplayName());
+                writer.write(Constants.CSV_SEPARATOR);
+
+                if (entity.getEmail() != null) {
+                    writer.write(entity.getEmail());
+                }
+
+                writer.write(Constants.CSV_SEPARATOR);
+                writer.write(StringUtils.join(entity.getGroups().stream().map(Group::getName).toArray(), ','));
+                writer.write(Constants.CSV_SEPARATOR);
+
+                if (entity.getExpirationDate() != null) {
+                    writer.write(Constants.DATETIME_FORMAT.format(entity.getExpirationDate()));
                 }
 
                 writer.write(Constants.CSV_SEPARATOR);
 
-                if (user.isDeletable()) {
+                if (entity.getLastConnectionDate() != null) {
+                    writer.write(Constants.DATETIME_FORMAT.format(entity.getLastConnectionDate()));
+                }
+
+                writer.write(Constants.CSV_SEPARATOR);
+
+                if (entity.getLastIp() != null) {
+                    writer.write(entity.getLastIp());
+                }
+
+                writer.write(Constants.CSV_SEPARATOR);
+
+                if (entity.isLocked()) {
                     writer.write("yes");
                 } else {
                     writer.write("no");
                 }
 
                 writer.write(Constants.CSV_SEPARATOR);
-                writer.write(user.getDisplayName());
+                writer.write(entity.getPassword());
                 writer.write(Constants.CSV_SEPARATOR);
 
-                if (user.getEmail() != null) {
-                    writer.write(user.getEmail());
-                }
-
-                writer.write(Constants.CSV_SEPARATOR);
-                writer.write(StringUtils.join(user.getRoles(), ','));
-                writer.write(Constants.CSV_SEPARATOR);
-
-                if (user.getExpirationDate() != null) {
-                    writer.write(Constants.DATETIME_FORMAT.format(user.getExpirationDate()));
-                }
-
-                writer.write(Constants.CSV_SEPARATOR);
-
-                if (user.getLastConnectionDate() != null) {
-                    writer.write(Constants.DATETIME_FORMAT.format(user.getLastConnectionDate()));
-                }
-
-                writer.write(Constants.CSV_SEPARATOR);
-
-                if (user.getLastIp() != null) {
-                    writer.write(user.getLastIp());
-                }
-
-                writer.write(Constants.CSV_SEPARATOR);
-
-                if (user.isLocked()) {
-                    writer.write("yes");
-                } else {
-                    writer.write("no");
-                }
-
-                writer.write(Constants.CSV_SEPARATOR);
-                writer.write(String.valueOf(user.getConnectionsCount()));
-                writer.write(Constants.CSV_SEPARATOR);
-                writer.write(user.getPassword());
-                writer.write(Constants.CSV_SEPARATOR);
-
-                if (user.getProperties() != null) {
-                    writer.write(JsonUtils.toJson(user.getProperties()));
+                if (entity.getProperties() != null) {
+                    writer.write(JsonUtils.toJson(entity.getProperties()));
                 }
 
                 writer.write(Constants.EOL);
@@ -337,8 +308,8 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
         if (connected) {
             // reload users from database to get up to date data
             try {
-                for (final Principal user : authenticated) {
-                    final Optional<User> optional = dao.findByName(user.getName());
+                for (final Principal principal : authenticated) {
+                    final Optional<User> optional = dao.findByName(principal.getName());
 
                     if (optional.isPresent()) {
                         results.add(filter(optional.get()));
@@ -362,7 +333,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#findByUniqueConstraints(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#findByUniqueConstraints(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected Optional<User> findByUniqueConstraints(final User value) throws ServiceException {
@@ -393,19 +364,10 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.authentication.service.UserService#getSupportedRoles()
-     */
-    @Override
-    public String[] getSupportedRoles() {
-        return SUPPORTED_ROLES;
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.infodavid.commons.authentication.service.UserService#isConnected(java.lang.String)
      */
     @Override
-    public boolean isConnected(final String name) {
+    public boolean isConnected(final String name) throws ServiceException {
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException(Constants.ARGUMENT_NAME_IS_NULL_OR_EMPTY);
         }
@@ -414,13 +376,13 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
             throw new IllegalAccessError("Cannot check user status due to unsupported authentication service");
         }
 
-        User user = null;
+        User principal = null;
 
         try {
             final Optional<User> optional = dao.findByName(name);
 
             if (optional.isPresent()) {
-                user = optional.get();
+                principal = optional.get();
             }
         } catch (final PersistenceException e) {
             getLogger().warn("An error occured while retrieving the user: " + name, e); // NOSONAR Templating not available with Throwable argument
@@ -428,11 +390,11 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
             return false;
         }
 
-        if (user == null) {
+        if (principal == null) {
             return false;
         }
 
-        return authenticationService.isAuthenticated(user);
+        return authenticationService.isAuthenticated(principal);
     }
 
     /*
@@ -447,43 +409,47 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
         authorizationService.assertDeleteAuthorization(authorizationService.getPrincipal(), getEntityClass(), id);
         validationHelper.validateId(id);
-        User user = null;
+        User entity = null;
 
         try {
             final Optional<User> optional = getDataAccessObject().findById(id);
 
             if (optional.isPresent()) {
-                user = optional.get();
+                entity = optional.get();
             }
         } catch (final PersistenceException e) {
             throw new ServiceException(ExceptionUtils.getRootCause(e));
         }
 
-        if (user != null && !user.isDeletable()) {
-            throw new IllegalAccessException("User '" + user.getDisplayName() + "' is protected, deletion is not allowed");
+        if (entity != null && org.infodavid.commons.authentication.model.Constants.DEFAULT_ADMINISTRATOR.equals(entity.getName())) {
+            throw new IllegalAccessException("User '" + entity.getDisplayName() + "' is protected, deletion is not allowed");
         }
     }
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#preDelete(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#preDelete(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
-    protected void preDelete(final User entity) throws IllegalAccessException, ServiceException {
-        super.preDelete(entity);
+    protected void preDelete(final User value) throws IllegalAccessException, ServiceException {
+        if (value != null && org.infodavid.commons.authentication.model.Constants.DEFAULT_ADMINISTRATOR.equals(value.getName())) {
+            throw new IllegalAccessException("User '" + value.getDisplayName() + "' is protected, deletion is not allowed");
+        }
 
-        if (entity == null) {
+        super.preDelete(value);
+
+        if (value == null) {
             return;
         }
 
         if (authenticationService != null) {
-            authenticationService.invalidate(entity, Collections.emptyMap());
+            authenticationService.invalidate(value, Collections.emptyMap());
         }
     }
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#preInsert(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#preInsert(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected User preInsert(final User value) throws IllegalAccessException, ServiceException {
@@ -496,12 +462,12 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#preUpdate(java.util.Optional, org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#preUpdate(java.util.Optional, org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected User preUpdate(final Optional<User> existing, final User value) throws IllegalAccessException, ServiceException {
         if (existing.isPresent()) {
-            if (!Objects.equals(existing.get().getRoles(), value.getRoles())) {
+            if (!Objects.equals(existing.get().getGroups(), value.getGroups())) {
                 authorizationService.assertRole(authorizationService.getPrincipal(), org.infodavid.commons.model.Constants.ADMINISTRATOR_ROLE);
             }
 
@@ -516,7 +482,7 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#update(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#update(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     public void update(final User value) throws ServiceException, IllegalAccessException {
@@ -524,78 +490,66 @@ public class DefaultUserService extends AbstractEntityService<Long, User> implem
             throw new IllegalArgumentException(Constants.ARGUMENT_IS_NULL_OR_EMPTY);
         }
 
-        final User valueToUpdate = new User(value);
+        final User entityToUpdate = new User(value);
 
         // if password value is empty (not provided by presentation layer), existing value is set
-        if (StringUtils.isEmpty(valueToUpdate.getPassword()) && valueToUpdate.getId() != null && valueToUpdate.getId().longValue() > 0) {
+        if (StringUtils.isEmpty(entityToUpdate.getPassword()) && entityToUpdate.getId() != null && entityToUpdate.getId().longValue() > 0) {
             try {
-                final Optional<User> optional = getDataAccessObject().findById(valueToUpdate.getId());
+                final Optional<User> optional = getDataAccessObject().findById(entityToUpdate.getId());
 
                 if (optional.isPresent()) {
                     // back to existing value
-                    valueToUpdate.setPassword(optional.get().getPassword());
+                    entityToUpdate.setPassword(optional.get().getPassword());
                 }
             } catch (final PersistenceException e) {
                 throw new ServiceException(ExceptionUtils.getRootCause(e));
             }
         }
 
-        final User existing;
+        final User existingEntity;
 
         try {
-            final Optional<User> optional = dao.findById(valueToUpdate.getId());
+            final Optional<User> optional = dao.findById(entityToUpdate.getId());
 
             if (!optional.isPresent()) {
                 return;
             }
 
-            existing = optional.get();
+            existingEntity = optional.get();
         } catch (final PersistenceException e) {
             throw new ServiceException(ExceptionUtils.getRootCause(e));
         }
 
         // User can change its email, displayName and password
-        if (authorizationService.getPrincipal().getName().equals(valueToUpdate.getName())) {
+        if (authorizationService.getPrincipal().getName().equals(entityToUpdate.getName())) {
             // only some data are allowed for update
-            existing.setDisplayName(valueToUpdate.getDisplayName());
-            existing.setEmail(valueToUpdate.getEmail());
-            existing.setPassword(valueToUpdate.getPassword());
-            valueToUpdate.getProperties().forEach(p -> existing.getProperties().add(p));
-            super.update(Optional.of(existing), existing);
+            existingEntity.setDisplayName(entityToUpdate.getDisplayName());
+            existingEntity.setEmail(entityToUpdate.getEmail());
+            existingEntity.setPassword(entityToUpdate.getPassword());
+            entityToUpdate.getProperties().forEach(p -> existingEntity.getProperties().add(p));
+            super.update(Optional.of(existingEntity), existingEntity);
 
             return;
         }
 
-        valueToUpdate.setDeletable(false);
-
-        if (!existing.isDeletable()) {
-            valueToUpdate.setName(existing.getName());
-            valueToUpdate.setRoles(existing.getRoles());
-            valueToUpdate.setLocked(existing.isLocked());
-            valueToUpdate.setExpirationDate(existing.getExpirationDate());
+        if (org.infodavid.commons.authentication.model.Constants.DEFAULT_ADMINISTRATOR.equals(existingEntity.getName())) {
+            entityToUpdate.setName(existingEntity.getName());
+            entityToUpdate.setGroups(existingEntity.getGroups());
+            entityToUpdate.setLocked(existingEntity.isLocked());
+            entityToUpdate.setExpirationDate(existingEntity.getExpirationDate());
         }
 
-        super.update(Optional.of(existing), valueToUpdate);
+        super.update(Optional.of(existingEntity), entityToUpdate);
     }
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.impl.AbstractEntityService#validate(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.impl.AbstractEntityService#validate(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     public void validate(final User value) throws ServiceException {
         if (value == null) {
             return;
-        }
-
-        if (value.getRoles() == null) {
-            value.setRoles(CollectionUtils.of(org.infodavid.commons.model.Constants.ANONYMOUS_ROLE));
-        } else {
-            for (final String role : value.getRoles()) {
-                if (Arrays.binarySearch(getSupportedRoles(), role) < 0) {
-                    throw new ValidationException("Role is not supported: " + role + " (" + Arrays.toString(getSupportedRoles()) + ')');
-                }
-            }
         }
 
         StringUtils.trim(value.getDisplayName());

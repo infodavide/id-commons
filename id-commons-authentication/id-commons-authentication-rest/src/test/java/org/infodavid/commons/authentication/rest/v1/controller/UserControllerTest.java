@@ -33,6 +33,13 @@ class UserControllerTest extends AbstractControllerTest<UserDto, Long, User> {
     @Autowired
     private DefaultUserController controller;
 
+    /**
+     * Instantiates a new controller test.
+     */
+    public UserControllerTest() {
+        super(Long.class, User.class);
+    }
+
     /*
      * (non-javadoc)
      * @see org.infodavid.web.controller.AbstractControllerTest#add(org.infodavid.web.dto.AbstractDto)
@@ -75,7 +82,7 @@ class UserControllerTest extends AbstractControllerTest<UserDto, Long, User> {
      */
     @Override
     protected UserDto newDto() {
-        return newUserDto();
+        return dataInitializer.newUserDto();
     }
 
     /*
@@ -84,18 +91,7 @@ class UserControllerTest extends AbstractControllerTest<UserDto, Long, User> {
      */
     @Override
     protected User newEntity() {
-        return newUser();
-    }
-
-    /**
-     * Test remove.
-     * @throws Exception the exception
-     */
-    @Test
-    void testDeleteNotDeletable() throws Exception { // NOSONAR Assert no exception
-        Mockito.doThrow(IllegalAccessException.class).when(getController().getService()).deleteById(any());
-
-        delete(1L);
+        return dataInitializer.newUser();
     }
 
     /**
@@ -147,7 +143,7 @@ class UserControllerTest extends AbstractControllerTest<UserDto, Long, User> {
      */
     @Test
     void testGetReferences() throws Exception {
-        final Page<DefaultEntityReference> page = new PageImpl<>(Collections.singletonList(new DefaultEntityReference(1L, "db1")));
+        final Page<DefaultEntityReference> page = new PageImpl<>(Collections.singletonList(new DefaultEntityReference(1L, "user1")));
         Mockito.when(getController().getService().findReferences(any(Pageable.class))).thenReturn(page);
 
         final PageDto result = controller.findReferences();

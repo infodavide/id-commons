@@ -1,15 +1,17 @@
 package org.infodavid.commons.authentication.service.test.persistence.dao;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.infodavid.commons.authentication.model.Group;
 import org.infodavid.commons.authentication.model.User;
+import org.infodavid.commons.authentication.persistence.dao.GroupDao;
 import org.infodavid.commons.authentication.persistence.dao.UserDao;
 import org.infodavid.commons.model.DefaultEntityReference;
 import org.infodavid.commons.model.EntityProperty;
@@ -28,6 +30,17 @@ public class UserDaoMock extends AbstractDefaultDaoMock<Long, User> implements U
     /** The Constant SEQUENCE. */
     private static final AtomicLong SEQUENCE = new AtomicLong(1);
 
+    /** The group data access object. */
+    private final GroupDao groupDao;
+
+    /**
+     * Instantiates a new data access object.
+     * @param groupDao the group data access object
+     */
+    public UserDaoMock(final GroupDao groupDao) {
+        this.groupDao = groupDao;
+    }
+
     /*
      * (non-Javadoc)
      * @see org.infodavid.commons.service.test.persistence.dao.AbstractDefaultDaoMock#clear()
@@ -40,28 +53,11 @@ public class UserDaoMock extends AbstractDefaultDaoMock<Long, User> implements U
 
     /*
      * (non-Javadoc)
-     * @see org.infodavid.commons.service.test.persistence.dao.AbstractDefaultDaoMock#clone(org.infodavid.commons.model.PersistentObject)
+     * @see org.infodavid.commons.service.test.persistence.dao.AbstractDefaultDaoMock#clone(org.infodavid.commons.model.PersistentEntity)
      */
     @Override
     protected User clone(final User source) {
         return source == null ? null : new User(source);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.infodavid.commons.authentication.persistence.dao.UserDao#deleteDeletable()
-     */
-    @Override
-    public void deleteDeletable() throws PersistenceException {
-        final Iterator<User> ite = map.values().iterator();
-
-        while (ite.hasNext()) {
-            final User user = ite.next();
-
-            if (!user.isDeletable()) {
-                ite.remove();
-            }
-        }
     }
 
     /*
@@ -77,6 +73,23 @@ public class UserDaoMock extends AbstractDefaultDaoMock<Long, User> implements U
         }
 
         return Optional.empty();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.infodavid.commons.authentication.persistence.dao.UserDao#findByGroup(java.lang.String, org.springframework.data.domain.Pageable)
+     */
+    @Override
+    public Page<User> findByGroup(final String group, final Pageable pageable) throws PersistenceException {
+        final List<User> results = new ArrayList<>();
+
+        for (final Entry<Long, User> entry : map.entrySet()) {
+            if (entry.getValue().getGroups().stream().filter(g -> g.getName().equals(group)).count() > 0) {
+                results.add(clone(entry.getValue()));
+            }
+        }
+
+        return new PageImpl<>(clone(results));
     }
 
     /*
@@ -117,10 +130,11 @@ public class UserDaoMock extends AbstractDefaultDaoMock<Long, User> implements U
      */
     @Override
     public Page<User> findByRole(final String value, final Pageable pageable) throws PersistenceException {
+        final List<Group> groups = groupDao.findByRole(value, Pageable.unpaged()).getContent();
         final List<User> results = new ArrayList<>();
 
         for (final User user : map.values()) {
-            if (user.getRoles() != null && user.getRoles().contains(value)) {
+            if (user.getGroups() != null && !CollectionUtils.intersection(user.getGroups(), groups).isEmpty()) {
                 results.add(user);
             }
         }

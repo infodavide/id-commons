@@ -56,7 +56,7 @@ public abstract class AbstractSpringTest extends TestCase implements Application
     @Setter
     protected ApplicationContext applicationContext;
 
-    /** The service. */
+    /** The manager. */
     @Autowired
     protected AuthenticationService authenticationService;
 

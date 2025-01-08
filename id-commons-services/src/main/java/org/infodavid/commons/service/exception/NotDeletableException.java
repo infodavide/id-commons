@@ -1,6 +1,6 @@
 package org.infodavid.commons.service.exception;
 
-import org.infodavid.commons.model.PersistentObject;
+import org.infodavid.commons.model.PersistentEntity;
 
 import jakarta.validation.ValidationException;
 
@@ -13,14 +13,14 @@ public class NotDeletableException extends ValidationException {
     private static final long serialVersionUID = -8377739488098386511L;
 
     /** The value. */
-    private final PersistentObject<?> value;
+    private final PersistentEntity<?> value;
 
     /**
      * Instantiates a new exception.
      * @param message the message
      * @param value   the value
      */
-    public NotDeletableException(final String message, final PersistentObject<?> value) {
+    public NotDeletableException(final String message, final PersistentEntity<?> value) {
         super(message);
         this.value = value;
     }
@@ -30,7 +30,7 @@ public class NotDeletableException extends ValidationException {
      * @return the value
      */
     @SuppressWarnings("rawtypes")
-    public PersistentObject getValue() {
+    public PersistentEntity getValue() {
         return value;
     }
 }
